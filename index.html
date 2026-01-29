@@ -1,0 +1,1876 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>GCSE Maths — Diagnostic: Geometry, Measures & Trigonometry (52 marks)</title>
+<style>
+  :root{
+    --ink:#0f172a; --muted:#6b7280; --accent:#2563eb; --bg:#ffffff; --border:#e5e7eb; --tabh:56px;
+    --tabGood:#10b981; --tabMid:#fbbf24; --tabBad:#ef4444;
+  }
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+    font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,Ubuntu,"Helvetica Neue",Arial,"Noto Sans",sans-serif;}
+  header{position:sticky;top:0;z-index:50;background:#fff;border-bottom:1px solid var(--border)}
+  main{max-width:1040px;margin:1.2rem auto 4rem;padding:0 1rem}
+
+  /* tabs */
+  .bar{display:flex;gap:.5rem;align-items:center;overflow:auto hidden;white-space:nowrap;height:var(--tabh);padding:.65rem .75rem}
+  .bar button{appearance:none;border:1px solid var(--border);background:#fff;color:#0f172a;
+    border-radius:999px;padding:.45rem .9rem;cursor:pointer;font-weight:900;transition:.15s;flex:0 0 auto}
+  .bar button:hover{border-color:#c7d2fe}
+  .bar button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+  /* colouring after marking */
+  .bar button.good{background:var(--tabGood);color:#083344;border-color:var(--tabGood)}
+  .bar button.mid{background:var(--tabMid);color:#291800;border-color:var(--tabMid)}
+  .bar button.bad{background:var(--tabBad);color:#fff;border-color:var(--tabBad)}
+
+  section.page{display:none;animation:fade .15s ease-out}
+  section.page.active{display:block}
+  @keyframes fade{from{opacity:.45;transform:translateY(-2px)}to{opacity:1;transform:none}}
+
+  .qpanel{border:1px solid var(--border);border-radius:.9rem;overflow:hidden;margin-top:1rem;box-shadow:0 1px 0 rgba(0,0,0,.03)}
+  .qhead{padding:.95rem 1rem;border-bottom:1px solid var(--border);background:linear-gradient(180deg,#fbfdff,#f8fafc);
+    display:flex;align-items:center;justify-content:space-between;gap:1rem}
+  .qhead h3{margin:.15rem 0;font-size:1.07rem}
+  .qbody{padding:1.05rem 1rem; position:relative;}
+  .qbody p{margin:.85rem 0}
+  .badge{display:inline-block;margin-left:.5rem;padding:.05rem .45rem;border:1px solid var(--border);border-radius:7px;background:#eef2ff}
+  .tag{font-weight:950;text-transform:uppercase;letter-spacing:.02em}
+  .tag.calc{color:#1d4ed8}
+  .tag.draw{color:#15803d}
+  .muted{color:var(--muted)}
+  .actions{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap}
+  .primary{background:var(--accent);color:#fff;border:1px solid var(--accent);border-radius:.6rem;padding:.65rem 1rem;cursor:pointer;font-weight:950}
+  .ghost{
+    background:#fff;color:#0f172a;border:1px solid var(--border);border-radius:.6rem;
+    padding:.65rem 1rem;cursor:pointer;font-weight:950;text-decoration:none;display:inline-block
+  }
+
+  input[type="text"], input[type="number"], select, textarea{
+    padding:.5rem .6rem;border:1px solid var(--border);border-radius:.55rem;min-width:64px;font-size:16px}
+  input[type="number"]{appearance:textfield}
+  input[type="number"]::-webkit-outer-spin-button,input[type="number"]::-webkit-inner-spin-button{appearance:none;margin:0}
+  textarea{width:100%;min-height:160px}
+
+  /* Answer row */
+  .ans{display:inline-flex;align-items:center;gap:.55rem;vertical-align:middle;flex-wrap:wrap}
+  .ans input{min-width:220px}
+  .ans select{min-width:220px}
+
+  /* Diagrams */
+  figure{margin:.25rem 0 1rem; padding:.9rem; border:1px solid var(--border); border-radius:.9rem; background:#fbfdff}
+  figcaption{color:var(--muted);font-size:.92rem;margin-top:.55rem}
+  svg{max-width:100%;height:auto;display:block}
+
+  .grid2{display:grid;grid-template-columns:1fr;gap:1rem}
+  @media (min-width:900px){ .grid2{grid-template-columns:1fr 1fr;} }
+
+  .hr{height:1px;background:var(--border);margin:1rem 0}
+  .small{font-size:.93rem}
+  .kbd{background:#f1f5f9;border:1px solid var(--border);border-radius:6px;padding:.1rem .35rem;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace}
+
+  /* Smart Targets */
+  #smartWrap{display:none;border:1px solid var(--border);border-radius:.8rem;padding:1rem;background:#f8fafc}
+  #smartBox{width:100%;min-height:240px;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace}
+  #copyBtn{margin-top:.5rem}
+
+  /* Intro modal */
+  .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.45);z-index:1000}
+  .modal .panel{width:min(900px,94vw);background:#fff;border:1px solid var(--border);border-radius:1rem;padding:1.1rem}
+  .modal h2{margin:.1rem 0 .4rem}
+
+  /* Fullscreen lock shield */
+  #fsShield{display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.75);color:#fff;align-items:center;justify-content:center;text-align:center;padding:1.5rem;}
+
+  /* ===== Formula sheet ===== */
+  .fs-open{
+    position:absolute;top:.55rem;right:.6rem;border:1px solid var(--border);background:#f8fafc;
+    border-radius:.6rem;padding:.35rem .7rem;font-weight:950;cursor:pointer
+  }
+  #fsModal .panel{width:min(940px,96vw)}
+  #fsGrid{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(260px,1fr);gap:16px;align-items:start}
+  #fsGrid h4{margin:.6rem 0 .35rem}
+  #fsGrid .box{border:1px solid var(--border);border-radius:.7rem;padding:.75rem .85rem;background:#fbfdff}
+  #fsClose{float:right;background:var(--accent);color:#fff;border:1px solid var(--accent);border-radius:.6rem;padding:.65rem 1rem;cursor:pointer;font-weight:950}
+  .fs-note{font-size:.92rem;color:#374151;margin:.15rem 0 .6rem}
+  .fs-math{display:block;margin:.25rem 0}
+  .fs-hr{border:none;border-top:1px solid var(--border);margin:.7rem 0}
+
+  /* tiny toast */
+  #blockToast{display:none}
+
+  /* Q4 multiple choice option grid */
+  .optgrid{display:grid;grid-template-columns:1fr;gap:12px}
+  @media (min-width:860px){ .optgrid{grid-template-columns:1fr 1fr;} }
+  .optcard{border:1px solid var(--border);border-radius:.85rem;background:#fff;padding:.55rem}
+  .optcard .optlab{font-weight:950;margin:.1rem 0 .45rem}
+</style>
+</head>
+<body>
+<header>
+  <div class="bar" id="tabbar" role="tablist" aria-label="Quick navigation">
+    <button class="active" data-target="q1"  role="tab" aria-selected="true">Q1</button>
+    <button data-target="q2"  role="tab">Q2</button>
+    <button data-target="q3"  role="tab">Q3</button>
+    <button data-target="q4"  role="tab">Q4</button>
+    <button data-target="q5"  role="tab">Q5</button>
+    <button data-target="q6"  role="tab">Q6</button>
+    <button data-target="q7"  role="tab">Q7</button>
+    <button data-target="q8"  role="tab">Q8</button>
+    <button data-target="q9"  role="tab">Q9</button>
+    <button data-target="q10" role="tab">Q10</button>
+    <button data-target="q11" role="tab">Q11</button>
+    <button data-target="q12" role="tab">Q12</button>
+    <button data-target="q13" role="tab">Q13</button>
+    <button data-target="results" role="tab">Results</button>
+  </div>
+</header>
+
+<main>
+
+  <!-- Q1 (do NOT say cylinder) -->
+  <section id="q1" class="page active" role="tabpanel">
+    <div class="qpanel">
+      <div class="qhead">
+        <h3>Q1 3D Shapes — Identify the shape, area of a face, volume & capacity <span class="badge">[8 marks]</span></h3>
+        <span class="tag calc">CALCULATOR</span>
+      </div>
+      <div class="qbody">
+        <button type="button" class="fs-open" aria-controls="fsModal">Formula sheet</button>
+        <p class="muted small"><b>Round all numerical answers to 2 decimal places.</b></p>
+
+        <figure>
+          <svg viewBox="0 0 900 320" role="img" aria-labelledby="cylTitle cylDesc">
+            <title id="cylTitle">3D shape with circular faces</title>
+            <desc id="cylDesc">A clean 3D shape with two circular faces, radius 4 cm and height 15 cm.</desc>
+            <defs>
+              <marker id="arr" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#0f172a"></path>
+              </marker>
+            </defs>
+
+            <!-- shape -->
+            <ellipse cx="300" cy="80" rx="140" ry="40" fill="none" stroke="#0f172a" stroke-width="3"/>
+            <line x1="160" y1="80" x2="160" y2="240" stroke="#0f172a" stroke-width="3"/>
+            <line x1="440" y1="80" x2="440" y2="240" stroke="#0f172a" stroke-width="3"/>
+            <ellipse cx="300" cy="240" rx="140" ry="40" fill="none" stroke="#0f172a" stroke-width="3"/>
+            <path d="M160 240 C200 275, 400 275, 440 240" fill="none" stroke="#0f172a" stroke-width="3"/>
+
+            <!-- height -->
+            <line x1="520" y1="80" x2="520" y2="240" stroke="#0f172a" stroke-width="2" marker-start="url(#arr)" marker-end="url(#arr)"/>
+            <line x1="440" y1="80" x2="505" y2="80" stroke="#0f172a" stroke-width="2"/>
+            <line x1="440" y1="240" x2="505" y2="240" stroke="#0f172a" stroke-width="2"/>
+            <rect x="545" y="145" width="135" height="30" rx="10" fill="#ffffff" stroke="#e5e7eb"/>
+            <text x="612" y="166" font-size="18" font-weight="950" text-anchor="middle">h = 15 cm</text>
+
+            <!-- radius -->
+            <circle cx="300" cy="80" r="4" fill="#0f172a"/>
+            <line x1="300" y1="80" x2="440" y2="80" stroke="#0f172a" stroke-width="2" marker-end="url(#arr)"/>
+            <rect x="326" y="44" width="110" height="28" rx="10" fill="#ffffff" stroke="#e5e7eb"/>
+            <text x="381" y="64" font-size="18" font-weight="950" text-anchor="middle">r = 4 cm</text>
+
+            <text x="600" y="70" font-size="16" fill="#6b7280">(Diagram not to scale)</text>
+          </svg>
+          <figcaption>Radius <b>4 cm</b>, height <b>15 cm</b>.</figcaption>
+        </figure>
+
+        <p>A metal tin is shown above. It has radius <b>4 cm</b> and height <b>15 cm</b>.</p>
+
+        <p><b>(a)</b> What is the <b>name of the 3D shape</b>? <span class="muted">[1]</span><br/>
+          <span class="ans">
+            <select id="q1shape" aria-label="Q1a shape name">
+              <option value=""></option>
+              <option value="cylinder">Cylinder</option>
+              <option value="cone">Cone</option>
+              <option value="sphere">Sphere</option>
+              <option value="cuboid">Cuboid</option>
+              <option value="triangularprism">Triangular prism</option>
+            </select>
+          </span>
+        </p>
+
+        <p><b>(b)</b> Calculate the <b>area of one circular face</b> in cm². <span class="muted">[2]</span><br/>
+          <span class="ans"><input id="q1face" type="text" aria-label="Q1b area of one face"></span>
+        </p>
+
+        <p><b>(c)</b> Calculate the <b>volume</b> of the tin in cm³. <span class="muted">[2]</span><br/>
+          <span class="ans"><input id="q1vol" type="text" aria-label="Q1c volume"></span>
+        </p>
+
+        <p><b>(d)</b> Calculate the <b>total surface area</b> (including top and base) in cm². <span class="muted">[2]</span><br/>
+          <span class="ans"><input id="q1tsa" type="text" aria-label="Q1d total surface area"></span>
+        </p>
+
+        <p><b>(e)</b> The tin is filled completely. Convert the volume into <b>litres</b>. <span class="muted">[1]</span><br/>
+          <span class="ans"><input id="q1lit" type="text" aria-label="Q1e litres"></span>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Q2 Cuboid -->
+  <section id="q2" class="page" role="tabpanel">
+    <div class="qpanel">
+      <div class="qhead">
+        <h3>Q2 3D Shapes — Cuboid volume & capacity <span class="badge">[2 marks]</span></h3>
+        <span class="tag calc">CALCULATOR</span>
+      </div>
+      <div class="qbody">
+        <button type="button" class="fs-open" aria-controls="fsModal">Formula sheet</button>
+        <p class="muted small"><b>Round answers to 2 decimal places if needed.</b></p>
+
+        <figure>
+          <svg viewBox="0 0 900 300" role="img" aria-labelledby="cubTitle cubDesc">
+            <title id="cubTitle">Cuboid with labelled dimensions</title>
+            <desc id="cubDesc">A cuboid diagram with 30 cm, 20 cm, 15 cm labelled using clear dimension lines. The 15 cm label is aligned to the back vertical edge.</desc>
+            <defs>
+              <marker id="arr2" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#0f172a"></path>
+              </marker>
+            </defs>
+
+            <!-- cuboid -->
+            <path d="M220 220 L520 220 L640 150 L340 150 Z" fill="none" stroke="#0f172a" stroke-width="3"/>
+            <path d="M220 220 L220 90 L340 20 L340 150 Z" fill="none" stroke="#0f172a" stroke-width="3"/>
+            <path d="M520 220 L520 90 L640 20 L640 150 Z" fill="none" stroke="#0f172a" stroke-width="3"/>
+            <path d="M220 90 L520 90 L640 20 L340 20 Z" fill="none" stroke="#0f172a" stroke-width="3"/>
+
+            <!-- length 30 -->
+            <line x1="220" y1="255" x2="520" y2="255" stroke="#0f172a" stroke-width="2" marker-start="url(#arr2)" marker-end="url(#arr2)"/>
+            <line x1="220" y1="245" x2="220" y2="220" stroke="#0f172a" stroke-width="2"/>
+            <line x1="520" y1="245" x2="520" y2="220" stroke="#0f172a" stroke-width="2"/>
+            <rect x="320" y="265" width="100" height="28" rx="10" fill="#fff" stroke="#e5e7eb"/>
+            <text x="370" y="286" font-size="18" font-weight="950" text-anchor="middle">30 cm</text>
+
+            <!-- width 20 -->
+            <line x1="535" y1="232" x2="655" y2="162" stroke="#0f172a" stroke-width="2" marker-start="url(#arr2)" marker-end="url(#arr2)"/>
+            <rect x="560" y="235" width="100" height="28" rx="10" fill="#fff" stroke="#e5e7eb"/>
+            <text x="610" y="256" font-size="18" font-weight="950" text-anchor="middle">20 cm</text>
+
+            <!-- height 15 on BACK vertical edge -->
+            <line x1="690" y1="20" x2="690" y2="150" stroke="#0f172a" stroke-width="2" marker-start="url(#arr2)" marker-end="url(#arr2)"/>
+            <line x1="640" y1="20" x2="678" y2="20" stroke="#0f172a" stroke-width="2"/>
+            <line x1="640" y1="150" x2="678" y2="150" stroke="#0f172a" stroke-width="2"/>
+            <rect x="710" y="84" width="90" height="28" rx="10" fill="#fff" stroke="#e5e7eb"/>
+            <text x="755" y="104" font-size="18" font-weight="950" text-anchor="middle">15 cm</text>
+
+            <text x="25" y="35" font-size="16" fill="#6b7280">(Diagram not to scale)</text>
+          </svg>
+          <figcaption>Cuboid dimensions: <b>30 cm</b> by <b>20 cm</b> by <b>15 cm</b>.</figcaption>
+        </figure>
+
+        <p>A storage box is a cuboid measuring <b>30 cm</b> by <b>20 cm</b> by <b>15 cm</b>.</p>
+        <p><b>(a)</b> Find the volume in cm³. <span class="muted">[1]</span><br/>
+          <span class="ans"><input id="q2a" type="text" aria-label="Q2a volume"></span>
+        </p>
+        <p><b>(b)</b> Convert your answer into <b>litres</b>. <span class="muted">[1]</span><br/>
+          <span class="ans"><input id="q2b" type="text" aria-label="Q2b litres"></span>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Q3 Scale & bearings -->
+  <section id="q3" class="page" role="tabpanel">
+    <div class="qpanel">
+      <div class="qhead">
+        <h3>Q3 Measuring — Scale, distance & bearings <span class="badge">[8 marks]</span></h3>
+        <span class="tag calc">CALCULATOR</span>
+      </div>
+      <div class="qbody">
+        <button type="button" class="fs-open" aria-controls="fsModal">Formula sheet</button>
+        <p class="muted small"><b>Round distance answers to 2 decimal places.</b> Bearings should be <b>3-figure</b>.</p>
+
+        <figure>
+          <svg viewBox="0 0 920 330" role="img" aria-labelledby="mapTitle mapDesc">
+            <title id="mapTitle">Map sketch with North arrow, points A, B, C</title>
+            <desc id="mapDesc">Map sketch showing scale box, north arrow, and points A, B, C joined by straight lines. No distance or bearing labels are printed on the diagram.</desc>
+            <defs>
+              <marker id="arr3" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#0f172a"></path>
+              </marker>
+            </defs>
+
+            <rect x="40" y="20" width="250" height="46" rx="12" ry="12" fill="#eef2ff" stroke="#c7d2fe"/>
+            <text x="60" y="50" font-size="18" font-weight="950">Scale 1 : 50 000</text>
+
+            <!-- North arrow -->
+            <line x1="95" y1="270" x2="95" y2="95" stroke="#0f172a" stroke-width="3" marker-end="url(#arr3)"/>
+            <text x="95" y="80" text-anchor="middle" font-size="18" font-weight="950">N</text>
+
+            <!-- points -->
+            <circle cx="270" cy="270" r="6" fill="#0f172a"/><text x="260" y="297" font-size="18" font-weight="950">A</text>
+            <circle cx="540" cy="140" r="6" fill="#0f172a"/><text x="552" y="145" font-size="18" font-weight="950">B</text>
+            <circle cx="760" cy="245" r="6" fill="#0f172a"/><text x="772" y="250" font-size="18" font-weight="950">C</text>
+
+            <!-- journey lines -->
+            <line x1="270" y1="270" x2="540" y2="140" stroke="#0f172a" stroke-width="3" marker-end="url(#arr3)"/>
+            <line x1="540" y1="140" x2="760" y2="245" stroke="#0f172a" stroke-width="3" marker-end="url(#arr3)"/>
+
+            <text x="40" y="315" font-size="16" fill="#6b7280">(Sketch diagram — not to scale)</text>
+          </svg>
+          <figcaption>Use the scale and the bearings given in the questions.</figcaption>
+        </figure>
+
+        <p><b>(a)</b> On the map, the distance from Town A to Town B is <b>7.6 cm</b>. Work out the real distance in <b>km</b>. <span class="muted">[3]</span><br/>
+          <span class="ans"><input id="q3a" type="text" aria-label="Q3a distance AB km"></span>
+        </p>
+
+        <p><b>(b)</b> The real distance from Town B to Town C is <b>2.6 km</b>. Work out the <b>map distance</b> in <b>cm</b>. <span class="muted">[2]</span><br/>
+          <span class="ans"><input id="q3b" type="text" aria-label="Q3b map distance BC cm"></span>
+        </p>
+
+        <p><b>(c)</b> From A, B lies on a bearing of <b>065°</b>. What is the bearing of A from B? <span class="muted">[1]</span><br/>
+          <span class="ans"><input id="q3c" type="text" aria-label="Q3c bearing of A from B"></span>
+        </p>
+
+        <p><b>(d)</b> From B, C lies on a bearing of <b>140°</b>. Calculate angle <b>ABC</b> (the angle at B). <span class="muted">[2]</span><br/>
+          <span class="ans"><input id="q3d" type="text" aria-label="Q3d angle ABC"></span>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Q4 Loci & construction (multiple choice) -->
+  <section id="q4" class="page" role="tabpanel">
+    <div class="qpanel">
+      <div class="qhead">
+        <h3>Q4 Loci & Construction — Multiple choice <span class="badge">[5 marks]</span></h3>
+        <span class="tag calc">CALCULATOR</span>
+      </div>
+      <div class="qbody">
+        <button type="button" class="fs-open" aria-controls="fsModal">Formula sheet</button>
+
+        <p class="muted small">Select the correct option <b>A–D</b> for each part.</p>
+
+        <!-- (a) Perpendicular bisector -->
+        <p><b>(a)</b> Which diagram shows the <b>locus of points equidistant from A and B</b> (the perpendicular bisector of AB)? <span class="muted">[1]</span><br/>
+          <span class="ans">
+            <select id="q4a" aria-label="Q4a option">
+              <option value=""></option>
+              <option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option>
+            </select>
+          </span>
+        </p>
+
+        <figure>
+          <div class="optgrid" aria-label="Options for Q4a">
+            <!-- A (correct) -->
+            <div class="optcard">
+              <div class="optlab">Option A</div>
+              <svg viewBox="0 0 360 210" aria-hidden="true">
+                <rect x="0" y="0" width="360" height="210" fill="#ffffff"/>
+                <g opacity="0.22">
+                  <g stroke="#cbd5e1" stroke-width="1">
+                    <script type="application/ecmascript"><![CDATA[]]></script>
+                    <line x1="0" y1="30" x2="360" y2="30"/><line x1="0" y1="60" x2="360" y2="60"/><line x1="0" y1="90" x2="360" y2="90"/>
+                    <line x1="0" y1="120" x2="360" y2="120"/><line x1="0" y1="150" x2="360" y2="150"/><line x1="0" y1="180" x2="360" y2="180"/>
+                    <line x1="30" y1="0" x2="30" y2="210"/><line x1="60" y1="0" x2="60" y2="210"/><line x1="90" y1="0" x2="90" y2="210"/>
+                    <line x1="120" y1="0" x2="120" y2="210"/><line x1="150" y1="0" x2="150" y2="210"/><line x1="180" y1="0" x2="180" y2="210"/>
+                    <line x1="210" y1="0" x2="210" y2="210"/><line x1="240" y1="0" x2="240" y2="210"/><line x1="270" y1="0" x2="270" y2="210"/>
+                    <line x1="300" y1="0" x2="300" y2="210"/><line x1="330" y1="0" x2="330" y2="210"/>
+                  </g>
+                </g>
+                <!-- AB -->
+                <line x1="110" y1="120" x2="250" y2="120" stroke="#0f172a" stroke-width="3"/>
+                <circle cx="110" cy="120" r="5" fill="#0f172a"/><text x="98" y="145" font-size="16" font-weight="950">A</text>
+                <circle cx="250" cy="120" r="5" fill="#0f172a"/><text x="258" y="145" font-size="16" font-weight="950">B</text>
+                <!-- perpendicular bisector (correct) -->
+                <line x1="180" y1="20" x2="180" y2="200" stroke="#2563eb" stroke-width="4"/>
+              </svg>
+            </div>
+
+            <!-- B (wrong: horizontal) -->
+            <div class="optcard">
+              <div class="optlab">Option B</div>
+              <svg viewBox="0 0 360 210" aria-hidden="true">
+                <rect x="0" y="0" width="360" height="210" fill="#ffffff"/>
+                <g opacity="0.22" stroke="#cbd5e1" stroke-width="1">
+                  <line x1="0" y1="30" x2="360" y2="30"/><line x1="0" y1="60" x2="360" y2="60"/><line x1="0" y1="90" x2="360" y2="90"/>
+                  <line x1="0" y1="120" x2="360" y2="120"/><line x1="0" y1="150" x2="360" y2="150"/><line x1="0" y1="180" x2="360" y2="180"/>
+                  <line x1="30" y1="0" x2="30" y2="210"/><line x1="60" y1="0" x2="60" y2="210"/><line x1="90" y1="0" x2="90" y2="210"/>
+                  <line x1="120" y1="0" x2="120" y2="210"/><line x1="150" y1="0" x2="150" y2="210"/><line x1="180" y1="0" x2="180" y2="210"/>
+                  <line x1="210" y1="0" x2="210" y2="210"/><line x1="240" y1="0" x2="240" y2="210"/><line x1="270" y1="0" x2="270" y2="210"/>
+                  <line x1="300" y1="0" x2="300" y2="210"/><line x1="330" y1="0" x2="330" y2="210"/>
+                </g>
+                <line x1="110" y1="120" x2="250" y2="120" stroke="#0f172a" stroke-width="3"/>
+                <circle cx="110" cy="120" r="5" fill="#0f172a"/><text x="98" y="145" font-size="16" font-weight="950">A</text>
+                <circle cx="250" cy="120" r="5" fill="#0f172a"/><text x="258" y="145" font-size="16" font-weight="950">B</text>
+                <line x1="30" y1="120" x2="330" y2="120" stroke="#2563eb" stroke-width="4"/>
+              </svg>
+            </div>
+
+            <!-- C (wrong: through A) -->
+            <div class="optcard">
+              <div class="optlab">Option C</div>
+              <svg viewBox="0 0 360 210" aria-hidden="true">
+                <rect x="0" y="0" width="360" height="210" fill="#ffffff"/>
+                <g opacity="0.22" stroke="#cbd5e1" stroke-width="1">
+                  <line x1="0" y1="30" x2="360" y2="30"/><line x1="0" y1="60" x2="360" y2="60"/><line x1="0" y1="90" x2="360" y2="90"/>
+                  <line x1="0" y1="120" x2="360" y2="120"/><line x1="0" y1="150" x2="360" y2="150"/><line x1="0" y1="180" x2="360" y2="180"/>
+                  <line x1="30" y1="0" x2="30" y2="210"/><line x1="60" y1="0" x2="60" y2="210"/><line x1="90" y1="0" x2="90" y2="210"/>
+                  <line x1="120" y1="0" x2="120" y2="210"/><line x1="150" y1="0" x2="150" y2="210"/><line x1="180" y1="0" x2="180" y2="210"/>
+                  <line x1="210" y1="0" x2="210" y2="210"/><line x1="240" y1="0" x2="240" y2="210"/><line x1="270" y1="0" x2="270" y2="210"/>
+                  <line x1="300" y1="0" x2="300" y2="210"/><line x1="330" y1="0" x2="330" y2="210"/>
+                </g>
+                <line x1="110" y1="120" x2="250" y2="120" stroke="#0f172a" stroke-width="3"/>
+                <circle cx="110" cy="120" r="5" fill="#0f172a"/><text x="98" y="145" font-size="16" font-weight="950">A</text>
+                <circle cx="250" cy="120" r="5" fill="#0f172a"/><text x="258" y="145" font-size="16" font-weight="950">B</text>
+                <line x1="110" y1="20" x2="110" y2="200" stroke="#2563eb" stroke-width="4"/>
+              </svg>
+            </div>
+
+            <!-- D (wrong: diagonal) -->
+            <div class="optcard">
+              <div class="optlab">Option D</div>
+              <svg viewBox="0 0 360 210" aria-hidden="true">
+                <rect x="0" y="0" width="360" height="210" fill="#ffffff"/>
+                <g opacity="0.22" stroke="#cbd5e1" stroke-width="1">
+                  <line x1="0" y1="30" x2="360" y2="30"/><line x1="0" y1="60" x2="360" y2="60"/><line x1="0" y1="90" x2="360" y2="90"/>
+                  <line x1="0" y1="120" x2="360" y2="120"/><line x1="0" y1="150" x2="360" y2="150"/><line x1="0" y1="180" x2="360" y2="180"/>
+                  <line x1="30" y1="0" x2="30" y2="210"/><line x1="60" y1="0" x2="60" y2="210"/><line x1="90" y1="0" x2="90" y2="210"/>
+                  <line x1="120" y1="0" x2="120" y2="210"/><line x1="150" y1="0" x2="150" y2="210"/><line x1="180" y1="0" x2="180" y2="210"/>
+                  <line x1="210" y1="0" x2="210" y2="210"/><line x1="240" y1="0" x2="240" y2="210"/><line x1="270" y1="0" x2="270" y2="210"/>
+                  <line x1="300" y1="0" x2="300" y2="210"/><line x1="330" y1="0" x2="330" y2="210"/>
+                </g>
+                <line x1="110" y1="120" x2="250" y2="120" stroke="#0f172a" stroke-width="3"/>
+                <circle cx="110" cy="120" r="5" fill="#0f172a"/><text x="98" y="145" font-size="16" font-weight="950">A</text>
+                <circle cx="250" cy="120" r="5" fill="#0f172a"/><text x="258" y="145" font-size="16" font-weight="950">B</text>
+                <line x1="90" y1="190" x2="310" y2="20" stroke="#2563eb" stroke-width="4"/>
+              </svg>
+            </div>
+          </div>
+          <figcaption>Pick the option that shows the correct <b>perpendicular bisector</b> of AB.</figcaption>
+        </figure>
+
+        <!-- (b) Circle locus -->
+        <p><b>(b)</b> Which diagram shows the <b>locus of points 4 cm from A</b>? <span class="muted">[1]</span><br/>
+          <span class="ans">
+            <select id="q4b" aria-label="Q4b option">
+              <option value=""></option>
+              <option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option>
+            </select>
+          </span>
+        </p>
+
+        <figure>
+          <div class="optgrid" aria-label="Options for Q4b">
+            <!-- A wrong: circle around B -->
+            <div class="optcard">
+              <div class="optlab">Option A</div>
+              <svg viewBox="0 0 360 210" aria-hidden="true">
+                <rect x="0" y="0" width="360" height="210" fill="#ffffff"/>
+                <line x1="110" y1="120" x2="250" y2="120" stroke="#0f172a" stroke-width="3"/>
+                <circle cx="110" cy="120" r="5" fill="#0f172a"/><text x="98" y="145" font-size="16" font-weight="950">A</text>
+                <circle cx="250" cy="120" r="5" fill="#0f172a"/><text x="258" y="145" font-size="16" font-weight="950">B</text>
+                <circle cx="250" cy="120" r="60" fill="none" stroke="#2563eb" stroke-width="4"/>
+                <rect x="226" y="28" width="90" height="26" rx="10" fill="#fff" stroke="#e5e7eb"/>
+                <text x="271" y="47" font-size="15" font-weight="950" text-anchor="middle">4 cm</text>
+              </svg>
+            </div>
+            <!-- B wrong: arc not full locus -->
+            <div class="optcard">
+              <div class="optlab">Option B</div>
+              <svg viewBox="0 0 360 210" aria-hidden="true">
+                <rect x="0" y="0" width="360" height="210" fill="#ffffff"/>
+                <line x1="110" y1="120" x2="250" y2="120" stroke="#0f172a" stroke-width="3"/>
+                <circle cx="110" cy="120" r="5" fill="#0f172a"/><text x="98" y="145" font-size="16" font-weight="950">A</text>
+                <circle cx="250" cy="120" r="5" fill="#0f172a"/><text x="258" y="145" font-size="16" font-weight="950">B</text>
+                <path d="M110 60 A60 60 0 0 1 170 120" fill="none" stroke="#2563eb" stroke-width="4"/>
+                <rect x="26" y="28" width="90" height="26" rx="10" fill="#fff" stroke="#e5e7eb"/>
+                <text x="71" y="47" font-size="15" font-weight="950" text-anchor="middle">4 cm</text>
+              </svg>
+            </div>
+            <!-- C correct: circle around A -->
+            <div class="optcard">
+              <div class="optlab">Option C</div>
+              <svg viewBox="0 0 360 210" aria-hidden="true">
+                <rect x="0" y="0" width="360" height="210" fill="#ffffff"/>
+                <line x1="110" y1="120" x2="250" y2="120" stroke="#0f172a" stroke-width="3"/>
+                <circle cx="110" cy="120" r="5" fill="#0f172a"/><text x="98" y="145" font-size="16" font-weight="950">A</text>
+                <circle cx="250" cy="120" r="5" fill="#0f172a"/><text x="258" y="145" font-size="16" font-weight="950">B</text>
+                <circle cx="110" cy="120" r="60" fill="none" stroke="#2563eb" stroke-width="4"/>
+                <rect x="40" y="28" width="90" height="26" rx="10" fill="#fff" stroke="#e5e7eb"/>
+                <text x="85" y="47" font-size="15" font-weight="950" text-anchor="middle">4 cm</text>
+              </svg>
+            </div>
+            <!-- D wrong: wrong radius -->
+            <div class="optcard">
+              <div class="optlab">Option D</div>
+              <svg viewBox="0 0 360 210" aria-hidden="true">
+                <rect x="0" y="0" width="360" height="210" fill="#ffffff"/>
+                <line x1="110" y1="120" x2="250" y2="120" stroke="#0f172a" stroke-width="3"/>
+                <circle cx="110" cy="120" r="5" fill="#0f172a"/><text x="98" y="145" font-size="16" font-weight="950">A</text>
+                <circle cx="250" cy="120" r="5" fill="#0f172a"/><text x="258" y="145" font-size="16" font-weight="950">B</text>
+                <circle cx="110" cy="120" r="85" fill="none" stroke="#2563eb" stroke-width="4"/>
+                <rect x="40" y="28" width="90" height="26" rx="10" fill="#fff" stroke="#e5e7eb"/>
+                <text x="85" y="47" font-size="15" font-weight="950" text-anchor="middle">4 cm</text>
+              </svg>
+            </div>
+          </div>
+          <figcaption>Pick the option that shows the correct <b>circle locus</b>.</figcaption>
+        </figure>
+
+        <!-- (c) Combined loci + shading -->
+        <p><b>(c)</b> Which diagram shows the correct region that is <b>closer to A than to B</b> AND <b>at least 4 cm from A</b>? <span class="muted">[1]</span><br/>
+          <span class="ans">
+            <select id="q4c" aria-label="Q4c option">
+              <option value=""></option>
+              <option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option>
+            </select>
+          </span>
+        </p>
+
+        <figure>
+          <div class="optgrid" aria-label="Options for Q4c">
+            <!-- A wrong: inside circle on A side -->
+            <div class="optcard">
+              <div class="optlab">Option A</div>
+              <svg viewBox="0 0 360 210" aria-hidden="true">
+                <rect x="0" y="0" width="360" height="210" fill="#ffffff"/>
+                <line x1="110" y1="120" x2="250" y2="120" stroke="#0f172a" stroke-width="3"/>
+                <circle cx="110" cy="120" r="5" fill="#0f172a"/><text x="98" y="145" font-size="16" font-weight="950">A</text>
+                <circle cx="250" cy="120" r="5" fill="#0f172a"/><text x="258" y="145" font-size="16" font-weight="950">B</text>
+                <line x1="180" y1="15" x2="180" y2="195" stroke="#0f172a" stroke-width="3"/>
+                <circle cx="110" cy="120" r="60" fill="none" stroke="#2563eb" stroke-width="4"/>
+                <circle cx="110" cy="120" r="58" fill="rgba(251,191,36,0.55)" stroke="none"/>
+              </svg>
+            </div>
+
+            <!-- B correct: outside circle on A side (left) -->
+            <div class="optcard">
+              <div class="optlab">Option B</div>
+              <svg viewBox="0 0 360 210" aria-hidden="true">
+                <rect x="0" y="0" width="360" height="210" fill="#ffffff"/>
+                <!-- shade left half -->
+                <rect x="0" y="0" width="180" height="210" fill="rgba(251,191,36,0.55)"/>
+                <!-- unshade inside circle around A -->
+                <circle cx="110" cy="120" r="58" fill="#ffffff" stroke="none"/>
+                <!-- draw loci/AB -->
+                <line x1="110" y1="120" x2="250" y2="120" stroke="#0f172a" stroke-width="3"/>
+                <circle cx="110" cy="120" r="5" fill="#0f172a"/><text x="98" y="145" font-size="16" font-weight="950">A</text>
+                <circle cx="250" cy="120" r="5" fill="#0f172a"/><text x="258" y="145" font-size="16" font-weight="950">B</text>
+                <line x1="180" y1="15" x2="180" y2="195" stroke="#0f172a" stroke-width="3"/>
+                <circle cx="110" cy="120" r="60" fill="none" stroke="#2563eb" stroke-width="4"/>
+              </svg>
+            </div>
+
+            <!-- C wrong: outside circle on B side -->
+            <div class="optcard">
+              <div class="optlab">Option C</div>
+              <svg viewBox="0 0 360 210" aria-hidden="true">
+                <rect x="0" y="0" width="360" height="210" fill="#ffffff"/>
+                <rect x="180" y="0" width="180" height="210" fill="rgba(251,191,36,0.55)"/>
+                <circle cx="110" cy="120" r="58" fill="#ffffff" stroke="none"/>
+                <line x1="110" y1="120" x2="250" y2="120" stroke="#0f172a" stroke-width="3"/>
+                <circle cx="110" cy="120" r="5" fill="#0f172a"/><text x="98" y="145" font-size="16" font-weight="950">A</text>
+                <circle cx="250" cy="120" r="5" fill="#0f172a"/><text x="258" y="145" font-size="16" font-weight="950">B</text>
+                <line x1="180" y1="15" x2="180" y2="195" stroke="#0f172a" stroke-width="3"/>
+                <circle cx="110" cy="120" r="60" fill="none" stroke="#2563eb" stroke-width="4"/>
+              </svg>
+            </div>
+
+            <!-- D wrong: inside circle on B side -->
+            <div class="optcard">
+              <div class="optlab">Option D</div>
+              <svg viewBox="0 0 360 210" aria-hidden="true">
+                <rect x="0" y="0" width="360" height="210" fill="#ffffff"/>
+                <line x1="110" y1="120" x2="250" y2="120" stroke="#0f172a" stroke-width="3"/>
+                <circle cx="110" cy="120" r="5" fill="#0f172a"/><text x="98" y="145" font-size="16" font-weight="950">A</text>
+                <circle cx="250" cy="120" r="5" fill="#0f172a"/><text x="258" y="145" font-size="16" font-weight="950">B</text>
+                <line x1="180" y1="15" x2="180" y2="195" stroke="#0f172a" stroke-width="3"/>
+                <circle cx="110" cy="120" r="60" fill="none" stroke="#2563eb" stroke-width="4"/>
+                <circle cx="250" cy="120" r="58" fill="rgba(251,191,36,0.55)" stroke="none"/>
+              </svg>
+            </div>
+          </div>
+          <figcaption>Pick the option with the correct <b>shaded region</b>.</figcaption>
+        </figure>
+
+        <p><b>(d)</b> If a point is <b>closer to A than to B</b>, it lies on: <span class="muted">[1]</span><br/>
+          <span class="ans">
+            <select id="q4d" aria-label="Q4d statement">
+              <option value=""></option>
+              <option value="A">the side of the perpendicular bisector containing A</option>
+              <option value="B">the side of the perpendicular bisector containing B</option>
+              <option value="C">only on the perpendicular bisector line</option>
+              <option value="D">either side of the perpendicular bisector</option>
+            </select>
+          </span>
+        </p>
+
+        <p><b>(e)</b> “At least 4 cm from A” means the point is: <span class="muted">[1]</span><br/>
+          <span class="ans">
+            <select id="q4e" aria-label="Q4e statement">
+              <option value=""></option>
+              <option value="A">strictly inside the circle of radius 4 cm centred at A</option>
+              <option value="B">on the circle only</option>
+              <option value="C">inside or on the circle</option>
+              <option value="D">on or outside the circle of radius 4 cm centred at A</option>
+            </select>
+          </span>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Q5 Circle circumference & area -->
+  <section id="q5" class="page" role="tabpanel">
+    <div class="qpanel">
+      <div class="qhead">
+        <h3>Q5 Circles — Diameter, circumference and area <span class="badge">[6 marks]</span></h3>
+        <span class="tag calc">CALCULATOR</span>
+      </div>
+      <div class="qbody">
+        <button type="button" class="fs-open" aria-controls="fsModal">Formula sheet</button>
+        <p class="muted small"><b>Round answers to 2 decimal places.</b></p>
+
+        <figure>
+          <svg viewBox="0 0 900 280" role="img" aria-labelledby="circTitle circDesc">
+            <title id="circTitle">Circle with radius labelled 4.2 m</title>
+            <desc id="circDesc">A circle diagram with a radius arrow labelled 4.2 m.</desc>
+            <defs>
+              <marker id="arr5" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#0f172a"></path>
+              </marker>
+            </defs>
+
+            <circle cx="320" cy="140" r="95" fill="none" stroke="#0f172a" stroke-width="3"/>
+            <circle cx="320" cy="140" r="4" fill="#0f172a"/>
+            <line x1="320" y1="140" x2="415" y2="140" stroke="#0f172a" stroke-width="2" marker-end="url(#arr5)"/>
+            <rect x="330" y="92" width="120" height="28" rx="10" fill="#fff" stroke="#e5e7eb"/>
+            <text x="390" y="112" font-size="18" font-weight="950" text-anchor="middle">r = 4.2 m</text>
+
+            <text x="540" y="100" font-size="16" fill="#6b7280">(Diagram not to scale)</text>
+          </svg>
+          <figcaption>Radius <b>4.2 m</b>.</figcaption>
+        </figure>
+
+        <p>A circular pond has radius <b>4.2 m</b>.</p>
+
+        <p><b>(a)</b> What is the <b>diameter</b> of the pond (m)? <span class="muted">[1]</span><br/>
+          <span class="ans"><input id="q5a" type="text" aria-label="Q5a diameter"></span>
+        </p>
+
+        <p><b>(b)</b> Calculate the <b>circumference</b> in metres. <span class="muted">[2]</span><br/>
+          <span class="ans"><input id="q5b" type="text" aria-label="Q5b circumference"></span>
+        </p>
+
+        <p><b>(c)</b> Calculate the <b>area</b> in m². <span class="muted">[3]</span><br/>
+          <span class="ans"><input id="q5c" type="text" aria-label="Q5c area"></span>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Q6 Sector -->
+  <section id="q6" class="page" role="tabpanel">
+    <div class="qpanel">
+      <div class="qhead">
+        <h3>Q6 Circles — Arc length & sector area <span class="badge">[4 marks]</span></h3>
+        <span class="tag calc">CALCULATOR</span>
+      </div>
+      <div class="qbody">
+        <button type="button" class="fs-open" aria-controls="fsModal">Formula sheet</button>
+        <p class="muted small"><b>Round answers to 2 decimal places.</b></p>
+
+        <figure>
+          <svg viewBox="0 0 920 320" role="img" aria-labelledby="secTitle secDesc">
+            <title id="secTitle">Sector with radius 12 cm and central angle 75 degrees</title>
+            <desc id="secDesc">A clear sector diagram with two radii 12 cm and central angle 75 degrees. Arc drawn across the circle boundary (no angle arc marker).</desc>
+            <defs>
+              <marker id="arr6" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#0f172a"></path>
+              </marker>
+            </defs>
+
+            <!-- faint full circle -->
+            <circle cx="320" cy="170" r="140" fill="none" stroke="#cbd5e1" stroke-width="3"/>
+
+            <!-- sector (filled lightly for clarity) -->
+            <path d="M320 170 L460 170 A140 140 0 0 1 356.3 305.2 Z"
+                  fill="#eef2ff" stroke="none" opacity="0.9"></path>
+
+            <!-- sector rays -->
+            <line x1="320" y1="170" x2="460" y2="170" stroke="#0f172a" stroke-width="3"/>
+            <line x1="320" y1="170" x2="356.3" y2="305.2" stroke="#0f172a" stroke-width="3"/>
+
+            <!-- arc (the boundary across the circle) -->
+            <path d="M460 170 A140 140 0 0 1 356.3 305.2" fill="none" stroke="#0f172a" stroke-width="3"/>
+
+            <!-- labelled points -->
+            <circle cx="320" cy="170" r="4" fill="#0f172a"/>
+            <text x="307" y="194" font-size="18" font-weight="950">O</text>
+            <circle cx="460" cy="170" r="4" fill="#0f172a"/>
+            <text x="470" y="176" font-size="18" font-weight="950">A</text>
+            <circle cx="356.3" cy="305.2" r="4" fill="#0f172a"/>
+            <text x="365" y="312" font-size="18" font-weight="950">B</text>
+
+            <!-- angle label (no arc) -->
+            <rect x="345" y="118" width="170" height="30" rx="10" fill="#fff" stroke="#e5e7eb"/>
+            <text x="430" y="139" font-size="18" font-weight="950" text-anchor="middle">∠AOB = 75°</text>
+
+            <!-- radius dimension -->
+            <line x1="320" y1="198" x2="460" y2="198" stroke="#0f172a" stroke-width="2" marker-start="url(#arr6)" marker-end="url(#arr6)"/>
+            <line x1="320" y1="190" x2="320" y2="170" stroke="#0f172a" stroke-width="2"/>
+            <line x1="460" y1="190" x2="460" y2="170" stroke="#0f172a" stroke-width="2"/>
+            <rect x="366" y="210" width="100" height="28" rx="10" fill="#fff" stroke="#e5e7eb"/>
+            <text x="416" y="230" font-size="18" font-weight="950" text-anchor="middle">12 cm</text>
+
+            <text x="540" y="80" font-size="16" fill="#6b7280">(Diagram not to scale)</text>
+          </svg>
+          <figcaption>Sector radius <b>12 cm</b>, central angle <b>75°</b>.</figcaption>
+        </figure>
+
+        <p>A sector of a circle has radius <b>12 cm</b> and central angle <b>75°</b>.</p>
+
+        <p><b>(a)</b> Calculate the <b>arc length</b> of the sector (cm). <span class="muted">[2]</span><br/>
+          <span class="ans"><input id="q6a" type="text" aria-label="Q6a arc length"></span>
+        </p>
+
+        <p><b>(b)</b> Calculate the <b>area</b> of the sector (cm²). <span class="muted">[2]</span><br/>
+          <span class="ans"><input id="q6b" type="text" aria-label="Q6b sector area"></span>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Q7 Pyramid -->
+  <section id="q7" class="page" role="tabpanel">
+    <div class="qpanel">
+      <div class="qhead">
+        <h3>Q7 3D Shapes — Pyramid volume <span class="badge">[3 marks]</span></h3>
+        <span class="tag calc">CALCULATOR</span>
+      </div>
+      <div class="qbody">
+        <button type="button" class="fs-open" aria-controls="fsModal">Formula sheet</button>
+        <p class="muted small"><b>Round your answer to 2 decimal places.</b></p>
+
+        <figure>
+          <svg viewBox="0 0 900 320" role="img" aria-labelledby="pyrTitle pyrDesc">
+            <title id="pyrTitle">Square-based pyramid with base 6 cm and height 9 cm</title>
+            <desc id="pyrDesc">A pyramid sketch with base side 6 cm and perpendicular height 9 cm labelled (height label horizontal).</desc>
+            <defs>
+              <marker id="arr7" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#0f172a"></path>
+              </marker>
+            </defs>
+
+            <!-- base -->
+            <path d="M240 255 L460 255 L560 190 L340 190 Z" fill="none" stroke="#0f172a" stroke-width="3"/>
+            <!-- apex -->
+            <circle cx="400" cy="70" r="4" fill="#0f172a"/>
+            <line x1="400" y1="70" x2="240" y2="255" stroke="#0f172a" stroke-width="3"/>
+            <line x1="400" y1="70" x2="460" y2="255" stroke="#0f172a" stroke-width="3"/>
+            <line x1="400" y1="70" x2="560" y2="190" stroke="#0f172a" stroke-width="3"/>
+            <line x1="400" y1="70" x2="340" y2="190" stroke="#0f172a" stroke-width="3"/>
+
+            <!-- perpendicular height (dashed) -->
+            <line x1="400" y1="70" x2="400" y2="225" stroke="#94a3b8" stroke-width="3" stroke-dasharray="7 7"/>
+            <circle cx="400" cy="225" r="3.5" fill="#0f172a"/>
+
+            <!-- height dimension arrow + HORIZONTAL label -->
+            <line x1="430" y1="70" x2="430" y2="225" stroke="#0f172a" stroke-width="2" marker-start="url(#arr7)" marker-end="url(#arr7)"/>
+            <line x1="410" y1="70" x2="425" y2="70" stroke="#0f172a" stroke-width="2"/>
+            <line x1="410" y1="225" x2="425" y2="225" stroke="#0f172a" stroke-width="2"/>
+            <rect x="450" y="140" width="120" height="30" rx="10" fill="#fff" stroke="#e5e7eb"/>
+            <text x="510" y="161" font-size="18" font-weight="950" text-anchor="middle">h = 9 cm</text>
+
+            <!-- base side -->
+            <line x1="240" y1="285" x2="460" y2="285" stroke="#0f172a" stroke-width="2" marker-start="url(#arr7)" marker-end="url(#arr7)"/>
+            <line x1="240" y1="275" x2="240" y2="255" stroke="#0f172a" stroke-width="2"/>
+            <line x1="460" y1="275" x2="460" y2="255" stroke="#0f172a" stroke-width="2"/>
+            <rect x="285" y="292" width="220" height="28" rx="10" fill="#fff" stroke="#e5e7eb"/>
+            <text x="395" y="312" font-size="18" font-weight="950" text-anchor="middle">base side = 6 cm</text>
+
+            <text x="610" y="70" font-size="16" fill="#6b7280">(Diagram not to scale)</text>
+          </svg>
+          <figcaption>Square base side <b>6 cm</b>, perpendicular height <b>9 cm</b>.</figcaption>
+        </figure>
+
+        <p>A square-based pyramid has base side length <b>6 cm</b> and perpendicular height <b>9 cm</b>.</p>
+        <p>Calculate its <b>volume</b> (cm³). <span class="muted">[3]</span><br/>
+          <span class="ans"><input id="q7a" type="text" aria-label="Q7 pyramid volume"></span>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Q8 Cone -->
+  <section id="q8" class="page" role="tabpanel">
+    <div class="qpanel">
+      <div class="qhead">
+        <h3>Q8 3D Shapes — Cone volume <span class="badge">[2 marks]</span></h3>
+        <span class="tag calc">CALCULATOR</span>
+      </div>
+      <div class="qbody">
+        <button type="button" class="fs-open" aria-controls="fsModal">Formula sheet</button>
+        <p class="muted small"><b>Round your answer to 2 decimal places.</b></p>
+
+        <figure>
+          <svg viewBox="0 0 900 320" role="img" aria-labelledby="coneTitle coneDesc">
+            <title id="coneTitle">Cone with radius 5 cm and height 12 cm</title>
+            <desc id="coneDesc">A clear cone diagram with radius 5 cm and perpendicular height 12 cm labelled (height label horizontal).</desc>
+            <defs>
+              <marker id="arr8c" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#0f172a"></path>
+              </marker>
+            </defs>
+
+            <ellipse cx="360" cy="250" rx="140" ry="40" fill="none" stroke="#0f172a" stroke-width="3"/>
+            <line x1="220" y1="250" x2="360" y2="70" stroke="#0f172a" stroke-width="3"/>
+            <line x1="500" y1="250" x2="360" y2="70" stroke="#0f172a" stroke-width="3"/>
+            <circle cx="360" cy="70" r="4" fill="#0f172a"/>
+            <circle cx="360" cy="250" r="4" fill="#0f172a"/>
+
+            <!-- height (dashed centre) -->
+            <line x1="360" y1="70" x2="360" y2="250" stroke="#94a3b8" stroke-width="3" stroke-dasharray="7 7"/>
+
+            <!-- height arrow + horizontal label -->
+            <line x1="540" y1="70" x2="540" y2="250" stroke="#0f172a" stroke-width="2" marker-start="url(#arr8c)" marker-end="url(#arr8c)"/>
+            <line x1="500" y1="70" x2="530" y2="70" stroke="#0f172a" stroke-width="2"/>
+            <line x1="500" y1="250" x2="530" y2="250" stroke="#0f172a" stroke-width="2"/>
+            <rect x="558" y="145" width="130" height="30" rx="10" fill="#fff" stroke="#e5e7eb"/>
+            <text x="623" y="166" font-size="18" font-weight="950" text-anchor="middle">h = 12 cm</text>
+
+            <!-- radius -->
+            <line x1="360" y1="250" x2="500" y2="250" stroke="#0f172a" stroke-width="2" marker-end="url(#arr8c)"/>
+            <rect x="396" y="210" width="105" height="28" rx="10" fill="#fff" stroke="#e5e7eb"/>
+            <text x="448" y="230" font-size="18" font-weight="950" text-anchor="middle">r = 5 cm</text>
+
+            <text x="610" y="70" font-size="16" fill="#6b7280">(Diagram not to scale)</text>
+          </svg>
+          <figcaption>Radius <b>5 cm</b>, perpendicular height <b>12 cm</b>.</figcaption>
+        </figure>
+
+        <p>A cone has radius <b>5 cm</b> and perpendicular height <b>12 cm</b>.</p>
+        <p>Calculate its <b>volume</b> (cm³). <span class="muted">[2]</span><br/>
+          <span class="ans"><input id="q8a" type="text" aria-label="Q8 cone volume"></span>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Q9 Sphere -->
+  <section id="q9" class="page" role="tabpanel">
+    <div class="qpanel">
+      <div class="qhead">
+        <h3>Q9 3D Shapes — Sphere surface area <span class="badge">[2 marks]</span></h3>
+        <span class="tag calc">CALCULATOR</span>
+      </div>
+      <div class="qbody">
+        <button type="button" class="fs-open" aria-controls="fsModal">Formula sheet</button>
+        <p class="muted small"><b>Round your answer to 2 decimal places.</b></p>
+
+        <figure>
+          <svg viewBox="0 0 900 320" role="img" aria-labelledby="sphTitle sphDesc">
+            <title id="sphTitle">Sphere with radius 4 cm</title>
+            <desc id="sphDesc">A sphere represented by a circle and an equator ellipse, with radius 4 cm labelled.</desc>
+            <defs>
+              <marker id="arr9s" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#0f172a"></path>
+              </marker>
+            </defs>
+
+            <circle cx="360" cy="170" r="110" fill="none" stroke="#0f172a" stroke-width="3"/>
+            <ellipse cx="360" cy="170" rx="110" ry="44" fill="none" stroke="#94a3b8" stroke-width="2" stroke-dasharray="7 7"/>
+            <circle cx="360" cy="170" r="4" fill="#0f172a"/>
+            <line x1="360" y1="170" x2="470" y2="170" stroke="#0f172a" stroke-width="2" marker-end="url(#arr9s)"/>
+            <rect x="398" y="132" width="110" height="28" rx="10" fill="#fff" stroke="#e5e7eb"/>
+            <text x="453" y="152" font-size="18" font-weight="950" text-anchor="middle">r = 4 cm</text>
+
+            <text x="610" y="70" font-size="16" fill="#6b7280">(Diagram not to scale)</text>
+          </svg>
+          <figcaption>Radius <b>4 cm</b>.</figcaption>
+        </figure>
+
+        <p>A sphere has radius <b>4 cm</b>.</p>
+        <p>Calculate its <b>surface area</b> (cm²). <span class="muted">[2]</span><br/>
+          <span class="ans"><input id="q9a" type="text" aria-label="Q9 sphere surface area"></span>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Q10 Congruence only -->
+  <section id="q10" class="page" role="tabpanel">
+    <div class="qpanel">
+      <div class="qhead">
+        <h3>Q10 Congruence (RHS) <span class="badge">[2 marks]</span></h3>
+        <span class="tag calc">CALCULATOR</span>
+      </div>
+      <div class="qbody">
+        <button type="button" class="fs-open" aria-controls="fsModal">Formula sheet</button>
+
+        <figure>
+          <svg viewBox="0 0 760 320" role="img" aria-labelledby="congTitle congDesc">
+            <title id="congTitle">Two right-angled triangles for congruence</title>
+            <desc id="congDesc">Two right triangles labelled PQR and XYZ with right-angle squares aligned to triangle edges and a note about given equal sides.</desc>
+
+            <text x="40" y="34" font-size="18" font-weight="950">Congruence</text>
+
+            <path d="M80 280 L300 280 L80 130 Z" fill="none" stroke="#0f172a" stroke-width="3"/>
+            <!-- right-angle square aligned at P(80,280) inside (right+up) -->
+            <rect x="80" y="255" width="25" height="25" fill="none" stroke="#0f172a" stroke-width="2"/>
+            <text x="68" y="302" font-size="16" font-weight="950">P</text>
+            <text x="308" y="292" font-size="16" font-weight="950">R</text>
+            <text x="68" y="126" font-size="16" font-weight="950">Q</text>
+
+            <path d="M400 280 L620 280 L400 130 Z" fill="none" stroke="#0f172a" stroke-width="3"/>
+            <!-- right-angle square aligned at X(400,280) -->
+            <rect x="400" y="255" width="25" height="25" fill="none" stroke="#0f172a" stroke-width="2"/>
+            <text x="388" y="302" font-size="16" font-weight="950">X</text>
+            <text x="628" y="292" font-size="16" font-weight="950">Z</text>
+            <text x="388" y="126" font-size="16" font-weight="950">Y</text>
+
+            <rect x="70" y="70" width="600" height="40" rx="12" fill="#fff" stroke="#e5e7eb"/>
+            <text x="370" y="96" font-size="16" font-weight="950" text-anchor="middle">
+              Given: PR = XZ and PQ = XY (both right‑angled).
+            </text>
+
+            <text x="40" y="312" font-size="16" fill="#6b7280">(Diagram not to scale)</text>
+          </svg>
+          <figcaption>Use congruence rules (especially <b>RHS</b>).</figcaption>
+        </figure>
+
+        <p>The right-angled triangles <b>PQR</b> and <b>XYZ</b> have <b>PR = XZ</b> and <b>PQ = XY</b>.</p>
+        <p><b>(a)</b> Are they <b>congruent</b>? <span class="muted">[1]</span><br/>
+          <span class="ans">
+            <select id="q10a1" aria-label="Q10a congruent yes no">
+              <option value=""></option>
+              <option value="yes">Yes</option>
+              <option value="no">No</option>
+            </select>
+          </span>
+        </p>
+        <p><b>(b)</b> Choose the <b>congruence rule</b>. <span class="muted">[1]</span><br/>
+          <span class="ans">
+            <select id="q10a2" aria-label="Q10b rule">
+              <option value=""></option>
+              <option value="SSS">SSS</option>
+              <option value="SAS">SAS</option>
+              <option value="ASA">ASA</option>
+              <option value="AAS">AAS</option>
+              <option value="RHS">RHS</option>
+            </select>
+          </span>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Q11 Similarity only (labels moved off the shapes) -->
+  <section id="q11" class="page" role="tabpanel">
+    <div class="qpanel">
+      <div class="qhead">
+        <h3>Q11 Similarity (scale factor & area scale factor) <span class="badge">[3 marks]</span></h3>
+        <span class="tag calc">CALCULATOR</span>
+      </div>
+      <div class="qbody">
+        <button type="button" class="fs-open" aria-controls="fsModal">Formula sheet</button>
+        <p class="muted small"><b>Round numerical answers to 2 decimal places if needed.</b></p>
+
+        <figure>
+          <svg viewBox="0 0 760 320" role="img" aria-labelledby="simTitle simDesc">
+            <title id="simTitle">Similar triangles with labelled corresponding sides</title>
+            <desc id="simDesc">Two similar triangles ABC and DEF with labels outside the triangles and leader lines to avoid confusion.</desc>
+
+            <defs>
+              <marker id="arrS" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#0f172a"></path>
+              </marker>
+            </defs>
+
+            <text x="40" y="34" font-size="18" font-weight="950">Similarity</text>
+
+            <!-- Small triangle: A(80,280), B(260,280), C(80,195) -->
+            <path d="M80 280 L260 280 L80 195 Z" fill="none" stroke="#0f172a" stroke-width="3"/>
+            <text x="67" y="302" font-size="16" font-weight="950">A</text>
+            <text x="266" y="292" font-size="16" font-weight="950">B</text>
+            <text x="67" y="192" font-size="16" font-weight="950">C</text>
+
+            <!-- AB = 6 (label outside below base) -->
+            <rect x="92" y="286" width="150" height="28" rx="10" fill="#fff" stroke="#e5e7eb"/>
+            <text x="167" y="306" font-size="16" font-weight="950" text-anchor="middle">AB = 6 cm</text>
+
+            <!-- AC = 4 (label outside left with leader) -->
+            <line x1="80" y1="238" x2="46" y2="238" stroke="#0f172a" stroke-width="2" marker-end="url(#arrS)"/>
+            <rect x="8" y="224" width="120" height="28" rx="10" fill="#fff" stroke="#e5e7eb"/>
+            <text x="68" y="244" font-size="16" font-weight="950" text-anchor="middle">AC = 4 cm</text>
+
+            <!-- Large triangle: D(380,280), E(560,280), F(380,140) -->
+            <path d="M380 280 L560 280 L380 140 Z" fill="none" stroke="#0f172a" stroke-width="3"/>
+            <text x="367" y="302" font-size="16" font-weight="950">D</text>
+            <text x="566" y="292" font-size="16" font-weight="950">E</text>
+            <text x="367" y="136" font-size="16" font-weight="950">F</text>
+
+            <!-- DE = ? (label outside below base) -->
+            <rect x="402" y="286" width="150" height="28" rx="10" fill="#fff" stroke="#e5e7eb"/>
+            <text x="477" y="306" font-size="16" font-weight="950" text-anchor="middle">DE = ? cm</text>
+
+            <!-- DF = 10 (label outside left with leader) -->
+            <line x1="380" y1="210" x2="318" y2="210" stroke="#0f172a" stroke-width="2" marker-end="url(#arrS)"/>
+            <rect x="185" y="196" width="150" height="28" rx="10" fill="#fff" stroke="#e5e7eb"/>
+            <text x="260" y="216" font-size="16" font-weight="950" text-anchor="middle">DF = 10 cm</text>
+
+            <!-- Correspondence box -->
+            <rect x="90" y="70" width="580" height="44" rx="12" fill="#fff" stroke="#e5e7eb"/>
+            <text x="380" y="92" font-size="14.5" font-weight="950" text-anchor="middle">Correspondence: AC ↔ DF (4 cm ↔ 10 cm)</text>
+            <text x="380" y="108" font-size="14.5" font-weight="950" text-anchor="middle">and AB ↔ DE (6 cm ↔ ?)</text>
+
+            <text x="40" y="312" font-size="16" fill="#6b7280"></text>
+          </svg>
+          <figcaption>Use the scale factor to find missing lengths and area scale factor.</figcaption>
+        </figure>
+
+        <p><b>(a)</b> Triangles <b>ABC</b> and <b>DEF</b> are similar. <b>AC = 4 cm</b> corresponds to <b>DF = 10 cm</b>.
+          Calculate <b>DE</b>. <span class="muted">[2]</span><br/>
+          <span class="ans"><input id="q11a" type="text" aria-label="Q11a DE length"></span>
+        </p>
+
+        <p><b>(b)</b> Find the ratio of the <b>areas</b> of triangle <b>DEF</b> to triangle <b>ABC</b>. <span class="muted">[1]</span><br/>
+          <span class="muted small">You can write a decimal.</span><br/>
+          <span class="ans"><input id="q11b" type="text" aria-label="Q11b area ratio"></span>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Q12 Pythagoras -->
+  <section id="q12" class="page" role="tabpanel">
+    <div class="qpanel">
+      <div class="qhead">
+        <h3>Q12 Pythagoras’ theorem <span class="badge">[3 marks]</span></h3>
+        <span class="tag calc">CALCULATOR</span>
+      </div>
+      <div class="qbody">
+        <button type="button" class="fs-open" aria-controls="fsModal">Formula sheet</button>
+        <p class="muted small"><b>Round your answer to 2 decimal places.</b></p>
+
+        <figure>
+          <svg viewBox="0 0 920 310" role="img" aria-labelledby="pyTitle pyDesc">
+            <title id="pyTitle">Right triangle with legs 7 cm and 24 cm</title>
+            <desc id="pyDesc">A right-angled triangle with perpendicular sides 7 cm and 24 cm labelled; hypotenuse unknown. Right-angle square is aligned to the triangle edges.</desc>
+            <defs>
+              <marker id="arr12p" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#0f172a"></path>
+              </marker>
+            </defs>
+
+            <path d="M220 240 L600 240 L220 80 Z" fill="none" stroke="#0f172a" stroke-width="3"/>
+            <!-- RIGHT-ANGLE square aligned at vertex (220,240) -->
+            <rect x="220" y="215" width="25" height="25" fill="none" stroke="#0f172a" stroke-width="2"/>
+
+            <!-- base 24 -->
+            <line x1="220" y1="270" x2="600" y2="270" stroke="#0f172a" stroke-width="2" marker-start="url(#arr12p)" marker-end="url(#arr12p)"/>
+            <line x1="220" y1="258" x2="220" y2="240" stroke="#0f172a" stroke-width="2"/>
+            <line x1="600" y1="258" x2="600" y2="240" stroke="#0f172a" stroke-width="2"/>
+            <rect x="365" y="272" width="90" height="28" rx="10" fill="#fff" stroke="#e5e7eb"/>
+            <text x="410" y="292" font-size="18" font-weight="950" text-anchor="middle">24 cm</text>
+
+            <!-- vertical 7 (label horizontal) -->
+            <line x1="185" y1="240" x2="185" y2="80" stroke="#0f172a" stroke-width="2" marker-start="url(#arr12p)" marker-end="url(#arr12p)"/>
+            <line x1="205" y1="240" x2="220" y2="240" stroke="#0f172a" stroke-width="2"/>
+            <line x1="205" y1="80" x2="220" y2="80" stroke="#0f172a" stroke-width="2"/>
+            <rect x="70" y="140" width="90" height="28" rx="10" fill="#fff" stroke="#e5e7eb"/>
+            <text x="115" y="160" font-size="18" font-weight="950" text-anchor="middle">7 cm</text>
+
+            <!-- hypotenuse label -->
+            <rect x="420" y="95" width="190" height="28" rx="10" fill="#fff" stroke="#e5e7eb"/>
+            <text x="515" y="115" font-size="18" font-weight="950" text-anchor="middle">hypotenuse = ?</text>
+
+            <text x="690" y="90" font-size="16" fill="#6b7280"></text>
+          </svg>
+          <figcaption>Find the hypotenuse.</figcaption>
+        </figure>
+
+        <p>A right-angled triangle has perpendicular sides of length <b>7 cm</b> and <b>24 cm</b>.
+          Calculate the length of the hypotenuse. <span class="muted">[3]</span><br/>
+          <span class="ans"><input id="q12a" type="text" aria-label="Q12a hypotenuse"></span>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Q13 Trig + parallel lines -->
+  <section id="q13" class="page" role="tabpanel">
+    <div class="qpanel">
+      <div class="qhead">
+        <h3>Q13 Trigonometry & Angles (parallel lines) <span class="badge">[4 marks]</span></h3>
+        <span class="tag calc">CALCULATOR</span>
+      </div>
+      <div class="qbody">
+        <button type="button" class="fs-open" aria-controls="fsModal">Formula sheet</button>
+        <p class="muted small"><b>Round θ to the nearest degree.</b></p>
+
+        <div class="grid2">
+          <!-- Trig diagram -->
+          <figure>
+            <svg viewBox="0 0 520 320" role="img" aria-labelledby="trTitle trDesc">
+              <title id="trTitle">Right triangle with adjacent 12 and hypotenuse 20</title>
+              <desc id="trDesc">A right triangle showing adjacent 12 cm, hypotenuse 20 cm and angle theta clearly labelled near vertex A (no arc). Right-angle square aligned to triangle edges.</desc>
+              <defs>
+                <marker id="arr13" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                  <path d="M 0 0 L 10 5 L 0 10 z" fill="#0f172a"></path>
+                </marker>
+              </defs>
+
+              <!-- triangle A(110,250), B(420,250), C(420,110) -->
+              <path d="M110 250 L420 250 L420 110 Z" fill="none" stroke="#0f172a" stroke-width="3"/>
+              <!-- right angle at B -->
+              <rect x="395" y="225" width="25" height="25" fill="none" stroke="#0f172a" stroke-width="2"/>
+
+              <!-- label vertices -->
+              <text x="98"  y="270" font-size="16" font-weight="950">A</text>
+              <text x="430" y="270" font-size="16" font-weight="950">B</text>
+              <text x="430" y="110" font-size="16" font-weight="950">C</text>
+
+              <!-- adjacent AB dimension -->
+              <line x1="110" y1="284" x2="420" y2="284" stroke="#0f172a" stroke-width="2" marker-start="url(#arr13)" marker-end="url(#arr13)"/>
+              <line x1="110" y1="272" x2="110" y2="250" stroke="#0f172a" stroke-width="2"/>
+              <line x1="420" y1="272" x2="420" y2="250" stroke="#0f172a" stroke-width="2"/>
+              <rect x="215" y="290" width="110" height="26" rx="10" fill="#fff" stroke="#e5e7eb"/>
+              <text x="270" y="309" font-size="16" font-weight="950" text-anchor="middle">AB = 12 cm</text>
+
+              <!-- hypotenuse AC dimension -->
+              <line x1="132" y1="232" x2="442" y2="92" stroke="#0f172a" stroke-width="2" marker-start="url(#arr13)" marker-end="url(#arr13)"/>
+              <rect x="240" y="140" width="130" height="26" rx="10" fill="#fff" stroke="#e5e7eb" transform="rotate(-24 305 153)"/>
+              <text x="305" y="158" font-size="16" font-weight="950" text-anchor="middle" transform="rotate(-24 305 158)">AC = 20 cm</text>
+
+              <!-- θ label (no arc) -->
+              <text x="145" y="240"
+                    font-size="22" font-weight="950" text-anchor="middle"
+                    fill="#0f172a" stroke="#ffffff" stroke-width="6" paint-order="stroke">θ</text>
+
+              <text x="18" y="28" font-size="16" fill="#6b7280">(Diagram not to scale)</text>
+            </svg>
+            <figcaption>Use <b>cos θ = adjacent / hypotenuse</b>.</figcaption>
+          </figure>
+
+          <!-- Parallel lines diagram -->
+          <figure>
+            <svg viewBox="0 0 520 320" role="img" aria-labelledby="parTitle parDesc">
+              <title id="parTitle">Parallel lines with transversal and simple alternate angles</title>
+              <desc id="parDesc">Two parallel lines cut by a transversal showing alternate interior angles labelled 2x and 84 degrees (no arcs).</desc>
+              <defs>
+                <marker id="arrP" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+                  <path d="M 0 0 L 10 5 L 0 10 z" fill="#0f172a"></path>
+                </marker>
+              </defs>
+
+              <!-- parallel lines -->
+              <line x1="70" y1="110" x2="480" y2="110" stroke="#0f172a" stroke-width="4"/>
+              <line x1="70" y1="240" x2="480" y2="240" stroke="#0f172a" stroke-width="4"/>
+              <text x="488" y="116" font-size="16" font-weight="950">p</text>
+              <text x="488" y="246" font-size="16" font-weight="950">q</text>
+
+              <rect x="70" y="40" width="70" height="26" rx="10" fill="#fff" stroke="#e5e7eb"/>
+              <text x="105" y="59" font-size="15" font-weight="950" text-anchor="middle">p ∥ q</text>
+
+              <!-- transversal -->
+              <line x1="160" y1="40" x2="390" y2="300" stroke="#0f172a" stroke-width="4"/>
+
+              <!-- intersection points -->
+              <circle cx="222" cy="110" r="3.5" fill="#0f172a"/>
+              <circle cx="337" cy="240" r="3.5" fill="#0f172a"/>
+
+              <!-- Callout 1: 2x -->
+              <line x1="222" y1="110" x2="292" y2="148" stroke="#0f172a" stroke-width="2" marker-end="url(#arrP)"/>
+              <rect x="295" y="134" width="110" height="30" rx="10" fill="#fff" stroke="#e5e7eb"/>
+              <text x="350" y="155" font-size="16" font-weight="950" text-anchor="middle">2x°</text>
+
+              <!-- Callout 2: 84° -->
+              <line x1="337" y1="240" x2="240" y2="205" stroke="#0f172a" stroke-width="2" marker-end="url(#arrP)"/>
+              <rect x="110" y="190" width="110" height="30" rx="10" fill="#fff" stroke="#e5e7eb"/>
+              <text x="165" y="211" font-size="16" font-weight="950" text-anchor="middle">84°</text>
+
+              <text x="18" y="28" font-size="16" fill="#6b7280">(Diagram not to scale)</text>
+            </svg>
+            <figcaption>Alternate interior angles are equal when lines are parallel.</figcaption>
+          </figure>
+        </div>
+
+        <p><b>(a)</b> In a right-angled triangle, the side adjacent to angle θ is <b>12 cm</b> and the hypotenuse is <b>20 cm</b>.
+          Calculate θ to the <b>nearest degree</b>. <span class="muted">[2]</span><br/>
+          <span class="ans"><input id="q13a" type="text" aria-label="Q13a theta"></span>
+        </p>
+
+        <p><b>(b)</b> Two straight lines <b>p</b> and <b>q</b> are parallel.
+          The alternate interior angles are <b>2x°</b> and <b>84°</b>.
+          Calculate <b>x</b>. <span class="muted">[2]</span><br/>
+          <span class="ans"><input id="q13b" type="text" aria-label="Q13b x value"></span>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESULTS -->
+  <section id="results" class="page" role="tabpanel">
+    <div class="qpanel">
+      <div class="qhead"><h3>Results & SMART Targets</h3></div>
+      <div class="qbody">
+        <div class="actions" style="margin-bottom:.8rem">
+          <button class="primary" id="markAllBtn">Mark questions</button>
+        </div>
+
+        <p><b>Total score:</b> <span id="totalscore" style="font-weight:950">0</span> / <span id="totalmax" style="font-weight:950">0</span></p>
+        <p><b>Grade:</b> <span id="grade" style="font-weight:950">—</span></p>
+        <p><b>Performance band:</b> <span id="band" style="font-weight:950">—</span></p>
+
+        <h4 style="margin:1.1rem 0 .6rem">SMART Targets (max 3)</h4>
+        <p class="muted">
+          After marking, you will get up to <b>3</b> SMART targets based on the topics you got wrong.
+        </p>
+
+        <div class="hr"></div>
+
+        <p style="margin:.2rem 0 .6rem"><b>Instructions:</b></p>
+        <ol class="small" style="margin:.3rem 0 1rem 1.2rem">
+          <li>Click <b>Copy to clipboard</b> to copy your targets.</li>
+          <li>Open <b>Microsoft Teams</b>, message your tutor, and <b>paste</b> your targets into the chat.</li>
+          <li>Send the message.</li>
+        </ol>
+
+        <div id="smartWrap">
+          <p style="margin:.2rem 0 .6rem"><b>Copy this into Teams:</b></p>
+          <textarea id="smartBox" readonly></textarea>
+          <button id="copyBtn" type="button">Copy to clipboard</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- Intro -->
+<div id="intro" class="modal" role="dialog" aria-modal="true" aria-labelledby="introTitle">
+  <div class="panel">
+    <h2 id="introTitle">Diagnostic Assessment — Geometry, Measures & Trigonometry (52 marks)</h2>
+    <p><b>Calculator allowed.</b> Give units with your answers where appropriate.</p>
+    <ul>
+      <li>There are <b>13 questions</b> (Q1–Q13). Total = <b>52 marks</b>.</li>
+      <li>Round measurement answers to <b>2 decimal places</b> unless told otherwise.</li>
+      <li>Use the <b>Formula sheet</b> button (top-right of each question) if needed.</li>
+      <li> <span class="kbd"></li>
+    </ul>
+    <div class="actions" style="margin-top:.6rem">
+      <button class="primary" id="startBtn" type="button">Start</button>
+      <!-- Blank href for you to paste your PDF link -->
+      <a class="ghost" id="pdfBtn" href="https://mathbase1.github.io/term2-pdf/FEB%20assessment%20PDF.pdf" target="_blank" rel="noopener">Download PDF version</a>
+    </div>
+  </div>
+</div>
+
+<!-- Fullscreen lock shield -->
+<div id="fsShield">
+  <div>
+    <div style="font-size:1.25rem;font-weight:950;margin-bottom:.5rem;">🚨 Fullscreen required (lock on) 🖥️🔒</div>
+    <div style="color:#e5e7eb">Click anywhere to re-enter fullscreen.</div>
+  </div>
+</div>
+
+<!-- FORMULA SHEET MODAL -->
+<div id="fsModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="fsTitle">
+  <div class="panel">
+    <button id="fsClose" type="button" aria-label="Close formula sheet">Close</button>
+    <h2 id="fsTitle">Additional Formulae (Foundation)</h2>
+    <p class="fs-note">Use these formulae where appropriate. Diagrams are not drawn to scale.</p>
+    <div id="fsGrid">
+      <div>
+        <div class="box">
+          <h4>Perimeter, area and volume</h4>
+
+          <div class="fs-math">
+            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+              <mtext>Area of trapezium</mtext>
+              <mo>=</mo>
+              <mfrac><mn>1</mn><mn>2</mn></mfrac>
+              <mo>(</mo><mi>a</mi><mo>+</mo><mi>b</mi><mo>)</mo><mo>&#x00D7;</mo><mi>h</mi>
+            </math>
+            <div class="muted">where <i>a</i> and <i>b</i> are the lengths of the parallel sides and <i>h</i> is the perpendicular separation.</div>
+          </div>
+
+          <div class="fs-math">
+            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+              <mtext>Volume of a prism</mtext>
+              <mo>=</mo>
+              <mtext>area of cross‑section</mtext>
+              <mo>&#x00D7;</mo>
+              <mtext>length</mtext>
+            </math>
+          </div>
+
+          <div class="fs-math">
+            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+              <mtext>Volume of a pyramid</mtext>
+              <mo>=</mo>
+              <mfrac><mn>1</mn><mn>3</mn></mfrac>
+              <mo>&#x00D7;</mo>
+              <mtext>base area</mtext>
+              <mo>&#x00D7;</mo>
+              <mtext>height</mtext>
+            </math>
+          </div>
+
+          <div class="fs-math">
+            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+              <mtext>Volume of a cone</mtext>
+              <mo>=</mo>
+              <mfrac><mn>1</mn><mn>3</mn></mfrac>
+              <mo>&#x00D7;</mo>
+              <mi>&#x03C0;</mi><msup><mi>r</mi><mn>2</mn></msup>
+              <mo>&#x00D7;</mo>
+              <mi>h</mi>
+            </math>
+          </div>
+
+          <div class="fs-math">
+            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+              <mtext>Circumference</mtext><mo>=</mo><mn>2</mn><mi>&#x03C0;</mi><mi>r</mi>
+              <mo>=</mo><mi>&#x03C0;</mi><mi>d</mi>
+            </math>
+          </div>
+
+          <div class="fs-math">
+            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+              <mtext>Area of a circle</mtext><mo>=</mo><mi>&#x03C0;</mi><msup><mi>r</mi><mn>2</mn></msup>
+            </math>
+          </div>
+
+          <div class="fs-math">
+            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+              <mtext>Surface area of a sphere</mtext>
+              <mo>=</mo>
+              <mn>4</mn><mi>&#x03C0;</mi><msup><mi>r</mi><mn>2</mn></msup>
+            </math>
+          </div>
+
+          <div class="fs-math">
+            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+              <mtext>Volume of a sphere</mtext>
+              <mo>=</mo>
+              <mfrac><mn>4</mn><mn>3</mn></mfrac><mi>&#x03C0;</mi><msup><mi>r</mi><mn>3</mn></msup>
+            </math>
+          </div>
+
+          <hr class="fs-hr">
+
+          <h4>Pythagoras and trigonometry</h4>
+          <div class="fs-math">
+            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+              <msup><mi>a</mi><mn>2</mn></msup><mo>+</mo><msup><mi>b</mi><mn>2</mn></msup><mo>=</mo><msup><mi>c</mi><mn>2</mn></msup>
+            </math>
+          </div>
+
+          <div class="fs-math">
+            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+              <mtext>sin&nbsp;A</mtext><mo>=</mo><mfrac><mi>a</mi><mi>c</mi></mfrac>
+              <mspace width="1.2em"/><mtext>cos&nbsp;A</mtext><mo>=</mo><mfrac><mi>b</mi><mi>c</mi></mfrac>
+              <mspace width="1.2em"/><mtext>tan&nbsp;A</mtext><mo>=</mo><mfrac><mi>a</mi><mi>b</mi></mfrac>
+            </math>
+          </div>
+
+          <hr class="fs-hr">
+
+          <h4>Compound interest</h4>
+          <div class="fs-math">
+            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+              <mtext>Total accrued</mtext><mo>=</mo>
+              <mi>P</mi>
+              <msup>
+                <mrow>
+                  <mo>(</mo><mn>1</mn><mo>+</mo><mfrac><mi>r</mi><mn>100</mn></mfrac><mo>)</mo>
+                </mrow>
+                <mi>n</mi>
+              </msup>
+            </math>
+          </div>
+
+          <hr class="fs-hr">
+
+          <h4>Probability</h4>
+          <div class="fs-math">
+            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+              <mi>P</mi><mo>(</mo><mi>A</mi><mo>&#xA0;</mo><mtext>or</mtext><mo>&#xA0;</mo><mi>B</mi><mo>)</mo>
+              <mo>=</mo>
+              <mi>P</mi><mo>(</mo><mi>A</mi><mo>)</mo>
+              <mo>+</mo>
+              <mi>P</mi><mo>(</mo><mi>B</mi><mo>)</mo>
+              <mo>−</mo>
+              <mi>P</mi><mo>(</mo><mi>A</mi><mo>&#xA0;</mo><mtext>and</mtext><mo>&#xA0;</mo><mi>B</mi><mo>)</mo>
+            </math>
+          </div>
+        </div>
+      </div>
+
+      <div class="box" style="justify-self:stretch">
+        <svg viewBox="0 0 260 200" width="100%" height="auto" aria-hidden="true">
+          <polygon points="40,160 200,160 200,40" fill="#eef2ff" stroke="#475569" stroke-width="2"/>
+          <rect x="184" y="144" width="16" height="16" fill="#ffffff" stroke="#475569" stroke-width="2"/>
+          <text x="32" y="170" font-size="12">A</text>
+          <text x="206" y="170" font-size="12">B</text>
+          <text x="206" y="36"  font-size="12">C</text>
+          <text x="210" y="100" font-size="12">a</text>
+          <text x="120" y="176" font-size="12">b</text>
+          <text x="110" y="90"  font-size="12">c</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ---------- Tabs ---------- */
+const tabs=[...document.querySelectorAll('#tabbar button')];
+const pages=[...document.querySelectorAll('section.page')];
+function showTab(id){
+  tabs.forEach(x=>{
+    const on = x.dataset.target===id;
+    x.classList.toggle('active', on);
+    if(on) x.setAttribute('aria-selected','true'); else x.removeAttribute('aria-selected');
+  });
+  pages.forEach(p=>p.classList.toggle('active', p.id===id));
+  localStorage.setItem('currentTab_diag_geo_52_v8',id);
+}
+tabs.forEach(b=>b.addEventListener('click',()=>showTab(b.dataset.target)));
+const last=localStorage.getItem('currentTab_diag_geo_52_v8');
+if(last && document.getElementById(last)){ showTab(last); } else { showTab('q1'); }
+
+/* ---------- Intro ---------- */
+const intro=document.getElementById('intro');
+document.getElementById('startBtn').addEventListener('click',()=>{
+  fsLocked = true;
+  requestFs().finally(updateFsShield);
+  intro.style.display='none';
+  showTab('q1');
+});
+function openIntro(){ intro.style.display='flex'; }
+openIntro();
+
+/* Blank PDF link behaviour */
+const pdfBtn = document.getElementById('pdfBtn');
+pdfBtn?.addEventListener('click', (e)=>{
+  const href = (pdfBtn.getAttribute('href') || '').trim();
+  if(!href){
+    e.preventDefault();
+    showBlockToast('PDF link not set');
+  }
+});
+
+/* ---------- Formula sheet open/close ---------- */
+(function(){
+  const fsModal = document.getElementById('fsModal');
+  const closeBtn = document.getElementById('fsClose');
+  if(!fsModal) return;
+  const openFS = ()=>{ fsModal.style.display='flex'; };
+  const closeFS = ()=>{ fsModal.style.display='none'; };
+  document.querySelectorAll('.fs-open').forEach(btn=>btn.addEventListener('click', openFS));
+  closeBtn?.addEventListener('click', closeFS);
+  document.addEventListener('keydown', e=>{
+    if(e.key==='Escape' && fsModal.style.display==='flex'){ closeFS(); }
+  });
+})();
+
+/* ---------- Restrictions (best-effort) ---------- */
+document.addEventListener('contextmenu', (e)=>{ e.preventDefault(); }, {capture:true});
+
+let allowProgrammaticCopy = false;
+document.addEventListener('copy', (e)=>{ if(!allowProgrammaticCopy){ e.preventDefault(); } }, {capture:true});
+document.addEventListener('cut',  (e)=>{ e.preventDefault(); }, {capture:true});
+document.addEventListener('paste',(e)=>{ e.preventDefault(); }, {capture:true});
+
+function showBlockToast(msg){
+  let t = document.getElementById('blockToast');
+  if(!t){
+    t = document.createElement('div');
+    t.id='blockToast';
+    t.style.position='fixed';
+    t.style.bottom='14px';
+    t.style.left='50%';
+    t.style.transform='translateX(-50%)';
+    t.style.background='#111827';
+    t.style.color='#fff';
+    t.style.padding='10px 14px';
+    t.style.borderRadius='12px';
+    t.style.fontWeight='950';
+    t.style.zIndex='3000';
+    t.style.boxShadow='0 10px 30px rgba(0,0,0,.25)';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.display='block';
+  clearTimeout(window.__toastTimer);
+  window.__toastTimer = setTimeout(()=>{ t.style.display='none'; }, 1200);
+}
+document.addEventListener('keydown', (e)=>{
+  const key = (e.key || '').toLowerCase();
+
+  if((e.ctrlKey||e.metaKey) && (key==='c' || key==='u')){
+    e.preventDefault(); e.stopPropagation();
+    showBlockToast('Copy disabled');
+    return;
+  }
+
+  const isPrtSc = (key==='printscreen' || e.keyCode===44);
+  if(isPrtSc){
+    e.preventDefault(); e.stopPropagation();
+    showBlockToast('Screenshot key blocked');
+    if(navigator.clipboard?.writeText){
+      navigator.clipboard.writeText('').catch(()=>{});
+    }
+    return;
+  }
+}, {capture:true});
+
+/* ---------- Helpers ---------- */
+const $ = (id)=>document.getElementById(id);
+function parseVal(str){
+  const s = String(str||'').trim().replace(/,/g,'');
+  if(!s) return NaN;
+  const frac = s.match(/(-?\d+(?:\.\d+)?)\s*\/\s*(-?\d+(?:\.\d+)?)/);
+  if(frac){
+    const n = parseFloat(frac[1]), d = parseFloat(frac[2]);
+    if(Number.isFinite(n) && Number.isFinite(d) && d!==0) return n/d;
+  }
+  const m = s.match(/-?\d+(?:\.\d+)?/);
+  return m ? parseFloat(m[0]) : NaN;
+}
+function withinTol(user, expected){
+  return Number.isFinite(user) && Math.abs(user - expected) <= 2.000001;
+}
+
+/* ---------- Grade boundaries (out of 52) ---------- */
+function gradeFromMarks(m){
+  if(m>=31) return '5';
+  if(m>=25) return '4';
+  if(m>=18) return '3';
+  if(m>=12) return '2';
+  if(m>=5)  return '1';
+  return 'U';
+}
+function gradeDisplayText(grade){
+  return (grade==='4' || grade==='5') ? `${grade} (PASS)` : grade;
+}
+
+/* ---------- Century nugget codes per question (Q1–Q13) ---------- */
+const NUGGETS = [
+  {c1:'MF34.07', c2:'MF35.03'}, // Q1
+  {c1:'MF34.02', c2:'MF36.10'}, // Q2
+  {c1:'MF39.05', c2:'MF39.08'}, // Q3
+  {c1:'MF42.03', c2:'MF42.09'}, // Q4
+  {c1:'MF32.01', c2:'MF32.07'}, // Q5
+  {c1:'MF32.14', c2:'MF32.15'}, // Q6
+  {c1:'MF34.15', c2:'MF34.16'}, // Q7
+  {c1:'MF34.12', c2:'MF34.13'}, // Q8
+  {c1:'MF35.05', c2:'MF35.08'}, // Q9
+  {c1:'MF29.07', c2:''},        // Q10 (congruence)
+  {c1:'MF43.05', c2:''},        // Q11 (similarity)
+  {c1:'MF44.02', c2:'MF44.04'}, // Q12
+  {c1:'MF45.05', c2:'MF27.11'}  // Q13
+];
+
+/* ---------- Marking ---------- */
+function mark_q1(){
+  let m=0;
+  const r=4, h=15;
+  const face = Math.PI*r*r;         // 16π
+  const V = Math.PI*r*r*h;          // 240π
+  const TSA = 2*Math.PI*r*r + 2*Math.PI*r*h; // 152π
+  const L = V/1000;
+
+  if(($('q1shape').value||'') === 'cylinder') m += 1;
+  if(withinTol(parseVal($('q1face').value), face)) m += 2;
+  if(withinTol(parseVal($('q1vol').value), V)) m += 2;
+  if(withinTol(parseVal($('q1tsa').value), TSA)) m += 2;
+  if(withinTol(parseVal($('q1lit').value), L)) m += 1;
+
+  return m;
+}
+function mark_q2(){
+  let m=0;
+  if(withinTol(parseVal($('q2a').value), 9000)) m+=1;
+  if(withinTol(parseVal($('q2b').value), 9)) m+=1;
+  return m;
+}
+function mark_q3(){
+  let m=0;
+  if(withinTol(parseVal($('q3a').value), 3.8)) m+=3;
+  if(withinTol(parseVal($('q3b').value), 5.2)) m+=2;
+  if(withinTol(parseVal($('q3c').value), 245)) m+=1;
+  if(withinTol(parseVal($('q3d').value), 105)) m+=2;
+  return m;
+}
+function mark_q4(){
+  let m=0;
+  if(($('q4a').value||'')==='A') m+=1; // perpendicular bisector
+  if(($('q4b').value||'')==='C') m+=1; // circle locus 4 cm from A
+  if(($('q4c').value||'')==='B') m+=1; // correct shaded region
+  if(($('q4d').value||'')==='A') m+=1; // closer to A = A side
+  if(($('q4e').value||'')==='D') m+=1; // at least 4 cm = on/outside
+  return m;
+}
+function mark_q5(){
+  let m=0;
+  const d = 8.4;
+  const C = 2*Math.PI*4.2;
+  const A = Math.PI*4.2*4.2;
+  if(withinTol(parseVal($('q5a').value), d)) m+=1;
+  if(withinTol(parseVal($('q5b').value), C)) m+=2;
+  if(withinTol(parseVal($('q5c').value), A)) m+=3;
+  return m;
+}
+function mark_q6(){
+  let m=0;
+  const arc = (75/360)*2*Math.PI*12;
+  const area = (75/360)*Math.PI*12*12;
+  if(withinTol(parseVal($('q6a').value), arc)) m+=2;
+  if(withinTol(parseVal($('q6b').value), area)) m+=2;
+  return m;
+}
+function mark_q7(){
+  return withinTol(parseVal($('q7a').value), 108) ? 3 : 0;
+}
+function mark_q8(){
+  const V = (1/3)*Math.PI*5*5*12;
+  return withinTol(parseVal($('q8a').value), V) ? 2 : 0;
+}
+function mark_q9(){
+  const SA = 4*Math.PI*4*4;
+  return withinTol(parseVal($('q9a').value), SA) ? 2 : 0;
+}
+function mark_q10(){
+  let m=0;
+  if(($('q10a1').value||'')==='yes') m+=1;
+  if(($('q10a2').value||'')==='RHS') m+=1;
+  return m;
+}
+function mark_q11(){
+  let m=0;
+  if(withinTol(parseVal($('q11a').value), 15)) m+=2;
+  if(withinTol(parseVal($('q11b').value), 6.25)) m+=1;
+  return m;
+}
+function mark_q12(){
+  return withinTol(parseVal($('q12a').value), 25) ? 3 : 0;
+}
+function mark_q13(){
+  let m=0;
+  const th = parseVal($('q13a').value);
+  if(Number.isFinite(th) && Math.abs(th-53) <= 2) m+=2;
+  if(withinTol(parseVal($('q13b').value), 42)) m+=2; // 2x = 84 => x = 42
+  return m;
+}
+
+/* ---------- Totals, colours, SMART targets ---------- */
+const qIds=['q1','q2','q3','q4','q5','q6','q7','q8','q9','q10','q11','q12','q13'];
+const qMax=[8,2,8,5,6,4,3,2,2,2,3,3,4];
+const topics=[
+  'Cylinder: volume, total surface area & unit conversion (incl. circle face area)',
+  'Cuboid: volume & capacity (cm³ ↔ litres)',
+  'Scale, map distance & bearings',
+  'Loci & construction (perpendicular bisector, circle locus, shading region)',
+  'Circles: diameter, circumference & area',
+  'Circles: arc length & sector area',
+  'Pyramid volume',
+  'Cone volume',
+  'Sphere surface area',
+  'Congruence (RHS)',
+  'Similarity (scale factor + area scale factor)',
+  'Pythagoras’ theorem',
+  'Trigonometry (cos) & angles in parallel lines'
+];
+const practice=[
+  'Identify the shape, use A=πr² for the circular face, V=πr²h, total surface area = 2πr² + 2πrh, and convert cm³ to litres.',
+  'Practise multiplying dimensions and converting cm³ to litres.',
+  'Practise 1:n scales, converting cm↔km, and bearings.',
+  'Practise standard loci: perpendicular bisector, circle with given radius, and shading combined regions.',
+  'Practise using circle facts: diameter = 2r, C=2πr and A=πr² with correct units.',
+  'Practise arc length and sector area using (angle/360)×(circumference/area).',
+  'Practise pyramid volume: (1/3)×base area×height.',
+  'Practise cone volume: (1/3)×πr²h.',
+  'Practise sphere surface area: 4πr².',
+  'Practise congruence rules (especially RHS): right angle + hypotenuse + one other side.',
+  'Practise similarity: find the scale factor, then use area scale factor = k².',
+  'Practise applying a²+b²=c² to find missing lengths.',
+  'Practise choosing the correct trig ratio and parallel-line angle facts (alternate angles).'
+];
+
+const MAX = qMax.reduce((a,b)=>a+b,0);
+$('totalmax').textContent=MAX;
+
+function band_from(raw,max){
+  const p=raw/max;
+  if(p>=0.80) return "Strong (secure)";
+  if(p>=0.55) return "Developing (getting there)";
+  return "Emerging (needs support)";
+}
+function colourClass(score,max){
+  if(score===0) return 'bad';
+  if(score===max) return 'good';
+  if(score>=Math.ceil(max/2)) return 'mid';
+  return 'bad';
+}
+function lockPaper(){
+  document.querySelectorAll('input,select,textarea,button').forEach(btn=>{
+    const keep = (
+      btn.id==='markAllBtn' || btn.id==='copyBtn' ||
+      btn.id==='fsClose' || btn.classList.contains('fs-open') ||
+      btn.closest('#tabbar') || btn.closest('#results') || btn.closest('#fsModal')
+    );
+    if(!keep) btn.disabled=true;
+  });
+}
+
+function pickTop3Wrong(scores){
+  const wrong = scores
+    .map((s,i)=>({i, s, max:qMax[i], ratio: s/qMax[i]}))
+    .filter(x=>x.s < x.max);
+
+  wrong.sort((a,b)=>{
+    if(a.ratio!==b.ratio) return a.ratio-b.ratio;
+    if(a.s!==b.s) return a.s-b.s;
+    return a.i-b.i;
+  });
+
+  return wrong.slice(0,3).map(x=>x.i);
+}
+
+function nuggetTagsFor(i){
+  const nug = NUGGETS[i] || {c1:'',c2:''};
+  const tags = [];
+  if(nug.c1) tags.push(`[${nug.c1}]`);
+  if(nug.c2) tags.push(`[${nug.c2}]`);
+  return tags.join(' ');
+}
+
+function doMarkAll(){
+  const scores=[
+    mark_q1(),mark_q2(),mark_q3(),mark_q4(),mark_q5(),mark_q6(),
+    mark_q7(),mark_q8(),mark_q9(),mark_q10(),mark_q11(),mark_q12(),mark_q13()
+  ];
+  const total=scores.reduce((a,b)=>a+b,0);
+  $('totalscore').textContent=total;
+
+  const g = gradeFromMarks(total);
+  $('grade').textContent = gradeDisplayText(g);
+
+  $('band').textContent = band_from(total,MAX);
+
+  for(let i=0;i<qIds.length;i++){
+    const id=qIds[i];
+    const tab = tabs.find(t => t.dataset.target===id);
+    if(!tab) continue;
+    tab.classList.remove('good','mid','bad','active');
+    tab.classList.add(colourClass(scores[i],qMax[i]));
+  }
+
+  lockPaper();
+
+  let lines=[];
+  lines.push("GCSE Maths Diagnostic — SMART Targets");
+  lines.push(`Mark: ${total} / ${MAX}`);
+  lines.push(`Grade: ${gradeDisplayText(g)}`);
+  lines.push("");
+  lines.push("Targets (complete the Century nuggets shown in brackets):");
+  lines.push("");
+
+  const topWrong = pickTop3Wrong(scores);
+
+  if(topWrong.length===0){
+    lines.push("• No targets: full marks achieved.");
+    lines.push("  - Next step: mixed exam-style practice to keep it secure.");
+  }else{
+    topWrong.forEach(i=>{
+      const nugTags = nuggetTagsFor(i);
+      lines.push(`• ${topics[i]} — complete Century nuggets ${nugTags}`.trim());
+      lines.push(`  - Target: ${practice[i]}`);
+      lines.push(`  - Measure: Improve to at least ${Math.ceil(qMax[i]*0.75)}/${qMax[i]} on a mini-quiz.`);
+      lines.push("");
+    });
+  }
+
+  $('smartBox').value = lines.join("\n");
+  $('smartWrap').style.display='block';
+
+  const btn=$('markAllBtn'); btn.disabled=true; btn.textContent='Marked & locked';
+  showTab('results');
+}
+$('markAllBtn').addEventListener('click', doMarkAll);
+
+$('copyBtn').addEventListener('click', async ()=>{
+  const text = $('smartBox').value;
+  try{
+    await navigator.clipboard.writeText(text);
+    $('copyBtn').textContent='Copied ✓';
+    setTimeout(()=>{$('copyBtn').textContent='Copy to clipboard';},1200);
+  }catch(e){
+    allowProgrammaticCopy = true;
+    try{
+      $('smartBox').focus();
+      $('smartBox').select();
+      document.execCommand('copy');
+      $('copyBtn').textContent='Copied ✓';
+      setTimeout(()=>{$('copyBtn').textContent='Copy to clipboard';},1200);
+    }catch(_){}
+    setTimeout(()=>{ allowProgrammaticCopy = false; }, 0);
+  }
+});
+
+/* ---------- Fullscreen lock ---------- */
+let fsLocked = false;
+const fsShield = document.getElementById('fsShield');
+
+function inFullscreen(){
+  return !!(document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement);
+}
+async function requestFs(){
+  const el = document.documentElement;
+  const fn = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
+  if(!fn) return;
+  try{
+    const ret = fn.call(el);
+    if(ret && typeof ret.then === 'function') await ret;
+  }catch(e){}
+}
+function exitFs(){
+  const fn = document.exitFullscreen || document.webkitExitFullscreen || document.msExitFullscreen;
+  if(!fn) return;
+  try{
+    const ret = fn.call(document);
+    if(ret && typeof ret.catch === 'function') ret.catch(()=>{});
+  }catch(e){}
+}
+function updateFsShield(){
+  if(!fsShield) return;
+  fsShield.style.display = (fsLocked && !inFullscreen()) ? 'flex' : 'none';
+}
+if(fsShield){
+  fsShield.addEventListener('click', async ()=>{
+    if(!fsLocked) return;
+    await requestFs();
+    updateFsShield();
+  });
+}
+document.addEventListener('fullscreenchange', updateFsShield);
+document.addEventListener('webkitfullscreenchange', updateFsShield);
+document.addEventListener('msfullscreenchange', updateFsShield);
+
+document.addEventListener('keydown', (e)=>{
+  const k=(e.key||'').toLowerCase();
+  if((e.ctrlKey||e.metaKey) && k==='e'){
+    e.preventDefault();
+    fsLocked = false;
+    if(inFullscreen()) exitFs();
+    updateFsShield();
+    return;
+  }
+  if(fsLocked && inFullscreen() && k==='escape'){
+    e.preventDefault();
+    e.stopPropagation();
+  }
+}, {capture:true});
+updateFsShield();
+</script>
+</body>
+</html>
