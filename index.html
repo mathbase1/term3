@@ -2319,16 +2319,52 @@ const QUESTION_MAX=[6,2,8,5,6,5,5,5,5,4,3,3,4];
 const MAX=QUESTION_MAX.reduce((sum,value)=>sum+value,0);
 $('totalmax').textContent=MAX;
 
+/* Supplied grade boundaries, translated to this 61-mark calculator assessment.
+   Each grade interval is divided into Low / Medium / High sections as evenly as possible. */
+const GRADE_BOUNDARIES = Object.freeze([
+  {grade:'5',min:42,max:61,percentMin:69,percentMax:100,bands:[
+    {level:'Low',min:42,max:48,percentMin:69,percentMax:79},
+    {level:'Medium',min:49,max:54,percentMin:80,percentMax:89},
+    {level:'High',min:55,max:61,percentMin:90,percentMax:100}
+  ]},
+  {grade:'4',min:33,max:41,percentMin:54,percentMax:68,bands:[
+    {level:'Low',min:33,max:35,percentMin:54,percentMax:58},
+    {level:'Medium',min:36,max:38,percentMin:59,percentMax:63},
+    {level:'High',min:39,max:41,percentMin:64,percentMax:68}
+  ]},
+  {grade:'3',min:23,max:32,percentMin:38,percentMax:53,bands:[
+    {level:'Low',min:23,max:25,percentMin:38,percentMax:42},
+    {level:'Medium',min:26,max:28,percentMin:43,percentMax:47},
+    {level:'High',min:29,max:32,percentMin:48,percentMax:53}
+  ]},
+  {grade:'2',min:14,max:22,percentMin:23,percentMax:37,bands:[
+    {level:'Low',min:14,max:16,percentMin:23,percentMax:27},
+    {level:'Medium',min:17,max:19,percentMin:28,percentMax:32},
+    {level:'High',min:20,max:22,percentMin:33,percentMax:37}
+  ]},
+  {grade:'1',min:6,max:13,percentMin:10,percentMax:22,bands:[
+    {level:'Low',min:6,max:8,percentMin:10,percentMax:13},
+    {level:'Medium',min:9,max:10,percentMin:14,percentMax:17},
+    {level:'High',min:11,max:13,percentMin:18,percentMax:22}
+  ]},
+  {grade:'U',min:0,max:5,percentMin:0,percentMax:9,bands:[
+    {level:'Low',min:0,max:1,percentMin:0,percentMax:2},
+    {level:'Medium',min:2,max:3,percentMin:3,percentMax:5},
+    {level:'High',min:4,max:5,percentMin:6,percentMax:9}
+  ]}
+]);
 function gradeFrom(raw,max){
-  const proportion=raw/max;
-  if(proportion>=0.60)return'5';
-  if(proportion>=0.47)return'4';
-  if(proportion>=0.34)return'3';
-  if(proportion>=0.22)return'2';
-  if(proportion>=0.10)return'1';
-  return'U';
+  const score=Math.max(0,Math.min(max,Math.round(Number(raw)||0)));
+  const boundary=GRADE_BOUNDARIES.find(item=>score>=item.min&&score<=item.max)
+    ||GRADE_BOUNDARIES[GRADE_BOUNDARIES.length-1];
+  const band=boundary.bands.find(item=>score>=item.min&&score<=item.max)
+    ||boundary.bands[0];
+  return {grade:boundary.grade,level:band.level};
 }
-function gradeDisplay(grade){return grade==='4'||grade==='5'?`${grade} (PASS)`:grade;}
+function gradeDisplay(result){
+  const label=`${result.grade} ${result.level}`;
+  return result.grade==='4'||result.grade==='5'?`${label} (PASS)`:label;
+}
 function performanceBand(raw,max){const proportion=raw/max;return proportion>=0.80?'STRONG / SECURE':proportion>=0.55?'DEVELOPING':'EMERGING / NEEDS SUPPORT';}
 function questionStatus(score,max){return score===max?'SECURE':score===0?'PRIORITY':'DEVELOPING';}
 function unique(values){return[...new Set(values.filter(Boolean))];}
