@@ -1,0 +1,3073 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>GCSE Maths (Eduqas) — Foundation Calculator Initial Assessment (13Q) — v3</title>
+<style>
+  :root{
+    --ink:#0f172a; --muted:#6b7280; --accent:#2563eb; --bg:#ffffff; --border:#e5e7eb; --tabh:56px;
+    --green:#16a34a; --orange:#f59e0b; --red:#dc2626;
+    --tabGood:#10b981; --tabMid:#fbbf24; --tabBad:#ef4444;
+    --fbar:4px; /* clear, centred fraction bar */
+  }
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);
+    font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,Ubuntu,"Helvetica Neue",Arial,"Noto Sans",sans-serif;}
+  header{position:sticky;top:0;z-index:50;background:#fff;border-bottom:1px solid var(--border)}
+  main{max-width:1040px;margin:1.2rem auto 4rem;padding:0 1rem}
+
+  /* tabs */
+  .bar{display:flex;gap:.5rem;align-items:center;overflow:auto hidden;white-space:nowrap;height:var(--tabh);padding:.65rem .75rem}
+  .bar button{appearance:none;border:1px solid var(--border);background:#fff;color:#0f172a;
+    border-radius:999px;padding:.45rem .9rem;cursor:pointer;font-weight:700;transition:.15s;flex:0 0 auto}
+  .bar button:hover{border-color:#c7d2fe}
+  .bar button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+  /* colouring after marking */
+  .bar button.good{background:var(--tabGood);color:#083344;border-color:var(--tabGood)}
+  .bar button.mid{background:var(--tabMid);color:#291800;border-color:var(--tabMid)}
+  .bar button.bad{background:var(--tabBad);color:#fff;border-color:var(--tabBad)}
+
+  section.page{display:none;animation:fade .15s ease-out}
+  section.page.active{display:block}
+  @keyframes fade{from{opacity:.45;transform:translateY(-2px)}to{opacity:1;transform:none}}
+
+  .qpanel{border:1px solid var(--border);border-radius:.8rem;overflow:hidden;margin-top:.9rem;box-shadow:0 1px 0 rgba(0,0,0,.03)}
+  .qhead{padding:.85rem 1rem;border-bottom:1px solid var(--border);background:linear-gradient(180deg,#fbfdff,#f8fafc);
+    display:flex;align-items:center;justify-content:space-between}
+  .qhead h3{margin:.15rem 0;font-size:1.05rem}
+  .qbody{padding:1.05rem 1rem}
+  .badge{display:inline-block;margin-left:.5rem;padding:.05rem .45rem;border:1px solid var(--border);border-radius:6px;background:#eef2ff}
+  .nc-tag{font-weight:800;color:#15803d;text-transform:uppercase;letter-spacing:.02em}
+  .muted{color:var(--muted)}
+  .actions{display:flex;gap:.6rem;align-items:center;flex-wrap:wrap}
+  .primary{background:var(--accent);color:#fff;border:1px solid var(--accent);border-radius:.45rem;padding:.55rem 1rem;cursor:pointer}
+
+  input[type="text"], input[type="number"], select, textarea{
+    padding:.4rem .5rem;border:1px solid var(--border);border-radius:.4rem;min-width:64px}
+  input::placeholder{color:#9aa3b2}
+  textarea{width:100%;min-height:120px}
+
+  /* Fraction answer widget: squarer boxes with a thicker bar centred between them */
+  .frac{
+    display:inline-grid;grid-template-columns:max-content;
+    grid-template-rows:3.25rem var(--fbar) 3.25rem;row-gap:.42rem;
+    align-items:center;justify-items:center;line-height:1;vertical-align:middle;
+    padding:.18rem .35rem
+  }
+  .frac input{
+    box-sizing:border-box;width:4rem;min-width:4rem;height:3.25rem;text-align:center;
+    border:2px solid var(--border);border-radius:.18rem;padding:.3rem .35rem;margin:0;
+    appearance:textfield;font-size:1.05rem;font-weight:750;line-height:1.15;
+    box-shadow:0 1px 2px rgba(15,23,42,.08)
+  }
+  .frac input::-webkit-outer-spin-button,.frac input::-webkit-inner-spin-button{appearance:none;margin:0}
+  .frac > .bar{
+    display:block;box-sizing:border-box;width:4.6rem;min-width:0;height:var(--fbar);min-height:var(--fbar);
+    padding:0;margin:0;border:0;border-radius:999px;background:var(--fraction-line);
+    overflow:hidden;white-space:normal
+  }
+  .frac input:last-child{margin-top:0}
+
+  /* (old fracinp kept, not used now) */
+  .fracinp{display:inline-flex;flex-direction:column;align-items:center;gap:2px;vertical-align:middle}
+  .fracinp input{width:70px;text-align:center;border:1px solid var(--border);border-radius:.35rem;padding:.35rem .4rem;appearance:textfield}
+  .fracinp input::-webkit-outer-spin-button,.fracinp input::-webkit-inner-spin-button{appearance:none;margin:0}
+  .fracinp .bar{width:70px;height:0;border-top:var(--fbar) solid #111;margin:1px 0}
+
+  /* Smart Targets box */
+  #smartWrap{display:none;border:1px solid var(--border);border-radius:.6rem;padding:1rem;background:#f8fafc}
+  #smartBox{width:100%;min-height:200px;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace}
+  #copyBtn{margin-top:.5rem}
+
+  /* Intro modal */
+  .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.45);z-index:1000}
+  .modal .panel{width:min(760px,94vw);background:#fff;border:1px solid var(--border);border-radius:.8rem;padding:1.1rem}
+  .modal h2{margin:.1rem 0 .4rem}
+
+
+  /* Permanent page warning */
+  .close-warning{
+    padding:.55rem .75rem;text-align:center;font-size:clamp(1.35rem,3.4vw,2.15rem);
+    line-height:1.1;font-weight:1000;letter-spacing:.045em;border-bottom:3px solid #111827;background:#fff;color:#111827
+  }
+
+  /* Plain-text diagnostic report */
+  #smartWrap{background:#fff}
+  #smartBox{
+    min-height:760px;box-sizing:border-box;line-height:1.45;white-space:pre;
+    overflow:auto;resize:vertical;font-size:14px
+  }
+  .report-note{border:1px solid var(--border);border-radius:.55rem;padding:.7rem .8rem;background:#fff}
+
+  /* Fullscreen answer lock */
+  #fsShield{
+    display:none;position:fixed;inset:0;z-index:2500;background:rgba(0,0,0,.86);color:#fff;
+    align-items:center;justify-content:center;text-align:center;padding:1.5rem;cursor:pointer
+  }
+  #fsShield .shield-panel{max-width:760px}
+  #fsShield .shield-title{font-size:clamp(1.45rem,4vw,2.4rem);font-weight:1000;margin-bottom:.75rem}
+  #fsShield .shield-copy{font-size:1.05rem;color:#e5e7eb}
+  body.exam-paused{overflow:hidden}
+  #blockToast{display:none}
+
+
+  /* Accessibility and display controls */
+  :root{
+    --text-scale:1;
+    --surface:#ffffff;
+    --surface-soft:#f8fafc;
+    --surface-head:#fbfdff;
+    --surface-head-end:#f8fafc;
+    --control-bg:#ffffff;
+    --control-ink:#0f172a;
+    --input-bg:#ffffff;
+    --badge-bg:#eef2ff;
+    --warning-bg:#ffffff;
+    --warning-ink:#111827;
+    --fraction-line:#111827;
+    --focus-ring:#1d4ed8;
+  }
+  html{font-size:calc(16px * var(--text-scale));background:var(--bg);color-scheme:light}
+  body{font-size:1rem;background:var(--bg);color:var(--ink)}
+  header{background:var(--surface)}
+  .bar{height:auto;min-height:var(--tabh);box-sizing:border-box}
+  .bar button,.tool-btn{background:var(--control-bg);color:var(--control-ink)}
+  .qpanel{background:var(--surface)}
+  .qhead{background:linear-gradient(180deg,var(--surface-head),var(--surface-head-end))}
+  .badge{background:var(--badge-bg)}
+  input[type="text"],input[type="number"],select,textarea{
+    background:var(--input-bg);color:var(--ink);font:inherit
+  }
+  input::placeholder{color:var(--muted)}
+  button{font:inherit}
+  .frac .bar,.fracinp .bar{border-top-color:var(--fraction-line)}
+  #smartWrap,#smartBox,.report-note{background:var(--surface);color:var(--ink)}
+  #smartBox{font-size:.875rem;white-space:pre-wrap}
+  .modal .panel{background:var(--surface);color:var(--ink)}
+  .close-warning{background:var(--warning-bg);color:var(--warning-ink);border-bottom-color:var(--warning-ink)}
+  :where(button,input,select,textarea):focus-visible{outline:3px solid var(--focus-ring);outline-offset:2px}
+
+  .display-toolbar{
+    display:flex;align-items:center;justify-content:space-between;gap:.55rem 1rem;flex-wrap:wrap;
+    padding:.55rem .75rem;background:var(--surface-soft);border-bottom:1px solid var(--border)
+  }
+  .tool-group{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap}
+  .tool-label{font-weight:900;font-size:.92rem;margin-right:.1rem}
+  .tool-note{font-size:.82rem;color:var(--muted)}
+  .tool-btn{
+    appearance:none;border:1px solid var(--border);border-radius:.5rem;padding:.35rem .58rem;
+    cursor:pointer;font-weight:800;line-height:1.2;min-height:2.1rem
+  }
+  .tool-btn:hover{border-color:var(--accent)}
+  .tool-btn[aria-pressed="true"],.tool-btn.active{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 24%,transparent)}
+  .overlay-choice{display:inline-flex;align-items:center;gap:.35rem}
+  .overlay-swatch{width:1rem;height:1rem;border-radius:50%;background:var(--swatch);border:1px solid #64748b;flex:0 0 auto}
+  .toolbar-divider{width:1px;height:1.75rem;background:var(--border);margin:0 .15rem}
+  #readingOverlay{
+    position:fixed;inset:0;z-index:2100;pointer-events:none;background:transparent;
+    transition:background .16s ease
+  }
+  .sr-only{
+    position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;
+    overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important
+  }
+  @media (max-width:760px){
+    .display-toolbar{align-items:flex-start}
+    .tool-group{width:100%}
+    .tool-note{width:100%}
+    .toolbar-divider{display:none}
+  }
+
+  html.theme-dark{
+    --ink:#f1f5f9;
+    --muted:#cbd5e1;
+    --accent:#2563eb;
+    --bg:#0b1220;
+    --border:#334155;
+    --surface:#111827;
+    --surface-soft:#172033;
+    --surface-head:#1e293b;
+    --surface-head-end:#172033;
+    --control-bg:#1f2937;
+    --control-ink:#f8fafc;
+    --input-bg:#0f172a;
+    --badge-bg:#273449;
+    --warning-bg:#020617;
+    --warning-ink:#f8fafc;
+    --fraction-line:#f8fafc;
+    --focus-ring:#93c5fd;
+    color-scheme:dark
+  }
+  html.theme-dark .nc-tag{color:#86efac}
+  html.theme-dark .bar button.active{color:#ffffff}
+  html.theme-dark .primary{color:#ffffff}
+  html.theme-dark .overlay-swatch{border-color:#cbd5e1}
+
+
+  /* Assessment text-selection deterrent: question/interface text cannot be highlighted.
+     Form fields remain selectable so learners can edit their own answers and the report
+     copy button can retain its controlled fallback behaviour. */
+  body,body *{
+    -webkit-user-select:none;
+    user-select:none;
+    -webkit-touch-callout:none
+  }
+  input,textarea,select,[contenteditable="true"]{
+    -webkit-user-select:text;
+    user-select:text;
+    -webkit-touch-callout:default
+  }
+
+
+
+  /* Calculator diagnostic additions */
+  :root{--diagram-paper:#ffffff;--diagram-soft:#f8fafc;--diagram-grid:#cbd5e1}
+  html.theme-dark{--diagram-paper:#111827;--diagram-soft:#172033;--diagram-grid:#475569}
+  .calc-tag{font-weight:900;color:#1d4ed8;text-transform:uppercase;letter-spacing:.02em}
+  html.theme-dark .calc-tag{color:#93c5fd}
+  .qbody{position:relative}
+  .qbody p{margin:.8rem 0}
+  .answer-row{display:flex;align-items:center;gap:.55rem;flex-wrap:wrap;margin:.55rem 0}
+  .answer-row input{min-width:9rem}
+  .answer-row select{min-width:12rem}
+  .unit{font-weight:800}
+  .formula-open{position:absolute;top:.7rem;right:.8rem}
+  .question-note{padding:.55rem .7rem;border:1px solid var(--border);border-radius:.5rem;background:var(--surface-soft);margin-bottom:.8rem}
+  figure.assessment-figure{margin:.55rem 0 1rem;padding:.85rem;border:1px solid var(--border);border-radius:.75rem;background:var(--surface-soft)}
+  figure.assessment-figure figcaption{color:var(--muted);font-size:.9rem;margin-top:.45rem}
+  svg.diagram{width:100%;height:auto;display:block;color:var(--ink);overflow:visible}
+  .diagram .line{fill:none;stroke:currentColor;stroke-width:3}
+  .diagram .thin{fill:none;stroke:currentColor;stroke-width:2}
+  .diagram .faint{fill:none;stroke:var(--diagram-grid);stroke-width:1.4}
+  .diagram .accent-line{fill:none;stroke:var(--accent);stroke-width:5;stroke-linecap:round}
+  .diagram .shape-fill{fill:color-mix(in srgb,var(--accent) 10%,var(--surface));stroke:currentColor;stroke-width:3}
+  .diagram .paper{fill:var(--diagram-paper);stroke:var(--border);stroke-width:1}
+  .diagram text{fill:currentColor;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+  .diagram .muted-svg{fill:var(--muted)}
+  .diagram .accent-text{fill:var(--accent)}
+  .diagram-card-grid{display:grid;grid-template-columns:1fr;gap:1rem}
+  @media(min-width:860px){.diagram-card-grid{grid-template-columns:1fr 1fr}}
+  .subquestion-card{border:1px solid var(--border);border-radius:.75rem;padding:.85rem;background:var(--surface)}
+  .subquestion-card h4{margin:.05rem 0 .6rem}
+  .bestbuy-grid{display:grid;grid-template-columns:1fr;gap:1rem;margin:.75rem 0}
+  @media(min-width:760px){.bestbuy-grid{grid-template-columns:1fr 1fr}}
+  .product-card{border:2px solid var(--border);border-radius:.8rem;padding:1rem;background:var(--surface);text-align:center}
+  .product-card .pack{font-size:1.12rem;font-weight:1000}
+  .product-card .price{font-size:1.65rem;font-weight:1000;margin:.25rem 0;color:var(--accent)}
+  .symbol-buttons{display:inline-flex;gap:.3rem;flex-wrap:wrap}
+  .symbol-buttons button{appearance:none;border:1px solid var(--border);border-radius:.45rem;padding:.3rem .55rem;background:var(--control-bg);color:var(--control-ink);cursor:pointer;font-weight:900}
+  .svgwrap{margin-top:.75rem;border:1px solid var(--border);border-radius:.65rem;padding:.55rem;background:var(--diagram-paper);overflow-x:auto}
+  #q7svg{touch-action:none;min-width:720px}
+  .numline-label{font-size:13px;fill:var(--ink);user-select:none}
+  .drag-handle{cursor:grab;fill:var(--diagram-paper);stroke:var(--accent);stroke-width:3;touch-action:none}
+  .drag-handle.closed{fill:var(--accent)}
+  .drag-handle:active{cursor:grabbing}
+  .drag-hit{fill:transparent;stroke:transparent;pointer-events:all;cursor:grab;touch-action:none}
+  .drag-hit:active{cursor:grabbing}
+  .data-table{border-collapse:collapse;width:100%;min-width:720px}
+  .data-table th,.data-table td{border:1px solid var(--border);padding:.55rem;text-align:center;vertical-align:middle}
+  .data-table th{background:var(--surface-soft);font-weight:900}
+  .data-table input{width:5.2rem;min-width:0;text-align:center;box-sizing:border-box}
+  .table-scroll{overflow-x:auto;margin:.75rem 0}
+  .work-box{min-width:min(32rem,92vw)!important}
+  /* ===== Formula sheet — restored from the original calculator diagnostic ===== */
+  #formulaModal .panel{width:min(940px,96vw);max-height:88vh;overflow:auto}
+  #fsGrid{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(260px,1fr);gap:16px;align-items:start}
+  #fsGrid h4{margin:.6rem 0 .35rem}
+  #fsGrid .box{border:1px solid var(--border);border-radius:.7rem;padding:.75rem .85rem;background:var(--surface-soft)}
+  #formulaClose{float:right;background:var(--accent);color:#fff;border:1px solid var(--accent);border-radius:.6rem;padding:.65rem 1rem;cursor:pointer;font-weight:950}
+  .fs-note{font-size:.92rem;color:var(--muted);margin:.15rem 0 .6rem}
+  .fs-math{display:block;margin:.25rem 0}
+  .fs-hr{border:none;border-top:1px solid var(--border);margin:.7rem 0}
+  #fsGrid svg text{fill:var(--ink)}
+  #fsGrid svg polygon{fill:var(--badge-bg)}
+  #fsGrid svg rect{fill:var(--surface)}
+  .probability-answer-grid{display:grid;grid-template-columns:1fr;gap:.65rem;margin-top:.65rem}
+  @media(min-width:740px){.probability-answer-grid{grid-template-columns:1fr 1fr}}
+  .mini-answer{border:1px solid var(--border);border-radius:.6rem;padding:.7rem;background:var(--surface-soft)}
+  .mini-answer input{width:8rem;min-width:0}
+  .angle-answer-grid{display:grid;grid-template-columns:1fr;gap:.6rem}
+  @media(min-width:720px){.angle-answer-grid{grid-template-columns:1fr 1fr}}
+</style>
+
+<!-- BEGIN PEM FLOATING CALCULATOR STYLES: isolated addition -->
+<style id="pemCalcStyles">
+  #pemCalcWindow{
+    position:fixed;z-index:900;top:180px;right:16px;
+    width:min(352px,calc(100vw - 16px));max-height:calc(100vh - 16px);
+    max-height:calc(100dvh - 16px);display:flex;flex-direction:column;
+    box-sizing:border-box;overflow:hidden;border:1px solid var(--border,#e5e7eb);
+    border-radius:14px;background:var(--surface,#fff);color:var(--ink,#0f172a);
+    box-shadow:0 12px 38px rgba(0,0,0,.25);font-size:1rem;line-height:1.35;
+  }
+  #pemCalcWindow[hidden]{display:none!important}
+  #pemCalcWindow *{box-sizing:border-box}
+  #pemCalcWindow .pem-calc-heading{
+    display:flex;align-items:center;gap:8px;padding:10px 12px;flex:0 0 auto;
+    background:var(--surface-soft,#f8fafc);border-bottom:1px solid var(--border,#e5e7eb);
+  }
+  #pemCalcDrag{
+    flex:1;min-width:0;cursor:grab;touch-action:none;border-radius:4px;
+    -webkit-user-select:none;user-select:none;
+  }
+  #pemCalcDrag:active,#pemCalcWindow.pem-calc-dragging #pemCalcDrag{cursor:grabbing}
+  #pemCalcTitle{display:block;font-size:1rem;font-weight:900}
+  #pemCalcWindow .pem-calc-drag-hint{display:block;font-size:.72rem;color:var(--muted,#6b7280);margin-top:2px}
+  #pemCalcClose{
+    flex:0 0 auto;appearance:none;font:inherit;font-size:.85rem;font-weight:800;
+    padding:7px 10px;min-height:34px;cursor:pointer;border-radius:7px;
+    border:1px solid var(--border,#e5e7eb);background:var(--control-bg,#fff);color:var(--control-ink,#0f172a);
+  }
+  #pemCalcContent{padding:12px;overflow:auto;overscroll-behavior:contain;min-height:0}
+  #pemCalcWindow .pem-calc-mode{
+    display:flex;align-items:center;justify-content:space-between;gap:8px;
+    margin-bottom:7px;font-size:.76rem;color:var(--muted,#6b7280);
+  }
+  #pemCalcWindow .pem-calc-mode b{
+    font-weight:900;color:var(--ink,#0f172a);border:1px solid var(--border,#e5e7eb);
+    border-radius:5px;padding:2px 6px;background:var(--surface-soft,#f8fafc);
+  }
+  #pemCalcExpression{
+    display:block;width:100%;min-width:0;max-width:100%;height:43px;margin:0;
+    padding:8px 10px;border:1px solid var(--border,#e5e7eb);border-radius:8px;
+    background:var(--input-bg,#fff);color:var(--ink,#0f172a);font:inherit;
+    font-size:1.05rem;line-height:1.25;text-align:right;direction:ltr;
+  }
+  #pemCalcResult{
+    display:block;min-height:38px;margin:5px 0 9px;padding:4px 2px;
+    font-size:1.25rem;font-weight:800;text-align:right;overflow-wrap:anywhere;
+    color:var(--ink,#0f172a);line-height:1.3;
+  }
+  #pemCalcResult[data-error="true"]{font-size:.84rem;font-weight:750;color:var(--ink,#0f172a)}
+  #pemCalcWindow .pem-calc-keys{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+  #pemCalcWindow .pem-calc-keys button{
+    appearance:none;display:flex;align-items:center;justify-content:center;
+    min-width:0;min-height:38px;padding:7px 2px;margin:0;border:1px solid var(--border,#e5e7eb);
+    border-radius:8px;background:var(--control-bg,#fff);color:var(--control-ink,#0f172a);
+    font:inherit;font-size:.95rem;font-weight:750;line-height:1.15;cursor:pointer;
+    touch-action:manipulation;
+  }
+  #pemCalcWindow .pem-calc-keys button[data-fn],
+  #pemCalcWindow .pem-calc-keys button[data-op],
+  #pemCalcWindow .pem-calc-keys button[data-action]{background:var(--surface-soft,#f8fafc)}
+  #pemCalcWindow .pem-calc-keys button:hover,#pemCalcClose:hover{border-color:var(--accent,#2563eb)}
+  #pemCalcWindow .pem-calc-keys button:active{transform:translateY(1px)}
+  #pemCalcWindow .pem-calc-keys button.pem-calc-equals{
+    grid-row:span 2;background:var(--accent,#2563eb);color:#fff;font-size:1.3rem;border-color:var(--accent,#2563eb);
+  }
+  #pemCalcWindow .pem-calc-keys .pem-calc-zero{grid-column:span 2}
+  #pemCalcWindow math{font-size:1em;color:inherit;pointer-events:none}
+  #pemCalcWindow .pem-calc-help{margin:10px 0 0;font-size:.73rem;line-height:1.4;color:var(--muted,#6b7280)}
+  #pemCalcWindow :where(button,input,[tabindex]):focus-visible{outline:3px solid var(--focus-ring,#1d4ed8);outline-offset:2px}
+  body.exam-paused #pemCalcWindow{visibility:hidden;pointer-events:none}
+  @media print{#pemCalcWindow,#pemCalcOpen{display:none!important}}
+</style>
+<!-- END PEM FLOATING CALCULATOR STYLES -->
+</head>
+<body>
+
+<header>
+  <div class="close-warning" role="alert">DO NOT CLOSE THIS PAGE</div>
+  <div class="display-toolbar" id="displayToolbar" aria-label="Reading and display controls">
+    <div class="tool-group" aria-label="Reading overlay choices">
+      <span class="tool-label">Reading overlay:</span>
+      <button type="button" class="tool-btn overlay-choice active" data-overlay="none" aria-pressed="true">None</button>
+      <button type="button" class="tool-btn overlay-choice" data-overlay="blue" aria-pressed="false"><span class="overlay-swatch" style="--swatch:#cfe8ff"></span>Light blue</button>
+      <button type="button" class="tool-btn overlay-choice" data-overlay="yellow" aria-pressed="false"><span class="overlay-swatch" style="--swatch:#fff2a8"></span>Pale yellow</button>
+      <button type="button" class="tool-btn overlay-choice" data-overlay="green" aria-pressed="false"><span class="overlay-swatch" style="--swatch:#d7f4df"></span>Mint green</button>
+      <button type="button" class="tool-btn overlay-choice" data-overlay="pink" aria-pressed="false"><span class="overlay-swatch" style="--swatch:#f9d4e0"></span>Soft pink</button>
+      <button type="button" class="tool-btn overlay-choice" data-overlay="peach" aria-pressed="false"><span class="overlay-swatch" style="--swatch:#ffe0ca"></span>Soft peach</button>
+      <button type="button" class="tool-btn overlay-choice" data-overlay="lavender" aria-pressed="false"><span class="overlay-swatch" style="--swatch:#e5ddff"></span>Lavender</button>
+    </div>
+    <div class="tool-group" aria-label="Theme, formula and text-size controls">
+      <span class="tool-note">Choose the tint that feels most comfortable.</span>
+      <span class="toolbar-divider" aria-hidden="true"></span>
+      <button type="button" class="tool-btn" id="formulaOpen">Formula sheet</button>
+      <!-- BEGIN PEM FLOATING CALCULATOR BUTTON -->
+      <button type="button" class="tool-btn" id="pemCalcOpen" aria-controls="pemCalcWindow" aria-haspopup="dialog" aria-expanded="false">Open calculator</button>
+      <!-- END PEM FLOATING CALCULATOR BUTTON -->
+      <button type="button" class="tool-btn" id="themeToggle" aria-pressed="false">Dark mode</button>
+      <span class="tool-label">Text:</span>
+      <button type="button" class="tool-btn" id="textSmaller" aria-label="Decrease text size">A−</button>
+      <button type="button" class="tool-btn" id="textReset" aria-label="Reset text size to 100 percent">A 100%</button>
+      <button type="button" class="tool-btn" id="textLarger" aria-label="Increase text size">A+</button>
+      <button type="button" class="tool-btn" id="textLargest" aria-label="Increase text size by two steps">A++</button>
+      <button type="button" class="tool-btn" id="displayReset">Reset display</button>
+      <span id="displayStatus" class="sr-only" aria-live="polite"></span>
+    </div>
+  </div>
+  <div class="bar" id="tabbar" role="tablist" aria-label="Quick navigation">
+    <button class="active" data-target="q1" role="tab" aria-selected="true">Q1</button>
+    <button data-target="q2" role="tab">Q2</button>
+    <button data-target="q3" role="tab">Q3</button>
+    <button data-target="q4" role="tab">Q4</button>
+    <button data-target="q5" role="tab">Q5</button>
+    <button data-target="q6" role="tab">Q6</button>
+    <button data-target="q7" role="tab">Q7</button>
+    <button data-target="q8" role="tab">Q8</button>
+    <button data-target="q9" role="tab">Q9</button>
+    <button data-target="q10" role="tab">Q10</button>
+    <button data-target="q11" role="tab">Q11</button>
+    <button data-target="q12" role="tab">Q12</button>
+    <button data-target="q13" role="tab">Q13</button>
+    <button data-target="results" role="tab">Results</button>
+  </div>
+</header>
+<div id="readingOverlay" aria-hidden="true"></div>
+
+
+<main>
+  <section id="q1" class="page active" role="tabpanel">
+    <div class="qpanel">
+      <div class="qhead"><h3>Q1 Circles — Diameter, circumference and area <span class="badge">[6 marks]</span></h3><span class="calc-tag">CALCULATOR</span></div>
+      <div class="qbody">
+        <p class="question-note"><b>Round circumference and area answers to 2 decimal places.</b></p>
+        <figure class="assessment-figure">
+          <svg class="diagram" viewBox="0 0 800 280" role="img" aria-labelledby="q1title q1desc">
+            <title id="q1title">Circle with radius 4.2 metres</title><desc id="q1desc">A circle with a radius drawn from the centre to the circumference and labelled 4.2 metres.</desc>
+            <circle cx="300" cy="140" r="100" class="line"/><circle cx="300" cy="140" r="4" fill="currentColor"/>
+            <line x1="300" y1="140" x2="400" y2="140" class="thin"/>
+            <polygon points="400,140 385,132 385,148" fill="currentColor"/>
+            <rect x="325" y="95" width="130" height="34" rx="8" class="paper"/><text x="390" y="118" text-anchor="middle" font-size="19" font-weight="900">r = 4.2 m</text>
+            <text x="520" y="70" class="muted-svg" font-size="16">Diagram not to scale</text>
+          </svg>
+          <figcaption>A circular pond has radius <b>4.2 m</b>.</figcaption>
+        </figure>
+        <p><b>(a)</b> Find the diameter of the pond. <span class="muted">[1]</span></p>
+        <div class="answer-row"><input id="q1a" type="text" inputmode="decimal" aria-label="Q1a diameter"><span class="unit">m</span></div>
+        <p><b>(b)</b> Calculate the circumference of the pond. <span class="muted">[2]</span></p>
+        <div class="answer-row"><input id="q1b" type="text" inputmode="decimal" aria-label="Q1b circumference"><span class="unit">m</span></div>
+        <p><b>(c)</b> Calculate the area of the pond. <span class="muted">[3]</span></p>
+        <div class="answer-row"><input id="q1c" type="text" inputmode="decimal" aria-label="Q1c area"><span class="unit">m²</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="q2" class="page" role="tabpanel">
+    <div class="qpanel">
+      <div class="qhead"><h3>Q2 3D Shapes — Cuboid volume and capacity <span class="badge">[2 marks]</span></h3><span class="calc-tag">CALCULATOR</span></div>
+      <div class="qbody">
+        <figure class="assessment-figure">
+          <svg class="diagram" viewBox="0 0 820 300" role="img" aria-labelledby="q2title q2desc">
+            <title id="q2title">Cuboid with dimensions 30 centimetres, 20 centimetres and 15 centimetres</title><desc id="q2desc">A cuboid diagram with its length, width and height labelled.</desc>
+            <path d="M190 220 L500 220 L625 145 L315 145 Z M190 220 L190 90 L315 20 L315 145 M500 220 L500 90 L625 20 L625 145 M190 90 L500 90 L625 20 L315 20" class="line"/>
+            <text x="345" y="260" font-size="20" font-weight="900" text-anchor="middle">30 cm</text>
+            <text x="585" y="220" font-size="20" font-weight="900">20 cm</text>
+            <text x="655" y="90" font-size="20" font-weight="900">15 cm</text>
+            <text x="25" y="35" class="muted-svg" font-size="16">Diagram not to scale</text>
+          </svg>
+          <figcaption>The storage box measures <b>30 cm × 20 cm × 15 cm</b>.</figcaption>
+        </figure>
+        <p><b>(a)</b> Find the volume of the box. <span class="muted">[1]</span></p>
+        <div class="answer-row"><input id="q2a" type="text" inputmode="decimal" aria-label="Q2a volume"><span class="unit">cm³</span></div>
+        <p><b>(b)</b> Convert the volume into litres. <span class="muted">[1]</span></p>
+        <div class="answer-row"><input id="q2b" type="text" inputmode="decimal" aria-label="Q2b litres"><span class="unit">litres</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="q3" class="page" role="tabpanel">
+    <div class="qpanel">
+      <div class="qhead"><h3>Q3 Measuring — Scale, distance and bearings <span class="badge">[8 marks]</span></h3><span class="calc-tag">CALCULATOR</span></div>
+      <div class="qbody">
+        <p class="question-note"><b>Scale 1 : 50 000.</b> Give bearings as three figures.</p>
+        <figure class="assessment-figure">
+          <svg class="diagram" viewBox="0 0 960 420" role="img" aria-labelledby="q3title q3desc">
+            <title id="q3title">Clear map sketch with towns A, B and C and a separate north arrow</title>
+            <desc id="q3desc">A boxed north arrow is kept separate from three clearly labelled towns. Town A is joined to Town B and Town B is joined to Town C.</desc>
+            <!-- North indicator is deliberately isolated so the N cannot overlap the journey diagram. -->
+            <rect x="42" y="105" width="126" height="205" rx="14" class="paper"/>
+            <text x="105" y="145" text-anchor="middle" font-size="26" font-weight="1000" class="accent-text">N</text>
+            <line x1="105" y1="274" x2="105" y2="190" stroke="var(--accent)" stroke-width="4"/>
+            <!-- Explicit upward-pointing triangle avoids browser-dependent SVG marker rotation. -->
+            <polygon points="105,166 91,192 119,192" fill="var(--accent)"/>
+            <text x="105" y="297" text-anchor="middle" font-size="15" font-weight="800" class="muted-svg">North</text>
+
+            <!-- Scale card, positioned away from the north indicator and town labels. -->
+            <rect x="678" y="28" width="238" height="50" rx="12" class="paper"/>
+            <text x="797" y="60" text-anchor="middle" font-size="20" font-weight="1000">Scale 1 : 50 000</text>
+
+            <!-- Journey diagram -->
+            <path d="M285 330 L555 150 L825 286" class="line" stroke-linejoin="round"/>
+            <circle cx="285" cy="330" r="8" fill="var(--accent)"/>
+            <circle cx="555" cy="150" r="8" fill="var(--accent)"/>
+            <circle cx="825" cy="286" r="8" fill="var(--accent)"/>
+
+            <rect x="244" y="344" width="46" height="38" rx="8" class="paper"/>
+            <text x="267" y="371" text-anchor="middle" font-size="22" font-weight="1000">A</text>
+            <rect x="572" y="122" width="46" height="38" rx="8" class="paper"/>
+            <text x="595" y="149" text-anchor="middle" font-size="22" font-weight="1000">B</text>
+            <rect x="843" y="267" width="46" height="38" rx="8" class="paper"/>
+            <text x="866" y="294" text-anchor="middle" font-size="22" font-weight="1000">C</text>
+
+            <!-- Light vertical reference lines reinforce that north is the same direction at each town. -->
+            <line x1="285" y1="315" x2="285" y2="235" class="faint" stroke-dasharray="7 7"/>
+            <line x1="555" y1="135" x2="555" y2="82" class="faint" stroke-dasharray="7 7"/>
+
+            <text x="38" y="400" class="muted-svg" font-size="16">Sketch diagram — not to scale</text>
+          </svg>
+          <figcaption>The north indicator, scale and town labels are separated clearly. Use the written distances and bearings below.</figcaption>
+        </figure>
+        <p><b>(a)</b> The map distance from A to B is <b>7.6 cm</b>. Work out the real distance in kilometres. <span class="muted">[3]</span></p>
+        <div class="answer-row"><input id="q3a" type="text" inputmode="decimal" aria-label="Q3a real distance"><span class="unit">km</span></div>
+        <p><b>(b)</b> The real distance from B to C is <b>2.6 km</b>. Work out the map distance in centimetres. <span class="muted">[2]</span></p>
+        <div class="answer-row"><input id="q3b" type="text" inputmode="decimal" aria-label="Q3b map distance"><span class="unit">cm</span></div>
+        <p><b>(c)</b> From A, B lies on a bearing of <b>065°</b>. Find the bearing of A from B. <span class="muted">[1]</span></p>
+        <div class="answer-row"><input id="q3c" type="text" inputmode="numeric" aria-label="Q3c reverse bearing"><span class="unit">°</span></div>
+        <p><b>(d)</b> From B, C lies on a bearing of <b>140°</b>. Calculate angle ABC. <span class="muted">[2]</span></p>
+        <div class="answer-row"><input id="q3d" type="text" inputmode="numeric" aria-label="Q3d angle ABC"><span class="unit">°</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="q4" class="page" role="tabpanel">
+    <div class="qpanel">
+      <div class="qhead"><h3>Q4 Best Buy — Compare price per gram <span class="badge">[5 marks]</span></h3><span class="calc-tag">CALCULATOR</span></div>
+      <div class="qbody">
+        <p>Two bags of coffee are on sale.</p>
+        <div class="bestbuy-grid">
+          <div class="product-card"><div class="pack">Pack A</div><div class="price">£4.79</div><div><b>750 g</b></div></div>
+          <div class="product-card"><div class="pack">Pack B</div><div class="price">£7.39</div><div><b>1.2 kg</b></div></div>
+        </div>
+        <p><b>(a)</b> Calculate the price of Pack A in <b>pence per gram</b>. Round to <b>2 decimal places</b>. <span class="muted">[2]</span></p>
+        <div class="answer-row"><input id="q4a" type="text" inputmode="decimal" aria-label="Q4a pence per gram"><span class="unit">p per g</span></div>
+        <p><b>(b)</b> Calculate the price of Pack B in <b>pence per gram</b>. Round to <b>2 decimal places</b>. <span class="muted">[2]</span></p>
+        <div class="answer-row"><input id="q4b" type="text" inputmode="decimal" aria-label="Q4b pence per gram"><span class="unit">p per g</span></div>
+        <p><b>(c)</b> Which pack is the better buy? <span class="muted">[1]</span></p>
+        <div class="answer-row"><select id="q4c" aria-label="Q4c better buy"><option value=""></option><option value="A">Pack A</option><option value="B">Pack B</option></select></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="q5" class="page" role="tabpanel">
+    <div class="qpanel">
+      <div class="qhead"><h3>Q5 3D Shapes — Cylinder volume and total surface area <span class="badge">[6 marks]</span></h3><span class="calc-tag">CALCULATOR</span></div>
+      <div class="qbody">
+        <p class="question-note"><b>Round numerical answers to 2 decimal places.</b></p>
+        <figure class="assessment-figure">
+          <svg class="diagram" viewBox="0 0 900 380" role="img" aria-labelledby="q5title q5desc">
+            <title id="q5title">Cylinder with a separately positioned radius dimension and a height of 15 centimetres</title>
+            <desc id="q5desc">A cylinder with radius 4 centimetres and height 15 centimetres. The radius dimension is placed above the top face so it does not overlap the ellipse or its label.</desc>
+            <defs>
+              <marker id="q5DimArrow" viewBox="0 0 12 12" refX="6" refY="6" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+                <path d="M1 6 L11 1 L11 11 Z" fill="currentColor"/>
+              </marker>
+            </defs>
+
+            <!-- Cylinder body -->
+            <ellipse cx="330" cy="120" rx="150" ry="42" class="line"/>
+            <line x1="180" y1="120" x2="180" y2="292" class="line"/>
+            <line x1="480" y1="120" x2="480" y2="292" class="line"/>
+            <ellipse cx="330" cy="292" rx="150" ry="42" class="line"/>
+            <circle cx="330" cy="120" r="5" fill="currentColor"/>
+
+            <!-- Radius dimension: the dimension line and label are above the top ellipse, not on it. -->
+            <line x1="330" y1="48" x2="480" y2="48" class="thin" marker-start="url(#q5DimArrow)" marker-end="url(#q5DimArrow)"/>
+            <line x1="330" y1="60" x2="330" y2="110" class="faint" stroke-dasharray="5 5"/>
+            <line x1="480" y1="60" x2="480" y2="110" class="faint" stroke-dasharray="5 5"/>
+            <rect x="350" y="8" width="112" height="32" rx="8" class="paper"/>
+            <text x="406" y="31" text-anchor="middle" font-size="19" font-weight="1000">r = 4 cm</text>
+
+            <!-- Height dimension -->
+            <line x1="590" y1="120" x2="590" y2="292" class="thin" marker-start="url(#q5DimArrow)" marker-end="url(#q5DimArrow)"/>
+            <line x1="490" y1="120" x2="575" y2="120" class="faint"/>
+            <line x1="490" y1="292" x2="575" y2="292" class="faint"/>
+            <rect x="618" y="189" width="132" height="34" rx="8" class="paper"/>
+            <text x="684" y="213" text-anchor="middle" font-size="19" font-weight="1000">h = 15 cm</text>
+
+            <text x="675" y="65" class="muted-svg" font-size="16">Diagram not to scale</text>
+          </svg>
+          <figcaption>A metal tin has radius <b>4 cm</b> and height <b>15 cm</b>.</figcaption>
+        </figure>
+        <p><b>(a)</b> Name the 3D shape. <span class="muted">[1]</span></p>
+        <div class="answer-row"><select id="q5shape" aria-label="Q5a shape name"><option value=""></option><option value="cylinder">Cylinder</option><option value="cone">Cone</option><option value="sphere">Sphere</option><option value="cuboid">Cuboid</option><option value="prism">Triangular prism</option></select></div>
+        <p><b>(b)</b> Calculate the volume of the tin. <span class="muted">[2]</span></p>
+        <div class="answer-row"><input id="q5vol" type="text" inputmode="decimal" aria-label="Q5b volume"><span class="unit">cm³</span></div>
+        <p><b>(c)</b> Calculate the total surface area, including the top and base. <span class="muted">[3]</span></p>
+        <div class="answer-row"><input id="q5tsa" type="text" inputmode="decimal" aria-label="Q5c total surface area"><span class="unit">cm²</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="q6" class="page" role="tabpanel">
+    <div class="qpanel">
+      <div class="qhead"><h3>Q6 Algebra — Expand, simplify and factorise <span class="badge">[5 marks]</span></h3><span class="calc-tag">CALCULATOR</span></div>
+      <div class="qbody">
+        <div class="subquestion-card">
+          <h4>(a) Expand and simplify by collecting like terms. <span class="muted">[3]</span></h4>
+          <p style="font-size:1.15rem"><b>4(2x − 3) + 5x</b></p>
+          <div class="answer-row"><label for="q6aWork"><b>Expanded working line:</b></label><input class="work-box" id="q6aWork" type="text" autocomplete="off" aria-label="Q6a expanded working line"></div>
+          <div class="answer-row"><label for="q6aFinal"><b>Final simplified expression:</b></label><input class="work-box" id="q6aFinal" type="text" autocomplete="off" aria-label="Q6a final simplified expression"></div>
+        </div>
+        <div class="subquestion-card" style="margin-top:1rem">
+          <h4>(b) Factorise fully. <span class="muted">[2]</span></h4>
+          <p style="font-size:1.15rem"><b>18x + 12</b></p>
+          <div class="answer-row"><input class="work-box" id="q6b" type="text" autocomplete="off" aria-label="Q6b factorised expression"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="q7" class="page" role="tabpanel">
+    <div class="qpanel">
+      <div class="qhead"><h3>Q7 Inequalities — Solve and show on a number line <span class="badge">[5 marks]</span></h3><span class="calc-tag">CALCULATOR</span></div>
+      <div class="qbody">
+        <p>Solve the two-sided inequality:</p>
+        <p style="font-size:1.2rem"><b>−7 &lt; 3x + 2 ≤ 14</b></p>
+        <p>Write the solution inequality. <span class="muted">[3]</span></p>
+        <div class="answer-row"><input class="work-box" id="q7ans" type="text" autocomplete="off" aria-label="Q7 solution inequality"><span class="symbol-buttons"><button type="button" data-insert=" ≤ ">≤</button><button type="button" data-insert=" < ">&lt;</button><button type="button" data-insert=" ≥ ">≥</button><button type="button" data-insert=" > ">&gt;</button></span></div>
+        <p>Show the same solution on the number line. Drag both circles to the boundaries, then click a circle to switch it between <b>open</b> and <b>closed</b>. <span class="muted">[2]</span></p>
+        <div class="svgwrap" aria-label="Interactive two-sided inequality number line">
+          <svg id="q7svg" class="diagram" viewBox="-420 -58 840 128" width="840" height="128" role="img" aria-labelledby="q7lineTitle q7lineDesc">
+            <title id="q7lineTitle">Interactive number line</title><desc id="q7lineDesc">Drag the left and right endpoint circles. Click each endpoint to toggle whether it is open or closed.</desc>
+            <rect x="-420" y="-58" width="840" height="128" fill="var(--diagram-paper)"/>
+            <line x1="-360" y1="0" x2="360" y2="0" stroke="var(--ink)" stroke-width="2" pointer-events="none"/>
+            <g id="q7ticks" pointer-events="none"></g><g id="q7labels" pointer-events="none"></g>
+            <line id="q7seg" x1="-225" y1="0" x2="225" y2="0" stroke="var(--accent)" stroke-width="7" stroke-linecap="round" pointer-events="none"/>
+            <circle id="q7L" r="10" cy="0" cx="-225" class="drag-handle" tabindex="0" aria-label="Left endpoint" pointer-events="none"/>
+            <circle id="q7R" r="10" cy="0" cx="225" class="drag-handle" tabindex="0" aria-label="Right endpoint" pointer-events="none"/>
+            <!-- Larger transparent hit areas make press-and-drag reliable without changing the visible circles. -->
+            <circle id="q7LHit" r="25" cy="0" cx="-225" class="drag-hit" data-side="L" aria-hidden="true"/>
+            <circle id="q7RHit" r="25" cy="0" cx="225" class="drag-hit" data-side="R" aria-hidden="true"/>
+          </svg>
+        </div>
+        <p id="q7LineStatus" class="muted small" aria-live="polite"></p>
+      </div>
+    </div>
+  </section>
+
+  <section id="q8" class="page" role="tabpanel">
+    <div class="qpanel">
+      <div class="qhead"><h3>Q8 Angles — Quadrilateral and algebraic triangle <span class="badge">[5 marks]</span></h3><span class="calc-tag">CALCULATOR</span></div>
+      <div class="qbody">
+        <div class="diagram-card-grid">
+          <div class="subquestion-card">
+            <h4>(a) Angle in a quadrilateral <span class="muted">[2]</span></h4>
+            <figure class="assessment-figure">
+              <svg class="diagram" viewBox="0 0 480 300" role="img" aria-labelledby="q8atitle"><title id="q8atitle">Quadrilateral with angles 78, 105, 92 and x degrees</title>
+                <polygon points="90,235 135,60 385,85 420,240" class="shape-fill"/>
+                <text x="168" y="112" text-anchor="middle" font-size="20" font-weight="900">78°</text><text x="348" y="128" text-anchor="middle" font-size="20" font-weight="900">105°</text><text x="374" y="212" text-anchor="middle" font-size="20" font-weight="900">92°</text><text x="136" y="207" text-anchor="middle" font-size="22" font-weight="1000" class="accent-text">x°</text>
+              </svg>
+            </figure>
+            <p>Calculate the missing angle <b>x</b>.</p><div class="answer-row"><input id="q8a" type="text" inputmode="decimal" aria-label="Q8a missing quadrilateral angle"><span class="unit">°</span></div>
+          </div>
+          <div class="subquestion-card">
+            <h4>(b) Angles in a triangle with expressions <span class="muted">[3]</span></h4>
+            <figure class="assessment-figure">
+              <svg class="diagram" viewBox="0 0 480 300" role="img" aria-labelledby="q8btitle"><title id="q8btitle">Triangle with angles x plus 20, 2x plus 10 and 60 degrees</title>
+                <polygon points="65,245 405,245 245,55" class="shape-fill"/>
+                <text x="155" y="218" text-anchor="middle" font-size="19" font-weight="900">x + 20°</text><text x="320" y="218" text-anchor="middle" font-size="19" font-weight="900">2x + 10°</text><text x="245" y="118" text-anchor="middle" font-size="20" font-weight="900">60°</text>
+              </svg>
+            </figure>
+            <p>Calculate <b>x</b>, then calculate the angle labelled <b>2x + 10°</b>.</p>
+            <div class="angle-answer-grid"><div class="answer-row"><label for="q8bx"><b>x =</b></label><input id="q8bx" type="text" inputmode="decimal" aria-label="Q8b x value"></div><div class="answer-row"><label for="q8bangle"><b>Angle =</b></label><input id="q8bangle" type="text" inputmode="decimal" aria-label="Q8b angle"><span class="unit">°</span></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="q9" class="page" role="tabpanel">
+    <div class="qpanel">
+      <div class="qhead"><h3>Q9 Statistics — Estimated mean from grouped data <span class="badge">[5 marks]</span></h3><span class="calc-tag">CALCULATOR</span></div>
+      <div class="qbody">
+        <p>The table shows the journey times, <b>t</b> minutes, for 30 students.</p>
+        <p>Complete the table, then calculate the estimated mean. Give the final answer to <b>1 decimal place</b>.</p>
+        <div class="table-scroll">
+          <table class="data-table" aria-label="Grouped frequency table for journey times">
+            <thead><tr><th>Journey time, t (minutes)</th><th>Frequency, f</th><th aria-label="Unlabelled working column"></th><th>f × x</th></tr></thead>
+            <tbody>
+              <tr><td>0 &lt; t ≤ 10</td><td>6</td><td><input id="q9m1" type="text" inputmode="decimal" aria-label="First unlabelled working value"></td><td><input id="q9fx1" type="text" inputmode="decimal" aria-label="First frequency times working value"></td></tr>
+              <tr><td>10 &lt; t ≤ 20</td><td>9</td><td><input id="q9m2" type="text" inputmode="decimal" aria-label="Second unlabelled working value"></td><td><input id="q9fx2" type="text" inputmode="decimal" aria-label="Second frequency times working value"></td></tr>
+              <tr><td>20 &lt; t ≤ 30</td><td>11</td><td><input id="q9m3" type="text" inputmode="decimal" aria-label="Third unlabelled working value"></td><td><input id="q9fx3" type="text" inputmode="decimal" aria-label="Third frequency times working value"></td></tr>
+              <tr><td>30 &lt; t ≤ 40</td><td>4</td><td><input id="q9m4" type="text" inputmode="decimal" aria-label="Fourth unlabelled working value"></td><td><input id="q9fx4" type="text" inputmode="decimal" aria-label="Fourth frequency times working value"></td></tr>
+              <tr><th>Total</th><td><input id="q9tf" type="text" inputmode="decimal" aria-label="Total frequency working"></td><td>—</td><td><input id="q9tfx" type="text" inputmode="decimal" aria-label="Total frequency times working value"></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="question-note"><b>Marking note:</b> the table boxes are unmarked working space. All <b>5 marks</b> are awarded from the calculation and final estimated mean entered below.</p>
+        <div class="answer-row"><label for="q9mean"><b>Calculation and estimated mean:</b></label><input class="work-box" id="q9mean" type="text" inputmode="text" autocomplete="off" aria-label="Q9 complete calculation and final estimated mean"><span class="unit">minutes</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="q10" class="page" role="tabpanel">
+    <div class="qpanel">
+      <div class="qhead"><h3>Q10 Probability — Tree diagram <span class="badge">[4 marks]</span></h3><span class="calc-tag">CALCULATOR</span></div>
+      <div class="qbody">
+        <p>A counter is selected from a bag, its colour is recorded, and it is replaced. A second counter is then selected.</p>
+        <p>On each selection, <b>P(Red) = 0.35</b> and <b>P(Blue) = 0.65</b>.</p>
+        <figure class="assessment-figure">
+          <svg class="diagram" viewBox="0 0 800 480" role="img" aria-labelledby="q10title q10desc">
+            <title id="q10title">Clear two-stage probability tree for two selections with replacement</title>
+            <desc id="q10desc">The start node branches to red and blue. Each first-stage node then branches to red and blue, with every branch probability shown in a separate labelled box.</desc>
+
+            <!-- Column headings -->
+            <text x="95" y="38" font-size="20" font-weight="1000">Start</text>
+            <text x="300" y="38" font-size="20" font-weight="1000" text-anchor="middle">First selection</text>
+            <text x="625" y="38" font-size="20" font-weight="1000" text-anchor="middle">Second selection</text>
+
+            <!-- Tree branches are drawn first so the white probability cards sit cleanly above them. -->
+            <line x1="105" y1="240" x2="360" y2="130" class="line"/>
+            <line x1="105" y1="240" x2="360" y2="350" class="line"/>
+            <line x1="365" y1="128" x2="705" y2="70" class="line"/>
+            <line x1="365" y1="132" x2="705" y2="190" class="line"/>
+            <line x1="365" y1="348" x2="705" y2="290" class="line"/>
+            <line x1="365" y1="352" x2="705" y2="410" class="line"/>
+
+            <!-- Nodes -->
+            <circle cx="100" cy="240" r="8" fill="currentColor"/>
+            <circle cx="360" cy="130" r="8" fill="currentColor"/>
+            <circle cx="360" cy="350" r="8" fill="currentColor"/>
+            <circle cx="705" cy="70" r="7" fill="#dc2626"/>
+            <circle cx="705" cy="190" r="7" fill="#2563eb"/>
+            <circle cx="705" cy="290" r="7" fill="#dc2626"/>
+            <circle cx="705" cy="410" r="7" fill="#2563eb"/>
+
+            <!-- First-stage probability cards -->
+            <rect x="178" y="155" width="150" height="40" rx="10" class="paper"/>
+            <circle cx="198" cy="175" r="6" fill="#dc2626"/><text x="214" y="182" font-size="18" font-weight="1000">Red 0.35</text>
+            <rect x="178" y="286" width="150" height="40" rx="10" class="paper"/>
+            <circle cx="198" cy="306" r="6" fill="#2563eb"/><text x="214" y="313" font-size="18" font-weight="1000">Blue 0.65</text>
+
+            <!-- Second-stage probability cards -->
+            <rect x="475" y="78" width="150" height="40" rx="10" class="paper"/>
+            <circle cx="495" cy="98" r="6" fill="#dc2626"/><text x="511" y="105" font-size="18" font-weight="1000">Red 0.35</text>
+            <rect x="475" y="142" width="150" height="40" rx="10" class="paper"/>
+            <circle cx="495" cy="162" r="6" fill="#2563eb"/><text x="511" y="169" font-size="18" font-weight="1000">Blue 0.65</text>
+            <rect x="475" y="298" width="150" height="40" rx="10" class="paper"/>
+            <circle cx="495" cy="318" r="6" fill="#dc2626"/><text x="511" y="325" font-size="18" font-weight="1000">Red 0.35</text>
+            <rect x="475" y="362" width="150" height="40" rx="10" class="paper"/>
+            <circle cx="495" cy="382" r="6" fill="#2563eb"/><text x="511" y="389" font-size="18" font-weight="1000">Blue 0.65</text>
+
+          </svg>
+          <figcaption>Multiply along a complete path. Add the two paths that contain exactly one red result.</figcaption>
+        </figure>
+        <p>Calculate the probability of selecting <b>exactly one red counter</b>.</p>
+        <div class="probability-answer-grid">
+          <div class="mini-answer"><label for="q10rb"><b>P(R then B) =</b></label><div class="answer-row"><input id="q10rb" type="text" inputmode="decimal" aria-label="Probability red then blue"></div></div>
+          <div class="mini-answer"><label for="q10br"><b>P(B then R) =</b></label><div class="answer-row"><input id="q10br" type="text" inputmode="decimal" aria-label="Probability blue then red"></div></div>
+        </div>
+        <div class="answer-row" style="margin-top:1rem"><label for="q10final"><b>P(exactly one red) =</b></label><input id="q10final" type="text" inputmode="decimal" aria-label="Probability exactly one red"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="q11" class="page" role="tabpanel">
+    <div class="qpanel">
+      <div class="qhead"><h3>Q11 Similarity — Scale factor and area scale factor <span class="badge">[3 marks]</span></h3><span class="calc-tag">CALCULATOR</span></div>
+      <div class="qbody">
+        <figure class="assessment-figure">
+          <svg class="diagram" viewBox="0 0 980 390" role="img" aria-labelledby="q11title q11desc">
+            <title id="q11title">Two similar right triangles with external dimension lines</title>
+            <desc id="q11desc">Triangle ABC has AB equal to 6 centimetres and AC equal to 4 centimetres. Triangle DEF has DF equal to 10 centimetres and DE unknown. The AC label is placed on a separate vertical dimension line outside the triangle.</desc>
+            <defs>
+              <marker id="q11DimArrow" viewBox="0 0 12 12" refX="6" refY="6" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+                <path d="M1 6 L11 1 L11 11 Z" fill="currentColor"/>
+              </marker>
+            </defs>
+
+            <rect x="212" y="22" width="570" height="50" rx="11" class="paper"/>
+            <text x="497" y="54" text-anchor="middle" font-size="18" font-weight="1000">AC ↔ DF (4 cm ↔ 10 cm) and AB ↔ DE (6 cm ↔ ?)</text>
+
+            <!-- Small triangle ABC -->
+            <polygon points="170,305 390,305 170,165" class="shape-fill"/>
+            <text x="150" y="337" font-size="19" font-weight="1000">A</text>
+            <text x="398" y="337" font-size="19" font-weight="1000">B</text>
+            <text x="148" y="157" font-size="19" font-weight="1000">C</text>
+            <text x="280" y="340" text-anchor="middle" font-size="19" font-weight="1000">AB = 6 cm</text>
+
+            <!-- AC dimension is completely outside the triangle to prevent overlap. -->
+            <line x1="92" y1="165" x2="92" y2="305" class="thin" marker-start="url(#q11DimArrow)" marker-end="url(#q11DimArrow)"/>
+            <line x1="105" y1="165" x2="158" y2="165" class="faint"/>
+            <line x1="105" y1="305" x2="158" y2="305" class="faint"/>
+            <rect x="27" y="202" width="42" height="68" rx="8" class="paper"/>
+            <text x="48" y="236" text-anchor="middle" font-size="18" font-weight="1000" transform="rotate(-90 48 236)">AC = 4 cm</text>
+
+            <!-- Large triangle DEF -->
+            <polygon points="575,305 890,305 575,105" class="shape-fill"/>
+            <text x="554" y="337" font-size="19" font-weight="1000">D</text>
+            <text x="898" y="337" font-size="19" font-weight="1000">E</text>
+            <text x="553" y="97" font-size="19" font-weight="1000">F</text>
+            <text x="733" y="340" text-anchor="middle" font-size="19" font-weight="1000">DE = ? cm</text>
+            <rect x="486" y="180" width="54" height="100" rx="8" class="paper"/>
+            <text x="513" y="230" text-anchor="middle" font-size="18" font-weight="1000" transform="rotate(-90 513 230)">DF = 10 cm</text>
+          </svg>
+          <figcaption>Triangles ABC and DEF are similar. Every side label is kept clear of the triangle edges.</figcaption>
+        </figure>
+        <p><b>(a)</b> Calculate DE. <span class="muted">[2]</span></p><div class="answer-row"><input id="q11a" type="text" inputmode="decimal" aria-label="Q11a DE length"><span class="unit">cm</span></div>
+        <p><b>(b)</b> Find the ratio of the area of triangle DEF to the area of triangle ABC. Write the scale factor as a decimal. <span class="muted">[1]</span></p><div class="answer-row"><input id="q11b" type="text" inputmode="decimal" aria-label="Q11b area scale factor"><span class="unit">: 1</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="q12" class="page" role="tabpanel">
+    <div class="qpanel">
+      <div class="qhead"><h3>Q12 Pythagoras’ theorem <span class="badge">[3 marks]</span></h3><span class="calc-tag">CALCULATOR</span></div>
+      <div class="qbody">
+        <figure class="assessment-figure">
+          <svg class="diagram" viewBox="0 0 820 320" role="img" aria-labelledby="q12title"><title id="q12title">Right-angled triangle with perpendicular sides 7 and 24 centimetres</title>
+            <path d="M180 255 L650 255 L180 95 Z" class="line"/><rect x="180" y="228" width="27" height="27" class="thin"/>
+            <text x="390" y="292" font-size="20" font-weight="900">24 cm</text><text x="95" y="180" font-size="20" font-weight="900">7 cm</text><text x="410" y="135" font-size="20" font-weight="900">hypotenuse = ?</text>
+          </svg>
+          <figcaption>Calculate the length of the hypotenuse.</figcaption>
+        </figure>
+        <div class="answer-row"><input id="q12a" type="text" inputmode="decimal" aria-label="Q12 hypotenuse"><span class="unit">cm</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="q13" class="page" role="tabpanel">
+    <div class="qpanel">
+      <div class="qhead"><h3>Q13 Trigonometry and angles in parallel lines <span class="badge">[4 marks]</span></h3><span class="calc-tag">CALCULATOR</span></div>
+      <div class="qbody">
+        <p class="question-note"><b>Round θ to the nearest degree.</b> The two parts are presented separately for clarity.</p>
+        <div class="subquestion-card">
+          <h4>(a) Trigonometry <span class="muted">[2]</span></h4>
+          <figure class="assessment-figure">
+            <svg class="diagram" viewBox="0 0 800 370" role="img" aria-labelledby="q13atitle q13adesc">
+              <title id="q13atitle">Right triangle with angle theta correctly placed between the base and hypotenuse</title>
+              <desc id="q13adesc">A right triangle has adjacent side 12 centimetres and hypotenuse 20 centimetres. A blue angle arc and theta label are positioned inside the left-hand angle.</desc>
+              <path d="M120 295 L650 295 L650 92 Z" class="line"/>
+              <rect x="618" y="263" width="32" height="32" class="thin"/>
+
+              <!-- Q13 instruction: Move or rotate the trigonometry angle arc here. Change the path d coordinates to reshape it; use transform="translate(dx dy)" to move it, or transform="rotate(angle 120 295)" to rotate it around the left vertex (120,295). -->
+              <path d="M184 295 A64 64 0 0 0 180 272" class="accent-line" style="stroke-width:4"/>
+
+              <!-- Q13 instruction: Move the blue theta label by changing x and y below. It is intentionally outside the blue arc but still inside the triangle; a transform="translate(dx dy)" can also be added. -->
+              <text x="214" y="287" text-anchor="middle" font-size="27" font-weight="1000" class="accent-text">θ</text>
+
+              <!-- Q13 instruction: Reposition or rotate the hypotenuse label by editing x, y and rotate(-21 408 160). The last two numbers are the rotation centre. -->
+              <text x="408" y="160" font-size="20" font-weight="1000" text-anchor="middle" transform="rotate(-21 408 160)">hypotenuse = 20 cm</text>
+
+              <!-- Q13 instruction: Move the adjacent-side label by editing x and y below. -->
+              <text x="385" y="338" font-size="20" font-weight="1000" text-anchor="middle">adjacent = 12 cm</text>
+              <text x="28" y="40" class="muted-svg" font-size="16">Diagram not to scale</text>
+            </svg>
+            <figcaption>The blue arc and θ sit inside the angle formed by the adjacent side and the hypotenuse.</figcaption>
+          </figure>
+          <p>Calculate θ to the nearest degree.</p><div class="answer-row"><input id="q13a" type="text" inputmode="decimal" aria-label="Q13a theta"><span class="unit">°</span></div>
+        </div>
+        <div class="subquestion-card" style="margin-top:1rem">
+          <h4>(b) Parallel lines <span class="muted">[2]</span></h4>
+          <figure class="assessment-figure">
+            <svg class="diagram" viewBox="0 0 800 380" role="img" aria-labelledby="q13btitle q13bdesc">
+              <title id="q13btitle">Two parallel horizontal lines with right-pointing arrows, cut by a transversal</title>
+              <desc id="q13bdesc">The angle 2x degrees is below the top line and to the right of the transversal. The alternate interior angle 84 degrees is above the bottom line and to the left of the transversal.</desc>
+              <defs>
+                <marker id="q13RightArrow" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="9" markerHeight="9" orient="auto">
+                  <path d="M1 1 L11 6 L1 11 Z" fill="currentColor"/>
+                </marker>
+              </defs>
+
+              <!-- Q13 instruction: Top parallel line. Edit x1/y1/x2/y2 to move or resize it. The marker-end adds the required right-pointing arrow. -->
+              <line x1="80" y1="115" x2="700" y2="115" class="line" marker-end="url(#q13RightArrow)"/>
+
+              <!-- Q13 instruction: Bottom parallel line. Edit x1/y1/x2/y2 to move or resize it. Keep marker-end so its arrow also points right. -->
+              <line x1="80" y1="275" x2="700" y2="275" class="line" marker-end="url(#q13RightArrow)"/>
+
+              <!-- Q13 instruction: Transversal. Change its endpoints to alter the slope or position. Current intersections are approximately (319,115) and (487,275). -->
+              <line x1="235" y1="35" x2="560" y2="345" class="line"/>
+
+              <!-- Q13 instruction: Top 2x angle arc. Edit the path d coordinates to move/reshape it. For translation add transform="translate(dx dy)"; for rotation use transform="rotate(angle 319 115)" around the top intersection. -->
+              <path d="M374 115 A55 55 0 0 1 359 153" class="accent-line" style="stroke-width:4"/>
+
+              <!-- Q13 instruction: Move the 2x° label by changing x and y below; text-anchor="middle" keeps it centred just beyond the approved arc inside the lower-right interior angle. -->
+              <text x="396" y="158" text-anchor="middle" font-size="23" font-weight="1000" class="accent-text">2x°</text>
+
+              <!-- Q13 instruction: Bottom 84° angle arc. Edit the path d coordinates to move/reshape it. For translation add transform="translate(dx dy)"; for rotation use transform="rotate(angle 487 275)" around the bottom intersection. -->
+              <path d="M432 275 A55 55 0 0 1 447 237" class="accent-line" style="stroke-width:4"/>
+
+              <!-- Q13 instruction: Move the 84° label by changing x and y below; text-anchor="middle" keeps it centred just beyond the approved arc inside the upper-left interior angle. -->
+              <text x="410" y="254" text-anchor="middle" font-size="23" font-weight="1000" class="accent-text">84°</text>
+
+              <!-- Q13 instruction: Move the p and q line labels by changing their x/y positions below. -->
+              <text x="728" y="122" font-size="21" font-weight="1000">p</text>
+              <text x="728" y="282" font-size="21" font-weight="1000">q</text>
+              <text x="95" y="82" font-size="18" font-weight="1000">p ∥ q</text>
+              <text x="28" y="354" class="muted-svg" font-size="16">Diagram not to scale</text>
+            </svg>
+            <figcaption>The blue arcs mark a pair of alternate interior angles. Both parallel lines carry matching right-pointing arrows.</figcaption>
+          </figure>
+          <p>Calculate x.</p><div class="answer-row"><label for="q13b"><b>x =</b></label><input id="q13b" type="text" inputmode="decimal" aria-label="Q13b x value"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="results" class="page" role="tabpanel">
+    <div class="qpanel">
+      <div class="qhead"><h3>Results, Century Targets and Plain-text Heat Map</h3></div>
+      <div class="qbody">
+        <div class="actions" style="margin-bottom:.8rem"><button class="primary" id="markAllBtn">Mark questions</button></div>
+        <p><b>Total score:</b> <span id="totalscore" style="font-weight:900">0</span> / <span id="totalmax" style="font-weight:900">0</span></p>
+        <p><b>Indicative grade:</b> <span id="grade" style="font-weight:900">—</span></p>
+        <p><b>Performance band:</b> <span id="band" style="font-weight:900">—</span></p>
+        <div class="report-note"><b>Automatic partial-credit rule:</b> method credit is awarded only when the response entered on this page shows a recognised correct setup, intermediate value, equivalent algebraic form, conversion stage, number-line feature or supported follow-through. The final stated answer takes precedence for accuracy. Handwritten working outside the page cannot be inspected automatically.</div>
+        <h4 style="margin:1.1rem 0 .6rem">Century Targets and Question-by-question Plain-text Diagnostic</h4>
+        <p class="muted">The report includes the mark, grade, up to four validated Century nugget targets taken only from parts where marks were lost, a colour-free text heat map, and an explanation of every full, partial or lost mark.</p>
+        <div id="smartWrap"><p style="margin:.2rem 0 .6rem"><b>Copy this complete report:</b></p><textarea id="smartBox" readonly spellcheck="false"></textarea><button id="copyBtn" type="button">Copy to clipboard</button></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+
+<div id="intro" class="modal" role="dialog" aria-modal="true" aria-labelledby="introTitle">
+  <div class="panel">
+    <div style="font-size:clamp(1.45rem,4vw,2.25rem);font-weight:1000;text-align:center;border:3px solid #111827;padding:.55rem;margin-bottom:.8rem;">DO NOT CLOSE THIS PAGE</div>
+    <h2 id="introTitle">Initial Assessment</h2>
+    <p><b>Important:</b> This is a <b>CALCULATOR</b> paper. Show clear working in the answer boxes where provided.</p>
+    <ul>
+      <li>There are 13 questions covering number, measures, ratio, algebra, inequalities, angles, statistics, probability, similarity, Pythagoras and trigonometry.</li>
+      <li>Pressing <b>Start</b> moves the assessment into fullscreen.</li>
+      <li>If fullscreen is exited before marking, all answer controls are blocked until fullscreen is entered again.</li>
+      <li>Do not close, refresh or navigate away from this page while completing the assessment.</li>
+      <li>The display controls at the top provide reading tints, light/dark mode, text-size controls and a formula sheet.</li>
+      <li>The Results tab produces a plain-text heat map, complete partial-credit reasons and up to four Century targets taken only from parts where marks were lost.</li>
+    </ul>
+    <div class="actions" style="margin-top:.6rem"><button class="primary" id="startBtn" type="button">Start assessment in fullscreen</button></div>
+  </div>
+</div>
+
+<div id="formulaModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="formulaTitle">
+  <div class="panel">
+    <button id="formulaClose" type="button" aria-label="Close formula sheet">Close</button>
+    <h2 id="formulaTitle">Additional Formulae (Foundation)</h2>
+    <p class="fs-note">Use these formulae where appropriate. Diagrams are not drawn to scale.</p>
+    <div id="fsGrid">
+      <div>
+        <div class="box">
+          <h4>Perimeter, area and volume</h4>
+
+          <div class="fs-math">
+            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+              <mtext>Area of trapezium</mtext>
+              <mo>=</mo>
+              <mfrac><mn>1</mn><mn>2</mn></mfrac>
+              <mo>(</mo><mi>a</mi><mo>+</mo><mi>b</mi><mo>)</mo><mo>&#x00D7;</mo><mi>h</mi>
+            </math>
+            <div class="muted">where <i>a</i> and <i>b</i> are the lengths of the parallel sides and <i>h</i> is the perpendicular separation.</div>
+          </div>
+
+          <div class="fs-math">
+            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+              <mtext>Volume of a prism</mtext>
+              <mo>=</mo>
+              <mtext>area of cross‑section</mtext>
+              <mo>&#x00D7;</mo>
+              <mtext>length</mtext>
+            </math>
+          </div>
+
+          <div class="fs-math">
+            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+              <mtext>Volume of a pyramid</mtext>
+              <mo>=</mo>
+              <mfrac><mn>1</mn><mn>3</mn></mfrac>
+              <mo>&#x00D7;</mo>
+              <mtext>base area</mtext>
+              <mo>&#x00D7;</mo>
+              <mtext>height</mtext>
+            </math>
+          </div>
+
+          <div class="fs-math">
+            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+              <mtext>Volume of a cone</mtext>
+              <mo>=</mo>
+              <mfrac><mn>1</mn><mn>3</mn></mfrac>
+              <mo>&#x00D7;</mo>
+              <mi>&#x03C0;</mi><msup><mi>r</mi><mn>2</mn></msup>
+              <mo>&#x00D7;</mo>
+              <mi>h</mi>
+            </math>
+          </div>
+
+          <div class="fs-math">
+            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+              <mtext>Circumference</mtext><mo>=</mo><mn>2</mn><mi>&#x03C0;</mi><mi>r</mi>
+              <mo>=</mo><mi>&#x03C0;</mi><mi>d</mi>
+            </math>
+          </div>
+
+          <div class="fs-math">
+            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+              <mtext>Area of a circle</mtext><mo>=</mo><mi>&#x03C0;</mi><msup><mi>r</mi><mn>2</mn></msup>
+            </math>
+          </div>
+
+          <div class="fs-math">
+            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+              <mtext>Surface area of a sphere</mtext>
+              <mo>=</mo>
+              <mn>4</mn><mi>&#x03C0;</mi><msup><mi>r</mi><mn>2</mn></msup>
+            </math>
+          </div>
+
+          <div class="fs-math">
+            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+              <mtext>Volume of a sphere</mtext>
+              <mo>=</mo>
+              <mfrac><mn>4</mn><mn>3</mn></mfrac><mi>&#x03C0;</mi><msup><mi>r</mi><mn>3</mn></msup>
+            </math>
+          </div>
+
+          <hr class="fs-hr">
+
+          <h4>Pythagoras and trigonometry</h4>
+          <div class="fs-math">
+            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+              <msup><mi>a</mi><mn>2</mn></msup><mo>+</mo><msup><mi>b</mi><mn>2</mn></msup><mo>=</mo><msup><mi>c</mi><mn>2</mn></msup>
+            </math>
+          </div>
+
+          <div class="fs-math">
+            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+              <mtext>sin&nbsp;A</mtext><mo>=</mo><mfrac><mi>a</mi><mi>c</mi></mfrac>
+              <mspace width="1.2em"/><mtext>cos&nbsp;A</mtext><mo>=</mo><mfrac><mi>b</mi><mi>c</mi></mfrac>
+              <mspace width="1.2em"/><mtext>tan&nbsp;A</mtext><mo>=</mo><mfrac><mi>a</mi><mi>b</mi></mfrac>
+            </math>
+          </div>
+
+          <hr class="fs-hr">
+
+          <h4>Compound interest</h4>
+          <div class="fs-math">
+            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+              <mtext>Total accrued</mtext><mo>=</mo>
+              <mi>P</mi>
+              <msup>
+                <mrow>
+                  <mo>(</mo><mn>1</mn><mo>+</mo><mfrac><mi>r</mi><mn>100</mn></mfrac><mo>)</mo>
+                </mrow>
+                <mi>n</mi>
+              </msup>
+            </math>
+          </div>
+
+          <hr class="fs-hr">
+
+          <h4>Probability</h4>
+          <div class="fs-math">
+            <math xmlns="http://www.w3.org/1998/Math/MathML" display="block">
+              <mi>P</mi><mo>(</mo><mi>A</mi><mo>&#xA0;</mo><mtext>or</mtext><mo>&#xA0;</mo><mi>B</mi><mo>)</mo>
+              <mo>=</mo>
+              <mi>P</mi><mo>(</mo><mi>A</mi><mo>)</mo>
+              <mo>+</mo>
+              <mi>P</mi><mo>(</mo><mi>B</mi><mo>)</mo>
+              <mo>−</mo>
+              <mi>P</mi><mo>(</mo><mi>A</mi><mo>&#xA0;</mo><mtext>and</mtext><mo>&#xA0;</mo><mi>B</mi><mo>)</mo>
+            </math>
+          </div>
+        </div>
+      </div>
+
+      <div class="box" style="justify-self:stretch">
+        <svg viewBox="0 0 260 200" width="100%" style="height:auto" aria-hidden="true">
+          <polygon points="40,160 200,160 200,40" fill="#eef2ff" stroke="#475569" stroke-width="2"/>
+          <rect x="184" y="144" width="16" height="16" fill="#ffffff" stroke="#475569" stroke-width="2"/>
+          <text x="32" y="170" font-size="12">A</text>
+          <text x="206" y="170" font-size="12">B</text>
+          <text x="206" y="36"  font-size="12">C</text>
+          <text x="210" y="100" font-size="12">a</text>
+          <text x="120" y="176" font-size="12">b</text>
+          <text x="110" y="90"  font-size="12">c</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="fsShield" role="dialog" aria-modal="true" aria-label="Fullscreen required">
+  <div class="shield-panel"><div class="shield-title">FULLSCREEN REQUIRED — ANSWERS LOCKED</div><div class="shield-copy">You exited fullscreen, so answer entry has been paused. Click anywhere on this screen to re-enter fullscreen and continue.</div><div style="font-size:1.25rem;font-weight:1000;margin-top:1rem;">DO NOT CLOSE THIS PAGE</div></div>
+</div>
+
+<script>
+'use strict';
+
+/* ---------- DOM shortcuts ---------- */
+const $ = (id) => document.getElementById(id);
+const tabs = [...document.querySelectorAll('#tabbar button')];
+const pages = [...document.querySelectorAll('section.page')];
+const mainEl = document.querySelector('main');
+const headerEl = document.querySelector('header');
+const safeStorage = {
+  get(key){ try{ return window.localStorage.getItem(key); }catch(_error){ return null; } },
+  set(key,value){ try{ window.localStorage.setItem(key,value); }catch(_error){} }
+};
+
+/* ---------- Reading overlay, theme and text-size controls ---------- */
+const DISPLAY_PREF_KEY = 'calc_diag_display_preferences_v1';
+const OVERLAY_TINTS = Object.freeze({
+  none:'transparent',
+  blue:'rgba(164, 211, 255, 0.22)',
+  yellow:'rgba(255, 235, 112, 0.22)',
+  green:'rgba(169, 226, 190, 0.20)',
+  pink:'rgba(248, 188, 209, 0.20)',
+  peach:'rgba(255, 198, 158, 0.20)',
+  lavender:'rgba(204, 190, 255, 0.20)'
+});
+let displayPrefs = {overlay:'none',theme:'light',scale:1};
+try{
+  const stored = JSON.parse(safeStorage.get(DISPLAY_PREF_KEY) || 'null');
+  if(stored && typeof stored === 'object'){
+    if(Object.hasOwn(OVERLAY_TINTS,stored.overlay)) displayPrefs.overlay = stored.overlay;
+    if(stored.theme === 'dark' || stored.theme === 'light') displayPrefs.theme = stored.theme;
+    if(Number.isFinite(Number(stored.scale))) displayPrefs.scale = Math.min(1.4,Math.max(.9,Number(stored.scale)));
+  }
+}catch(_error){}
+function saveDisplayPrefs(){ safeStorage.set(DISPLAY_PREF_KEY,JSON.stringify(displayPrefs)); }
+function announceDisplay(message){
+  const status = $('displayStatus');
+  if(status) status.textContent = message;
+}
+function applyOverlay(name,{persist=true,announce=true}={}){
+  if(!Object.hasOwn(OVERLAY_TINTS,name)) name = 'none';
+  displayPrefs.overlay = name;
+  const overlay = $('readingOverlay');
+  if(overlay) overlay.style.background = OVERLAY_TINTS[name];
+  document.querySelectorAll('.overlay-choice').forEach(button=>{
+    const active = button.dataset.overlay === name;
+    button.classList.toggle('active',active);
+    button.setAttribute('aria-pressed',String(active));
+  });
+  if(persist) saveDisplayPrefs();
+  if(announce) announceDisplay(name === 'none' ? 'Reading overlay removed.' : `${name} reading overlay applied.`);
+}
+function applyTheme(theme,{persist=true,announce=true}={}){
+  displayPrefs.theme = theme === 'dark' ? 'dark' : 'light';
+  const dark = displayPrefs.theme === 'dark';
+  document.documentElement.classList.toggle('theme-dark',dark);
+  const button = $('themeToggle');
+  if(button){
+    button.textContent = dark ? 'Light mode' : 'Dark mode';
+    button.setAttribute('aria-pressed',String(dark));
+  }
+  if(persist) saveDisplayPrefs();
+  if(announce) announceDisplay(dark ? 'Dark mode enabled.' : 'Light mode enabled.');
+}
+function applyTextScale(scale,{persist=true,announce=true}={}){
+  const clean = Math.round(Math.min(1.4,Math.max(.9,Number(scale) || 1))*100)/100;
+  displayPrefs.scale = clean;
+  document.documentElement.style.setProperty('--text-scale',String(clean));
+  const reset = $('textReset');
+  if(reset) reset.textContent = `A ${Math.round(clean*100)}%`;
+  if(persist) saveDisplayPrefs();
+  if(announce) announceDisplay(`Text size ${Math.round(clean*100)} percent.`);
+}
+document.querySelectorAll('.overlay-choice').forEach(button=>button.addEventListener('click',()=>applyOverlay(button.dataset.overlay)));
+$('themeToggle')?.addEventListener('click',()=>applyTheme(displayPrefs.theme === 'dark' ? 'light' : 'dark'));
+$('textSmaller')?.addEventListener('click',()=>applyTextScale(displayPrefs.scale-.1));
+$('textReset')?.addEventListener('click',()=>applyTextScale(1));
+$('textLarger')?.addEventListener('click',()=>applyTextScale(displayPrefs.scale+.1));
+$('textLargest')?.addEventListener('click',()=>applyTextScale(displayPrefs.scale+.2));
+$('displayReset')?.addEventListener('click',()=>{
+  displayPrefs = {overlay:'none',theme:'light',scale:1};
+  applyOverlay('none',{persist:false,announce:false});
+  applyTheme('light',{persist:false,announce:false});
+  applyTextScale(1,{persist:false,announce:false});
+  saveDisplayPrefs();
+  announceDisplay('Display settings reset.');
+});
+applyOverlay(displayPrefs.overlay,{persist:false,announce:false});
+applyTheme(displayPrefs.theme,{persist:false,announce:false});
+applyTextScale(displayPrefs.scale,{persist:false,announce:false});
+
+
+/* ---------- Tabs ---------- */
+function showTab(id){
+  tabs.forEach(tab => {
+    const active = tab.dataset.target === id;
+    tab.classList.toggle('active', active);
+    if(active) tab.setAttribute('aria-selected','true');
+    else tab.removeAttribute('aria-selected');
+  });
+  pages.forEach(page => page.classList.toggle('active', page.id === id));
+  safeStorage.set('currentTab_calc_diag_v2', id);
+}
+tabs.forEach(tab => tab.addEventListener('click', () => showTab(tab.dataset.target)));
+const savedTab = safeStorage.get('currentTab_calc_diag_v2');
+if(savedTab && document.getElementById(savedTab)) showTab(savedTab);
+else showTab('q1');
+
+/* ---------- Small toast ---------- */
+function showBlockToast(message){
+  let toast = $('blockToast');
+  if(!toast){
+    toast = document.createElement('div');
+    toast.id = 'blockToast';
+    Object.assign(toast.style, {
+      position:'fixed', bottom:'14px', left:'50%', transform:'translateX(-50%)',
+      background:'#111827', color:'#fff', padding:'10px 14px', borderRadius:'12px',
+      fontWeight:'900', zIndex:'3200', boxShadow:'0 10px 30px rgba(0,0,0,.25)'
+    });
+    document.body.appendChild(toast);
+  }
+  toast.textContent = message;
+  toast.style.display = 'block';
+  clearTimeout(window.__assessmentToast);
+  window.__assessmentToast = setTimeout(() => { toast.style.display = 'none'; }, 1500);
+}
+
+/* ---------- Fullscreen assessment lock ---------- */
+let examStarted = false;
+let paperMarked = false;
+let fsLocked = false;
+const intro = $('intro');
+const fsShield = $('fsShield');
+
+function inFullscreen(){
+  return !!(document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement);
+}
+function fullscreenSupported(){
+  const el = document.documentElement;
+  return !!(el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen);
+}
+async function requestFs(){
+  const el = document.documentElement;
+  const fn = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
+  if(!fn) return false;
+  try{
+    const result = fn.call(el);
+    if(result && typeof result.then === 'function') await result;
+    return inFullscreen();
+  }catch(_error){
+    return false;
+  }
+}
+function answerEntryPaused(){
+  return examStarted && !paperMarked && fsLocked && !inFullscreen();
+}
+function setInterfacePaused(paused){
+  document.body.classList.toggle('exam-paused', paused);
+  if(mainEl) mainEl.inert = paused;
+  if(headerEl) headerEl.inert = paused;
+  if(paused && document.activeElement && typeof document.activeElement.blur === 'function'){
+    document.activeElement.blur();
+  }
+}
+function updateFsState(){
+  const paused = answerEntryPaused();
+  if(fsShield) fsShield.style.display = paused ? 'flex' : 'none';
+  setInterfacePaused(paused);
+}
+
+$('startBtn').addEventListener('click', async () => {
+  intro.style.display = 'none';
+  showTab('q1');
+  examStarted = true;
+  fsLocked = true;
+
+  if(!fullscreenSupported()){
+    fsLocked = false;
+    updateFsState();
+    showBlockToast('Fullscreen is not supported by this browser.');
+    return;
+  }
+
+  await requestFs();
+  updateFsState();
+});
+function openIntro(){ intro.style.display = 'flex'; }
+openIntro();
+
+if(fsShield){
+  fsShield.addEventListener('click', async () => {
+    if(!answerEntryPaused()) return;
+    await requestFs();
+    updateFsState();
+  });
+}
+document.addEventListener('fullscreenchange', updateFsState);
+document.addEventListener('webkitfullscreenchange', updateFsState);
+document.addEventListener('msfullscreenchange', updateFsState);
+document.addEventListener('visibilitychange', () => {
+  if(!document.hidden) updateFsState();
+});
+
+/* Defence in depth: reject answer input while fullscreen is off. */
+document.addEventListener('beforeinput', (event) => {
+  if(answerEntryPaused()) event.preventDefault();
+}, {capture:true});
+document.addEventListener('keydown', (event) => {
+  if(answerEntryPaused()){
+    const target = event.target;
+    if(target && (target.matches?.('input,select,textarea') || target.isContentEditable)){
+      event.preventDefault();
+      event.stopPropagation();
+    }
+  }
+}, {capture:true});
+
+window.addEventListener('beforeunload', (event) => {
+  if(examStarted && !paperMarked){
+    event.preventDefault();
+    event.returnValue = '';
+  }
+});
+
+/* ---------- Input helpers ---------- */
+function rawValue(id){
+  const el = $(id);
+  return el ? String(el.value ?? '').trim() : '';
+}
+function shownResponse(value){
+  const cleaned = String(value ?? '').trim();
+  return cleaned || '(blank)';
+}
+const INLINE_SUPERSCRIPT_DIGITS = Object.freeze({'⁰':'0','¹':'1','²':'2','³':'3','⁴':'4','⁵':'5','⁶':'6','⁷':'7','⁸':'8','⁹':'9'});
+function normaliseInlinePowers(value){
+  return String(value ?? '').replace(/([0-9.)])([⁰¹²³⁴⁵⁶⁷⁸⁹]+)/g, (_match,base,superscript) => {
+    const exponent = [...superscript].map(character=>INLINE_SUPERSCRIPT_DIGITS[character]).join('');
+    return `${base}^${exponent}`;
+  });
+}
+function normaliseThousandsSeparators(value){
+  return String(value ?? '').replace(/(\d),(?=\d{3}(?:\D|$))/g,'$1');
+}
+function cleanMathText(value){
+  return normaliseThousandsSeparators(normaliseInlinePowers(value))
+    .replace(/[−–—]/g,'-')
+    .replace(/[£€]/g,'')
+    .replace(/°/g,'')
+    .replace(/\b(?:cm|mm|km|m)(?:\s*(?:\^?\s*[23]|[²³]))?\b/gi,'')
+    .replace(/\b(?:litres?|liters?|pounds?|euros?)\b/gi,'')
+    .trim();
+}
+function normaliseArithmeticExpression(value){
+  return cleanMathText(value)
+    .replace(/\bof\b/gi,'*')
+    .replace(/(-?\d+(?:\.\d+)?)\s*%/g,'($1/100)')
+    .replace(/[×·xX]/g,'*')
+    .replace(/÷/g,'/')
+    .replace(/\^/g,'**')
+    .trim();
+}
+function evaluateArithmeticSegment(value){
+  const expression = normaliseArithmeticExpression(value);
+  if(!expression || expression.length > 160 || !/^[0-9eE+\-*/().\s]+$/.test(expression)) return NaN;
+  try{
+    const result = Function(`"use strict"; return (${expression});`)();
+    return Number.isFinite(result) ? result : NaN;
+  }catch(_error){
+    return NaN;
+  }
+}
+function parseNumeric(value){
+  let s = cleanMathText(value);
+  if(!s) return NaN;
+
+  // Where a learner writes working followed by an equals/arrow, the final stated answer takes precedence.
+  const statedParts = s.split(/[=≈→]/).map(part=>part.trim()).filter(Boolean);
+  if(statedParts.length) s = statedParts[statedParts.length-1];
+
+  const mixed = s.match(/^(-?\d+)\s+(-?\d+(?:\.\d+)?)\s*\/\s*(-?\d+(?:\.\d+)?)$/);
+  if(mixed){
+    const whole = Number(mixed[1]);
+    const n = Number(mixed[2]);
+    const d = Number(mixed[3]);
+    if(Number.isFinite(whole) && Number.isFinite(n) && Number.isFinite(d) && d !== 0){
+      return whole < 0 ? whole - Math.abs(n/d) : whole + n/d;
+    }
+  }
+
+  const simpleFraction = s.match(/^(-?\d+(?:\.\d+)?)\s*\/\s*(-?\d+(?:\.\d+)?)$/);
+  if(simpleFraction){
+    const n = Number(simpleFraction[1]);
+    const d = Number(simpleFraction[2]);
+    return Number.isFinite(n) && Number.isFinite(d) && d !== 0 ? n/d : NaN;
+  }
+
+  const evaluated = evaluateArithmeticSegment(s);
+  if(Number.isFinite(evaluated)) return evaluated;
+
+  const matches = [...s.matchAll(/-?\d+(?:\.\d+)?(?:e[+\-]?\d+)?/gi)];
+  return matches.length ? Number(matches[matches.length-1][0]) : NaN;
+}
+function near(a,b,tolerance=1e-9){
+  return Number.isFinite(a) && Math.abs(a-b) <= tolerance;
+}
+function literalNumbers(value){
+  const cleaned = normaliseThousandsSeparators(value).replace(/[−–—]/g,'-');
+  return [...cleaned.matchAll(/-?\d+(?:\.\d+)?(?:e[+\-]?\d+)?/gi)]
+    // A number used as a percentage label is not, by itself, evidence of that numerical value.
+    .filter(match=>!/^\s*%/.test(cleaned.slice((match.index ?? 0)+match[0].length)))
+    .map(match=>Number(match[0]))
+    .filter(Number.isFinite);
+}
+function evaluatedWorkingValues(value){
+  const cleaned = cleanMathText(value);
+  if(!cleaned) return [];
+  return cleaned
+    .split(/[=≈→;,]/)
+    .map(part=>evaluateArithmeticSegment(part))
+    .filter(Number.isFinite);
+}
+function evidenceValues(value){
+  return [...literalNumbers(value),...evaluatedWorkingValues(value)];
+}
+function evidenceIncludes(value,target,tolerance=1e-9){
+  return evidenceValues(value).some(candidate=>near(candidate,target,tolerance));
+}
+function gcd(a,b){
+  a = Math.abs(Math.trunc(a));
+  b = Math.abs(Math.trunc(b));
+  while(b) [a,b] = [b,a%b];
+  return a || 1;
+}
+function getFraction(prefix){
+  return {
+    n: parseNumeric(rawValue(prefix+'N')),
+    d: parseNumeric(rawValue(prefix+'D')),
+    response: `${shownResponse(rawValue(prefix+'N'))}/${shownResponse(rawValue(prefix+'D'))}`
+  };
+}
+function equivalentFraction(n,d,trueN,trueD){
+  return Number.isInteger(n) && Number.isInteger(d) && d !== 0 && n*trueD === d*trueN;
+}
+function fractionIsSimplest(n,d){
+  return Number.isInteger(n) && Number.isInteger(d) && d !== 0 && gcd(n,d) === 1 && d > 0;
+}
+function parseRatio(value){
+  const parts = String(value ?? '').split(':');
+  if(parts.length !== 2) return null;
+  const left = parseNumeric(parts[0]);
+  const right = parseNumeric(parts[1]);
+  return Number.isFinite(left) && Number.isFinite(right) ? {left,right} : null;
+}
+function insertAt(id, text){
+  const el = $(id);
+  if(!el || el.disabled || answerEntryPaused()) return;
+  const start = Number.isInteger(el.selectionStart) ? el.selectionStart : el.value.length;
+  const end = Number.isInteger(el.selectionEnd) ? el.selectionEnd : el.value.length;
+  el.value = el.value.slice(0,start) + text + el.value.slice(end);
+  const position = start + text.length;
+  el.setSelectionRange(position,position);
+  el.focus();
+}
+window.insertAt = insertAt;
+
+
+/* ---------- Calculator diagnostic helpers ---------- */
+function finalStatedText(value){
+  const parts=String(value??'').split(/[=≈→]/).map(v=>v.trim()).filter(Boolean);
+  return parts.length?parts[parts.length-1]:String(value??'').trim();
+}
+function evaluateSpecialMath(value){
+  let s=finalStatedText(value).toLowerCase().replace(/[−–—]/g,'-').replace(/[×·]/g,'*').replace(/÷/g,'/').replace(/π/g,'pi').replace(/√\s*([0-9.]+)/g,'sqrt($1)').replace(/\^/g,'**').replace(/\s+/g,'');
+  s=s.replace(/(?:cm|mm|km|metres?|meters?|litres?|liters?|degrees?|°|m²|m³|cm²|cm³)$/g,'');
+  if(!s) return NaN;
+  const probe=s.replace(/sqrt|pi/g,'');
+  if(/[a-z_$`{}\[\];:'"\\]/i.test(probe) || !/^[0-9+\-*/().,]*$/.test(probe)) return NaN;
+  s=s.replace(/pi/g,'Math.PI').replace(/sqrt/g,'Math.sqrt');
+  s=s.replace(/(\d|\))(?=Math\.)/g,'$1*').replace(/Math\.PI(?=\d|\()/g,'Math.PI*').replace(/(\d|\))(?=\()/g,'$1*').replace(/\)(?=\d)/g,')*');
+  try{const result=Function('"use strict";return ('+s+');')();return Number.isFinite(result)?result:NaN;}catch(_error){return NaN;}
+}
+function exactNumericResponse(response,expected,tolerance=1e-9){return near(parseNumeric(response),expected,tolerance);}
+function parseProbability(value){return parseNumeric(value);}
+function normaliseAlgebra(value){
+  let s=finalStatedText(value).toLowerCase().replace(/[−–—]/g,'-').replace(/[×·]/g,'*').replace(/÷/g,'/').replace(/\s+/g,'');
+  s=s.replace(/\^/g,'**');
+  return s;
+}
+function algebraValue(value,x){
+  let s=normaliseAlgebra(value);
+  if(!s || !/^[0-9x+\-*/().*]+$/.test(s)) return NaN;
+  s=s.replace(/(\d|x|\))(?=x|\()/g,'$1*').replace(/x(?=\d)/g,'x*').replace(/\)(?=\d|x)/g,')*');
+  try{const result=Function('x','"use strict";return ('+s+');')(x);return Number.isFinite(result)?result:NaN;}catch(_error){return NaN;}
+}
+function linearCoefficients(value){
+  const y0=algebraValue(value,0),y1=algebraValue(value,1);
+  if(!Number.isFinite(y0)||!Number.isFinite(y1)) return null;
+  const a=y1-y0,b=y0;
+  for(const x of [-4,-2,2,5]) if(!near(algebraValue(value,x),a*x+b,1e-7)) return null;
+  return {a,b};
+}
+function linearEquivalent(value,a,b){const c=linearCoefficients(value);return !!c&&near(c.a,a,1e-7)&&near(c.b,b,1e-7);}
+function isCollectedLinear(value,a,b){
+  const s=normaliseAlgebra(value);
+  // Explicit multiplication signs such as 13*x are accepted; brackets or division mean the expression is not fully collected.
+  if(!linearEquivalent(value,a,b)||/[()/]/.test(s)) return false;
+  return (s.match(/x/g)||[]).length===1;
+}
+function factorisationInfo(value){
+  const s=normaliseAlgebra(value);
+  const match=s.match(/^\(?([+-]?\d+)\)?\((.+)\)$/);
+  if(!match) return null;
+  const outer=Number(match[1]);const inner=linearCoefficients(match[2]);
+  if(!Number.isFinite(outer)||!inner) return null;
+  return {outer,inner,equivalent:near(outer*inner.a,18,1e-7)&&near(outer*inner.b,12,1e-7)};
+}
+function combineResponses(ids){return ids.map(id=>`${id}: ${shownResponse(rawValue(id))}`).join(' | ');}
+
+/* ---------- Formula sheet ---------- */
+const formulaModal=$('formulaModal');
+$('formulaOpen')?.addEventListener('click',()=>{if(formulaModal) formulaModal.style.display='flex';});
+$('formulaClose')?.addEventListener('click',()=>{if(formulaModal) formulaModal.style.display='none';});
+formulaModal?.addEventListener('click',event=>{if(event.target===formulaModal) formulaModal.style.display='none';});
+
+/* ---------- Interactive Q7 two-sided number line ---------- */
+const NL_MIN=-8,NL_MAX=8,NL_SCALE=45;
+let q7State={L:-5,U:5,Li:false,Ui:false};
+function setQ7Handles(){
+  const left=$('q7L'),right=$('q7R'),leftHit=$('q7LHit'),rightHit=$('q7RHit'),seg=$('q7seg');if(!left||!right||!seg)return;
+  const leftX=String(q7State.L*NL_SCALE),rightX=String(q7State.U*NL_SCALE);
+  left.setAttribute('cx',leftX);right.setAttribute('cx',rightX);
+  if(leftHit)leftHit.setAttribute('cx',leftX);if(rightHit)rightHit.setAttribute('cx',rightX);
+  left.classList.toggle('closed',q7State.Li);right.classList.toggle('closed',q7State.Ui);
+  seg.setAttribute('x1',leftX);seg.setAttribute('x2',rightX);
+  const lSign=q7State.Li?'≤':'<',uSign=q7State.Ui?'≤':'<';
+  const status=$('q7LineStatus');if(status)status.textContent=`Current number line: ${q7State.L} ${lSign} x ${uSign} ${q7State.U}.`;
+}
+function initQ7NumberLine(){
+  const ticks=$('q7ticks'),labels=$('q7labels');if(!ticks||!labels)return;ticks.innerHTML='';labels.innerHTML='';
+  for(let i=NL_MIN;i<=NL_MAX;i++){
+    const x=i*NL_SCALE;
+    const tick=document.createElementNS('http://www.w3.org/2000/svg','line');tick.setAttribute('x1',x);tick.setAttribute('x2',x);tick.setAttribute('y1','-8');tick.setAttribute('y2','8');tick.setAttribute('stroke','var(--ink)');tick.setAttribute('stroke-width','1.5');ticks.appendChild(tick);
+    const label=document.createElementNS('http://www.w3.org/2000/svg','text');label.setAttribute('x',x);label.setAttribute('y','30');label.setAttribute('text-anchor','middle');label.setAttribute('class','numline-label');label.textContent=String(i);labels.appendChild(label);
+  }
+  setQ7Handles();
+}
+function q7PointerValue(event){
+  const svg=$('q7svg');if(!svg)return null;const point=svg.createSVGPoint();point.x=event.clientX;point.y=event.clientY;const matrix=svg.getScreenCTM();if(!matrix)return null;const local=point.matrixTransform(matrix.inverse());return Math.max(NL_MIN,Math.min(NL_MAX,Math.round(local.x/NL_SCALE)));
+}
+function bindQ7Endpoint(side){
+  const id=side==='L'?'q7L':'q7R';
+  const endpoint=$(id),hit=$(id+'Hit');if(!endpoint)return;
+  const pointerTargets=[hit,endpoint].filter(Boolean);
+  let dragging=false,moved=false,startX=0,startValue=side==='L'?q7State.L:q7State.U,activePointerId=null,captureTarget=null;
+
+  function beginDrag(event){
+    if(paperMarked||answerEntryPaused()||(typeof event.button==='number'&&event.button!==0))return;
+    dragging=true;moved=false;startX=event.clientX;startValue=side==='L'?q7State.L:q7State.U;activePointerId=event.pointerId;captureTarget=event.currentTarget;
+    try{captureTarget.setPointerCapture?.(event.pointerId);}catch(_error){}
+    event.preventDefault();event.stopPropagation();
+  }
+  function moveDrag(event){
+    if(!dragging||event.pointerId!==activePointerId||paperMarked||answerEntryPaused())return;
+    const value=q7PointerValue(event);if(value===null)return;
+    if(side==='L')q7State.L=Math.max(NL_MIN,Math.min(value,q7State.U-1));
+    else q7State.U=Math.min(NL_MAX,Math.max(value,q7State.L+1));
+    moved=moved||Math.abs(event.clientX-startX)>3||(side==='L'?q7State.L:q7State.U)!==startValue;
+    setQ7Handles();event.preventDefault();
+  }
+  function finishDrag(event,cancelled=false){
+    if(!dragging||event.pointerId!==activePointerId)return;
+    dragging=false;
+    try{captureTarget?.releasePointerCapture?.(event.pointerId);}catch(_error){}
+    captureTarget=null;activePointerId=null;
+    if(cancelled||paperMarked||answerEntryPaused())return;
+    if(!moved){if(side==='L')q7State.Li=!q7State.Li;else q7State.Ui=!q7State.Ui;setQ7Handles();}
+    event.preventDefault();
+  }
+
+  pointerTargets.forEach(target=>target.addEventListener('pointerdown',beginDrag,{passive:false}));
+  window.addEventListener('pointermove',moveDrag,{passive:false});
+  window.addEventListener('pointerup',event=>finishDrag(event,false),{passive:false});
+  window.addEventListener('pointercancel',event=>finishDrag(event,true),{passive:false});
+
+  endpoint.addEventListener('keydown',event=>{
+    if(paperMarked||answerEntryPaused())return;let handled=true;
+    if(event.key==='ArrowLeft'){if(side==='L')q7State.L=Math.max(NL_MIN,Math.min(q7State.L-1,q7State.U-1));else q7State.U=Math.max(q7State.L+1,q7State.U-1);}
+    else if(event.key==='ArrowRight'){if(side==='L')q7State.L=Math.min(q7State.U-1,q7State.L+1);else q7State.U=Math.min(NL_MAX,q7State.U+1);}
+    else if(event.key==='Enter'||event.key===' '){if(side==='L')q7State.Li=!q7State.Li;else q7State.Ui=!q7State.Ui;}
+    else handled=false;
+    if(handled){event.preventDefault();setQ7Handles();}
+  });
+}
+bindQ7Endpoint('L');bindQ7Endpoint('R');
+document.querySelectorAll('#q7 .symbol-buttons button').forEach(button=>button.addEventListener('click',()=>insertAt('q7ans',button.dataset.insert||'')));
+initQ7NumberLine();
+
+/* ---------- Century nugget catalogue (exact titles/codes from the uploaded workbook) ---------- */
+const NUGGET_CATALOG=Object.freeze({
+  "MF9.01":"Rounding to the Nearest Whole Number",
+  "MF9.02":"Rounding to 1 Decimal Place",
+  "MF9.03":"Rounding to 2 Decimal Places",
+  "MF16.04":"Better Value",
+  "MF17.14":"Substitution into Expressions 2: Two Terms",
+  "MF18.06":"Expanding and Simplifying",
+  "MF18.08":"Factorising into a Single Bracket 2: ax ± bx",
+  "MF19.02":"Solving Equations: One Step (×)",
+  "MF25.10":"Solving Inequalities: Multi Step and Two Sided",
+  "MF25.12":"Solving Inequalities: Expressing Solutions on a Number Line",
+  "MF26.10":"Naming 3D Shapes",
+  "MF27.08":"Alternate Angles",
+  "MF28.01":"Angles in a Triangle 1",
+  "MF28.05":"Angles in Quadrilaterals",
+  "MF32.01":"Circumference: From Radius",
+  "MF32.07":"Area of a Circle: From Radius",
+  "MF34.02":"Volume of Cubes and Cuboids",
+  "MF34.07":"Volume of Cylinders",
+  "MF35.03":"Surface Area of Cylinders",
+  "MF36.10":"Converting Metric Capacity",
+  "MF39.05":"Using Scales on a Map",
+  "MF39.08":"Finding Bearings 1",
+  "MF39.09":"Finding Bearings 2: Using Co-interior Angles",
+  "MF43.05":"Similar Triangles 1: Same Orientation",
+  "MF44.02":"Pythagoras: Finding the Hypotenuse",
+  "MF45.02":"Trigonometry: Using a Calculator",
+  "MF45.05":"Trigonometry: Missing Angle",
+  "MF46.15":"Tree Diagrams 2: Calculating Probability of Single Outcome",
+  "MF46.16":"Tree Diagrams 3: Calculating Probability of Multiple Outcomes",
+  "MF46.17":"Tree Diagrams 4: AND/OR Statements (2 Branch Trees)",
+  "MF49.17":"Mean from Grouped Frequency Table 2: Continuous Data"
+});
+
+/* ---------- Structured mark records ---------- */
+function makePart({label,max,score,response,expected,awardReason,lostReason,nuggets=[]}){
+  const safeScore=Math.max(0,Math.min(max,Number.isFinite(score)?score:0));
+  return {label,max,score:safeScore,response:shownResponse(response),expected,awardReason,lostReason,nuggets};
+}
+function makeQuestion(number,topic,parts,practice){
+  const score=parts.reduce((sum,part)=>sum+part.score,0);
+  const max=parts.reduce((sum,part)=>sum+part.max,0);
+  return {number,id:`q${number}`,topic,parts,practice,score,max};
+}
+function oneMarkNumber({label,id,expected,nuggets=[],tolerance=1e-9,wrongReason,wrongNuggets}){
+  const response=rawValue(id),value=parseNumeric(response);
+  if(near(value,expected,tolerance)){
+    return makePart({label,max:1,score:1,response,expected:String(expected),nuggets,
+      awardReason:'B1 awarded for the correct answer (or an exact equivalent).',
+      lostReason:'None — full credit awarded.'});
+  }
+  const reason=!response
+    ? 'No answer was entered.'
+    : (typeof wrongReason==='function'?wrongReason(value,response):'')||`The final answer does not equal ${expected}.`;
+  const targeted=typeof wrongNuggets==='function'?wrongNuggets(value,response):wrongNuggets;
+  return makePart({label,max:1,score:0,response,expected:String(expected),
+    nuggets:Array.isArray(targeted)&&targeted.length?targeted:nuggets,
+    awardReason:'B0: this is a one-mark accuracy item, so no separate method mark is available from an incorrect final response.',
+    lostReason:reason});
+}
+
+/* ---------- Mark-scheme evidence helpers ---------- */
+function workingSegments(value){
+  return String(value??'').split(/[=≈→;\n]/).map(segment=>segment.trim()).filter(Boolean);
+}
+function specialEvidenceValues(value){
+  const segments=workingSegments(value);
+  const values=[];
+  segments.forEach(segment=>{
+    const v=evaluateSpecialMath(segment);
+    if(Number.isFinite(v)) values.push(v);
+  });
+  const whole=evaluateSpecialMath(value);
+  if(Number.isFinite(whole)) values.push(whole);
+  return values;
+}
+function specialEvidenceIncludes(value,target,tolerance=1e-7){
+  return specialEvidenceValues(value).some(candidate=>near(candidate,target,tolerance));
+}
+function compactArithmetic(value){
+  return normaliseArithmeticExpression(String(value??'')).replace(/\s+/g,'');
+}
+function escapedNumber(value){
+  return String(value).replace('.', '\\.');
+}
+function containsProduct(value,a,b){
+  const s=compactArithmetic(value),A=escapedNumber(a),B=escapedNumber(b);
+  return new RegExp(`(?:^|[^0-9.])(?:${A}\\*${B}|${B}\\*${A})(?:$|[^0-9.])`).test(s);
+}
+function containsDivision(value,a,b){
+  const s=compactArithmetic(value),A=escapedNumber(a),B=escapedNumber(b);
+  return new RegExp(`(?:^|[^0-9.])${A}/${B}(?:$|[^0-9.])`).test(s);
+}
+function containsAllLiteralValues(value,targets,tolerance=1e-9){
+  const values=evidenceValues(value);
+  return targets.every(target=>values.some(candidate=>near(candidate,target,tolerance)));
+}
+function roundedTo(value,places){const factor=10**places;return Math.round((value+Number.EPSILON)*factor)/factor;}
+function truncatedTo(value,places){const factor=10**places;return Math.trunc(value*factor)/factor;}
+function finalDecimalPlaces(value){
+  let s=finalStatedText(value).trim().replace(/[,\s]/g,'').replace(/[a-z£€°]/gi,'');
+  if(s.endsWith('%'))s=s.slice(0,-1);
+  const fraction=s.match(/^[-+]?\d+(?:\.\d+)?\s*\/\s*[-+]?\d+(?:\.\d+)?$/);
+  if(fraction)return null;
+  const match=s.match(/^[-+]?\d+(?:\.(\d+))?$/);
+  return match?(match[1]?.length||0):null;
+}
+function finalIsRoundedValue(response,value,places,tolerance=1e-9){
+  const parsed=parseNumeric(response);
+  if(!near(parsed,value,tolerance))return false;
+  const dp=finalDecimalPlaces(response);
+  return dp===null||dp===places||dp<places;
+}
+function responseShowsPiFormula(response,patterns=[]){
+  const s=String(response??'').toLowerCase().replace(/π/g,'pi').replace(/[×·]/g,'*').replace(/\s+/g,'');
+  return patterns.some(pattern=>pattern.test(s));
+}
+function joinReasons(items){return items.filter(Boolean).join('; ');}
+
+/* ---------- Q1: circles ---------- */
+function assessQ1(){
+  const diameter=oneMarkNumber({
+    label:'(a) Diameter',id:'q1a',expected:8.4,nuggets:['MF32.01'],
+    wrongReason:value=>near(value,4.2)?'The radius, 4.2 m, was copied. The diameter must be twice the radius.':''
+  });
+
+  const rb=rawValue('q1b'),vb=parseNumeric(rb),C=2*Math.PI*4.2;
+  const circumferenceFormula=responseShowsPiFormula(rb,[/2\*?pi\*?\(?4\.2\)?/,/4\.2\*?2\*?pi/,/8\.4\*?pi/,/pi\*?8\.4/])||specialEvidenceIncludes(rb,C,0.0007);
+  const circumferenceWrongRounding=[roundedTo(C,1),Math.round(C),truncatedTo(C,2)].some(value=>near(vb,value,1e-9));
+  const circumferenceContradiction=/[=≈→]/.test(rb)&&!near(vb,26.39,1e-9)&&!circumferenceWrongRounding;
+  const circumferenceExact=!circumferenceContradiction&&(specialEvidenceIncludes(rb,C,0.0007)||evidenceIncludes(rb,C,0.0007));
+  let bScore=0,bAward='',bLost='',bNuggets=['MF32.01'];
+  if(near(vb,26.39,1e-9)){
+    bScore=2;
+    bAward='M1 A1 awarded: the circumference was calculated using 2πr (or πd) and stated as 26.39 m.';
+    bLost='None — full credit awarded.';
+  }else if(circumferenceExact||circumferenceWrongRounding){
+    bScore=1;bNuggets=['MF9.03'];
+    bAward='M1 awarded: the correct circumference method/value is seen or implied.';
+    bLost='A1 lost because the final answer was not stated as 26.39 m to 2 decimal places.';
+  }else if(circumferenceFormula){
+    bScore=1;
+    bAward='M1 awarded for a correct circumference formula with the given radius/diameter, despite a later evaluation error.';
+    bLost='A1 lost because the calculation did not produce 26.39 m.';
+  }else{
+    bAward='M0 A0: no correct 2πr or πd method with the given measurement was identified.';
+    bLost=!rb?'No answer was entered.':'The response does not show a valid circumference method or the correct value 26.39 m.';
+  }
+  const circumference=makePart({label:'(b) Circumference',max:2,score:bScore,response:rb,expected:'26.39 m',nuggets:bNuggets,awardReason:bAward,lostReason:bLost});
+
+  const rc=rawValue('q1c'),vc=parseNumeric(rc),A=Math.PI*4.2*4.2;
+  const areaFormula=responseShowsPiFormula(rc,[/pi\*?\(?4\.2\)?(?:\*?4\.2|\*\*2|\^2)/,/4\.2(?:\*?4\.2|\*\*2|\^2)\*?pi/,/17\.64\*?pi/,/pi\*?17\.64/])||specialEvidenceIncludes(rc,A,0.0007);
+  const squareSeen=evidenceIncludes(rc,17.64,1e-7);
+  const areaWrongRounding=[roundedTo(A,1),Math.round(A),truncatedTo(A,2)].some(value=>near(vc,value,1e-9));
+  const areaContradiction=/[=≈→]/.test(rc)&&!near(vc,55.42,1e-9)&&!areaWrongRounding;
+  const areaExact=!areaContradiction&&(specialEvidenceIncludes(rc,A,0.0007)||evidenceIncludes(rc,A,0.0007));
+  let cScore=0,cAward='',cLost='',cNuggets=['MF32.07'];
+  if(near(vc,55.42,1e-9)){
+    cScore=3;
+    cAward='M1 A1 A1 awarded: πr² was used, evaluated correctly and stated as 55.42 m².';
+    cLost='None — full credit awarded.';
+  }else if(areaExact||areaWrongRounding){
+    cScore=2;cNuggets=['MF9.03'];
+    cAward='M1 A1 awarded: the correct circle-area calculation is seen or implied.';
+    cLost='The final A1 was lost because the answer was not stated as 55.42 m² to 2 decimal places.';
+  }else if(areaFormula){
+    cScore=1;
+    cAward='M1 awarded for substituting the correct radius into πr², despite a later evaluation error.';
+    cLost='Both accuracy marks were lost because the method was not evaluated and rounded to 55.42 m².';
+  }else if(squareSeen){
+    cScore=1;
+    cAward='M1 awarded for correctly obtaining r² = 4.2² = 17.64.';
+    cLost='Both accuracy marks were lost because 17.64 still had to be multiplied by π and rounded to 55.42 m².';
+  }else{
+    cAward='M0 A0 A0: no correct πr² setup or valid intermediate result was identified.';
+    cLost=!rc?'No answer was entered.':'The response does not show 4.2², π × 4.2², the correct unrounded value or 55.42 m².';
+  }
+  const area=makePart({label:'(c) Area',max:3,score:cScore,response:rc,expected:'55.42 m²',nuggets:cNuggets,awardReason:cAward,lostReason:cLost});
+
+  return makeQuestion(1,'Circles: diameter, circumference and area',[diameter,circumference,area],
+    'Use MF32.01 for diameter/circumference from a radius, MF32.07 for area from a radius, and MF9.03 only when the mathematical method was secure but 2-decimal-place rounding caused the lost mark.');
+}
+
+/* ---------- Q2: cuboid volume and capacity ---------- */
+function assessQ2(){
+  const volume=oneMarkNumber({label:'(a) Volume',id:'q2a',expected:9000,nuggets:['MF34.02'],
+    wrongReason:value=>near(value,900)?'Only two dimensions appear to have been multiplied, or a place-value error was made.':near(value,9)?'The answer appears to have been converted to litres even though this part asks for cm³.':''});
+  const ra=rawValue('q2a'),a=parseNumeric(ra),rb=rawValue('q2b'),b=parseNumeric(rb);
+  let score=0,award='',lost='';
+  if(near(b,9,1e-9)){
+    score=1;award='B1 awarded for the correct conversion: 9000 cm³ = 9 litres.';lost='None — full credit awarded.';
+  }else if(Number.isFinite(a)&&a>0&&near(b,a/1000,1e-9)){
+    score=1;award=`FT1 awarded: the part (a) value ${a} cm³ was divided consistently by 1000 to convert it to litres.`;lost='None — the conversion mark was secured by valid follow-through, although part (a) may still be incorrect.';
+  }else{
+    award='B0/FT0: neither the correct capacity nor a consistent cm³-to-litre follow-through was identified.';
+    lost=!rb?'No answer was entered.':near(b,9000)?'The cm³ value was copied without dividing by 1000.':'The conversion should divide the volume in cm³ by 1000; the final value should be 9 litres.';
+  }
+  const capacity=makePart({label:'(b) Capacity in litres',max:1,score,response:rb,expected:'9 litres',nuggets:['MF36.10'],awardReason:award,lostReason:lost});
+  return makeQuestion(2,'Cuboid: volume and capacity',[volume,capacity],
+    'Use MF34.02 to multiply all three dimensions for cuboid volume and MF36.10 to convert cubic centimetres to litres by dividing by 1000.');
+}
+
+/* ---------- Q3: scale and bearings ---------- */
+function assessQ3(){
+  const ra=rawValue('q3a'),a=parseNumeric(ra),q3aSetup=containsProduct(ra,7.6,50000);
+  const q3aHasContradictoryResult=/[=≈→]/.test(ra)&&!near(a,3.8,1e-9);
+  const q3aLiteralValues=literalNumbers(ra);
+  const has380000=q3aLiteralValues.some(value=>near(value,380000,1e-6))||(!q3aHasContradictoryResult&&near(a,380000,1e-6));
+  const has3800=q3aLiteralValues.some(value=>near(value,3800,1e-6))||(!q3aHasContradictoryResult&&near(a,3800,1e-6));
+  const q3aConversion=containsDivision(ra,380000,100000)||containsDivision(ra,3800,1000);
+  let as=0,aa='',al='';
+  if(near(a,3.8,1e-9)){
+    as=3;aa='M1 A1 A1 awarded: 7.6 × 50 000 = 380 000 cm and the distance was converted correctly to 3.8 km.';al='None — full credit awarded.';
+  }else if(has380000||has3800){
+    as=2;aa=`M1 A1 awarded for the correct scaled distance ${has380000?'380 000 cm':'3800 m'}.`;
+    al='The final accuracy/unit mark was lost because the conversion was not completed as 3.8 km.';
+  }else if(q3aSetup||q3aConversion){
+    as=1;aa='M1 awarded for a correct scale multiplication or kilometre-conversion setup, despite a later arithmetic error.';
+    al='Both accuracy marks were lost because the working did not establish 380 000 cm and the final 3.8 km.';
+  }else if([0.038,0.38,38,380,38000,3800000].some(value=>near(a,value,1e-9))){
+    as=1;aa='SC1 awarded because the result is a recognised powers-of-ten conversion error arising from the correct scale calculation.';
+    al='Two marks were lost because the centimetre-to-kilometre conversion was not completed correctly to 3.8 km.';
+  }else{
+    aa='M0 A0 A0: no valid scale multiplication or conversion stage was identified.';
+    al=!ra?'No answer was entered.':'The response does not show 7.6 × 50 000, 380 000 cm, 3800 m or 3.8 km.';
+  }
+  const partA=makePart({label:'(a) Real distance A to B',max:3,score:as,response:ra,expected:'3.8 km',nuggets:['MF39.05'],awardReason:aa,lostReason:al});
+
+  const rb=rawValue('q3b'),b=parseNumeric(rb),q3bConvert=containsProduct(rb,2.6,100000),q3bDivide=containsDivision(rb,260000,50000);
+  const has260000=evidenceIncludes(rb,260000,1e-6)||specialEvidenceIncludes(rb,260000,1e-6);
+  let bs=0,ba='',bl='';
+  if(near(b,5.2,1e-9)){
+    bs=2;ba='M1 A1 awarded: 2.6 km was converted to 260 000 cm and divided by 50 000 to obtain 5.2 cm.';bl='None — full credit awarded.';
+  }else if(has260000||q3bConvert||q3bDivide){
+    bs=1;ba='M1 awarded for a correct real-distance conversion or map-scale division setup.';
+    bl='A1 lost because the final map distance was not obtained as 5.2 cm.';
+  }else if([0.052,0.52,52,520,5200].some(value=>near(b,value,1e-9))){
+    bs=1;ba='SC1 awarded because the response is a recognised place-value error after applying the scale relationship.';
+    bl='A1 lost because the correct map distance is 5.2 cm.';
+  }else{
+    ba='M0 A0: no correct conversion to centimetres or division by the scale factor was identified.';
+    bl=!rb?'No answer was entered.':'The response does not show 260 000 cm, division by 50 000, or the final 5.2 cm.';
+  }
+  const partB=makePart({label:'(b) Map distance B to C',max:2,score:bs,response:rb,expected:'5.2 cm',nuggets:['MF39.05'],awardReason:ba,lostReason:bl});
+
+  const partC=oneMarkNumber({label:'(c) Reverse bearing',id:'q3c',expected:245,nuggets:['MF39.08'],
+    wrongReason:value=>near(value,65)?'The original bearing was copied; the reverse bearing is 180° opposite.':near(value,115)?'180° was subtracted in the wrong direction; 065° + 180° = 245°.':''});
+
+  const rd=rawValue('q3d'),d=parseNumeric(rd);
+  const reverseSeen=evidenceIncludes(rd,245,1e-9)||containsAllLiteralValues(rd,[65,180])||/65\s*\+\s*180/.test(compactArithmetic(rd));
+  const differenceSetup=/245\s*-\s*140|140\s*-\s*245/.test(compactArithmetic(rd));
+  let ds=0,da='',dl='',dNuggets=['MF39.08','MF39.09'];
+  if(near(d,105,1e-9)){
+    ds=2;da='M1 A1 awarded: the reverse bearing 245° was found and the difference 245° − 140° was calculated as 105°.';dl='None — full credit awarded.';
+  }else if(reverseSeen||differenceSetup){
+    ds=1;dNuggets=['MF39.09'];
+    da='M1 awarded because the correct reverse bearing or the correct bearing-difference setup is shown.';
+    dl='A1 lost because the calculation was not completed correctly to angle ABC = 105°.';
+  }else{
+    da='M0 A0: no correct reverse-bearing or bearing-difference method was identified.';
+    dl=!rd?'No answer was entered.':near(d,75)?'The calculation used 140° − 65° directly. The bearing from B to A must first be changed to 245°.':'The response does not establish the reverse bearing 245° or the required angle 105°.';
+  }
+  const partD=makePart({label:'(d) Angle ABC',max:2,score:ds,response:rd,expected:'105°',nuggets:dNuggets,awardReason:da,lostReason:dl});
+
+  return makeQuestion(3,'Scale, map distance and bearings',[partA,partB,partC,partD],
+    'Use MF39.05 for map-scale calculations, MF39.08 for reverse bearings and MF39.09 for angle calculations formed from bearings.');
+}
+
+/* ---------- Q4: best buy ---------- */
+function bestBuyUnitPart(id,label,pricePence,grams,rounded){
+  const response=rawValue(id),value=parseNumeric(response),exactPencePerGram=pricePence/grams;
+  const pricePounds=pricePence/100,gramsInKg=grams/1000;
+  const formulaPencePerGram=containsDivision(response,pricePence,grams);
+  const formulaPoundsPerGram=containsDivision(response,pricePounds,grams);
+  const formulaPoundsPerKg=containsDivision(response,pricePounds,gramsInKg);
+  const formulaPencePerKg=containsDivision(response,pricePence,gramsInKg);
+  const supportedFormula=formulaPencePerGram||formulaPoundsPerGram||formulaPoundsPerKg||formulaPencePerKg;
+  const unitCandidates=[
+    {unit:'p/g',exact:exactPencePerGram,values:[exactPencePerGram,roundedTo(exactPencePerGram,1),roundedTo(exactPencePerGram,3),roundedTo(exactPencePerGram,4),truncatedTo(exactPencePerGram,2)],reason:'price in pence was divided by mass in grams'},
+    {unit:'£/g',exact:exactPencePerGram/100,values:[exactPencePerGram/100,roundedTo(exactPencePerGram/100,4),roundedTo(exactPencePerGram/100,5),truncatedTo(exactPencePerGram/100,4)],reason:'price in pounds was divided by mass in grams'},
+    {unit:'p/100g',exact:exactPencePerGram*100,values:[exactPencePerGram*100,roundedTo(exactPencePerGram*100,2),roundedTo(exactPencePerGram*100,1),Math.round(exactPencePerGram*100)],reason:'a valid pence-per-100-gram rate was calculated'},
+    {unit:'£/kg',exact:exactPencePerGram*10,values:[exactPencePerGram*10,roundedTo(exactPencePerGram*10,2),roundedTo(exactPencePerGram*10,3),roundedTo(exactPencePerGram*10,4)],reason:'a valid pounds-per-kilogram rate was calculated'},
+    {unit:'p/kg',exact:exactPencePerGram*1000,values:[exactPencePerGram*1000,roundedTo(exactPencePerGram*1000,2),roundedTo(exactPencePerGram*1000,1),Math.round(exactPencePerGram*1000)],reason:'a valid pence-per-kilogram rate was calculated'}
+  ];
+  const allEvidence=[...evidenceValues(response),...specialEvidenceValues(response)];
+  const matched=unitCandidates.find(candidate=>candidate.values.some(expected=>allEvidence.some(seen=>near(seen,expected,Math.max(1e-7,Math.abs(expected)*1e-6)))));
+  let score=0,award='',lost='',nuggets=['MF16.04'],methodUnit='',comparisonValue=NaN;
+  if(near(value,rounded,1e-9)){
+    score=2;methodUnit='p/g';comparisonValue=value;
+    award=`M1 A1 awarded: the unit price was calculated and stated as ${rounded.toFixed(2)} p per g.`;
+    lost='None — full credit awarded.';
+  }else if(matched||supportedFormula){
+    score=1;
+    methodUnit=matched?.unit||(formulaPencePerGram?'p/g':formulaPoundsPerGram?'£/g':formulaPoundsPerKg?'£/kg':'p/kg');
+    comparisonValue=Number.isFinite(value)?value:(matched?.exact??NaN);
+    award=`M1 awarded because ${matched?.reason||'a correct price-by-mass division setup was shown'}, despite an incorrect or incomplete final response.`;
+    if(methodUnit==='p/g'){
+      nuggets=['MF9.03'];
+      lost=`A1 lost because the result had to be rounded and stated as ${rounded.toFixed(2)} p per g.`;
+    }else{
+      lost=`A1 lost because the requested unit is pence per gram; the ${methodUnit} result had to be converted and stated as ${rounded.toFixed(2)} p per g.`;
+    }
+  }else{
+    award='M0 A0: no valid price-divided-by-mass calculation was identified.';
+    lost=!response?'No answer was entered.':'The response is not a supported unit-rate calculation in p/g, £/g, p/100 g, £/kg or p/kg.';
+  }
+  const part=makePart({label,max:2,score,response,expected:`${rounded.toFixed(2)} p per g`,nuggets,awardReason:award,lostReason:lost});
+  part.methodUnit=methodUnit;part.comparisonValue=comparisonValue;part.methodSupported=score>0;
+  return part;
+}
+function assessQ4(){
+  const partA=bestBuyUnitPart('q4a','(a) Pack A unit price',479,750,0.64);
+  const partB=bestBuyUnitPart('q4b','(b) Pack B unit price',739,1200,0.62);
+  const choice=rawValue('q4c');
+  const sameSupportedUnit=partA.methodSupported&&partB.methodSupported&&partA.methodUnit&&partA.methodUnit===partB.methodUnit&&Number.isFinite(partA.comparisonValue)&&Number.isFinite(partB.comparisonValue);
+  const followsTheirComparison=sameSupportedUnit&&((choice==='A'&&partA.comparisonValue<partB.comparisonValue)||(choice==='B'&&partB.comparisonValue<partA.comparisonValue));
+  let cs=0,ca='',cl='';
+  if(choice==='B'){
+    cs=1;ca='B1 awarded for the correct conclusion: Pack B has the lower unit price.';cl='None — full credit awarded.';
+  }else if(followsTheirComparison){
+    cs=1;ca=`FT1 awarded because the selected pack follows consistently from the learner's two supported like-for-like ${partA.methodUnit} unit prices.`;cl='None — the comparison mark was awarded by follow-through, although one or both unit prices may still be inaccurate.';
+  }else{
+    ca='B0/FT0: no correct or supported follow-through comparison was made.';
+    cl=!choice?'No pack was selected.':'Pack A was selected, but the correct comparison gives Pack B; the entered unit prices do not provide a valid like-for-like follow-through supporting Pack A.';
+  }
+  const comparison=makePart({label:'(c) Better buy',max:1,score:cs,response:choice==='A'?'Pack A':choice==='B'?'Pack B':choice,expected:'Pack B',nuggets:['MF16.04'],awardReason:ca,lostReason:cl});
+  return makeQuestion(4,'Best buy: compare price per gram',[partA,partB,comparison],
+    'Use MF16.04 to convert each price and mass into compatible units, divide price by mass and compare like with like. Use MF9.03 only where the unit-rate method was correct and the remaining error was 2-decimal-place rounding.');
+}
+
+/* ---------- Q5: cylinder ---------- */
+function assessQ5(){
+  const shape=rawValue('q5shape');
+  const p1=makePart({label:'(a) Name of shape',max:1,score:shape==='cylinder'?1:0,response:shape,expected:'Cylinder',nuggets:['MF26.10'],
+    awardReason:shape==='cylinder'?'B1 awarded for identifying the solid as a cylinder.':'B0: the solid was not identified correctly.',
+    lostReason:shape==='cylinder'?'None — full credit awarded.':shape?'The selected 3D shape is not a cylinder.':'No shape was selected.'});
+
+  const rv=rawValue('q5vol'),v=parseNumeric(rv),V=240*Math.PI;
+  const volumeFormula=responseShowsPiFormula(rv,[/pi\*?\(?4\)?(?:\*?4|\*\*2|\^2)\*?\(?15\)?/,/240\*?pi/,/pi\*?240/])||specialEvidenceIncludes(rv,V,0.0007);
+  const volumeWrongRounding=[roundedTo(V,1),Math.round(V),truncatedTo(V,2)].some(value=>near(v,value,1e-9));
+  const volumeContradiction=/[=≈→]/.test(rv)&&!near(v,753.98,1e-9)&&!volumeWrongRounding;
+  const volumeExact=!volumeContradiction&&(specialEvidenceIncludes(rv,V,0.0007)||evidenceIncludes(rv,V,0.0007));
+  let vs=0,va='',vl='',vn=['MF34.07'];
+  if(near(v,753.98,1e-9)){
+    vs=2;va='M1 A1 awarded: πr²h was used and the volume was stated as 753.98 cm³.';vl='None — full credit awarded.';
+  }else if(volumeExact||volumeWrongRounding){
+    vs=1;vn=['MF9.03'];va='M1 awarded: the correct cylinder-volume value is seen or implied.';vl='A1 lost because the final value was not stated as 753.98 cm³ to 2 decimal places.';
+  }else if(volumeFormula||evidenceIncludes(rv,240,1e-9)){
+    vs=1;va='M1 awarded for the correct πr²h setup, or for obtaining r²h = 240, despite a later evaluation error.';vl='A1 lost because the calculation was not completed to 753.98 cm³.';
+  }else{
+    va='M0 A0: no correct cylinder-volume setup was identified.';vl=!rv?'No answer was entered.':'The response does not show π × 4² × 15, 240π, or 753.98 cm³.';
+  }
+  const volume=makePart({label:'(b) Volume',max:2,score:vs,response:rv,expected:'753.98 cm³',nuggets:vn,awardReason:va,lostReason:vl});
+
+  const rt=rawValue('q5tsa'),t=parseNumeric(rt),T=152*Math.PI;
+  const endFormulaStrong=responseShowsPiFormula(rt,[/2\*?pi\*?4(?:\*?4|\*\*2|\^2)/,/32\*?pi/,/pi\*?32/])||specialEvidenceIncludes(rt,32*Math.PI,0.02);
+  const curvedFormulaStrong=responseShowsPiFormula(rt,[/2\*?pi\*?4\*?15/,/120\*?pi/,/pi\*?120/])||specialEvidenceIncludes(rt,120*Math.PI,0.02);
+  const oneEndFormulaStrong=responseShowsPiFormula(rt,[/pi\*?4(?:\*?4|\*\*2|\^2)/,/16\*?pi/,/pi\*?16/])||specialEvidenceIncludes(rt,16*Math.PI,0.02);
+  const endFormula=endFormulaStrong||evidenceIncludes(rt,32,1e-9);
+  const curvedFormula=curvedFormulaStrong||evidenceIncludes(rt,120,1e-9);
+  const oneEndFormula=oneEndFormulaStrong||evidenceIncludes(rt,16,1e-9);
+  const completeSurfaceSetup=responseShowsPiFormula(rt,[/152\*?pi/,/pi\*?152/])||(endFormulaStrong&&curvedFormulaStrong)||specialEvidenceIncludes(rt,T,0.0007);
+  const totalWrongRounding=[roundedTo(T,1),Math.round(T),truncatedTo(T,2)].some(value=>near(t,value,1e-9));
+  const surfaceContradiction=/[=≈→]/.test(rt)&&!near(t,477.52,1e-9)&&!totalWrongRounding;
+  const totalExact=!surfaceContradiction&&(specialEvidenceIncludes(rt,T,0.0007)||evidenceIncludes(rt,T,0.0007));
+  let ts=0,ta='',tl='',tn=['MF35.03'];
+  if(near(t,477.52,1e-9)){
+    ts=3;ta='M1 M1 A1 awarded: both circular ends and the curved surface were calculated, combined and stated as 477.52 cm².';tl='None — full credit awarded.';
+  }else if(totalExact||totalWrongRounding){
+    ts=2;tn=['MF9.03'];ta='M1 M1 awarded: the complete total surface area 152π (or its correct decimal value) is seen or implied.';tl='A1 lost because the final answer was not stated as 477.52 cm² to 2 decimal places.';
+  }else if(completeSurfaceSetup){
+    ts=2;ta='M1 M1 awarded because the correct complete surface-area setup includes both circular ends and the curved surface.';tl='A1 lost because the setup was not evaluated and completed as 477.52 cm².';
+  }else if(curvedFormula||endFormula||oneEndFormula||specialEvidenceIncludes(rt,136*Math.PI,0.03)){
+    ts=1;ta='M1 awarded for one valid surface-area component or a partially correct surface-area setup.';tl='Two marks were lost because all required surfaces were not combined and completed as 477.52 cm².';
+  }else{
+    ta='M0 M0 A0: no valid circular-end or curved-surface calculation was identified.';tl=!rt?'No answer was entered.':'The response does not show a correct surface component, the full 152π total, or 477.52 cm².';
+  }
+  const surface=makePart({label:'(c) Total surface area',max:3,score:ts,response:rt,expected:'477.52 cm²',nuggets:tn,awardReason:ta,lostReason:tl});
+
+  return makeQuestion(5,'Cylinder: name, volume and total surface area',[p1,volume,surface],
+    'Use MF26.10 to identify the solid, MF34.07 for πr²h and MF35.03 for two circular ends plus the curved surface. Use MF9.03 only when the complete mathematical result was correct but the requested rounding was not.');
+}
+
+/* ---------- Q6: algebra ---------- */
+function algebraWorkingSegments(value){
+  return String(value??'').split(/[=≈→;\n]/).map(segment=>segment.trim()).filter(Boolean);
+}
+function algebraSegmentInfo(value){
+  return algebraWorkingSegments(value).map(segment=>({segment,coeffs:linearCoefficients(segment),normal:normaliseAlgebra(segment)}));
+}
+function algebraHasTerm(value,coefficient,constant=false){
+  const s=String(value??'').toLowerCase().replace(/[−–—]/g,'-').replace(/\s+/g,'');
+  if(constant)return new RegExp(`(?:^|[+\-(])${Math.abs(coefficient)}(?:$|[+)])`).test(s)&&((coefficient<0&&s.includes(`-${Math.abs(coefficient)}`))||(coefficient>=0&&s.includes(String(coefficient))));
+  const abs=Math.abs(coefficient),sign=coefficient<0?'-':'(?:\\+|^)';
+  return new RegExp(`${sign}${abs===1?'':abs}\\*?x(?:$|[+)\\-])`).test(s);
+}
+function assessQ6(){
+  const work=rawValue('q6aWork'),final=rawValue('q6aFinal'),combined=`${work}\n${final}`;
+  const infos=algebraSegmentInfo(combined);
+  const finalCorrect=isCollectedLinear(final,13,-12);
+  const equivalentUncollected=infos.some(info=>info.coeffs&&near(info.coeffs.a,13,1e-7)&&near(info.coeffs.b,-12,1e-7)&&((info.normal.match(/x/g)||[]).length>1||/[()]/.test(info.normal)));
+  const bracketExpanded=infos.some(info=>info.coeffs&&near(info.coeffs.a,8,1e-7)&&near(info.coeffs.b,-12,1e-7));
+  const correctXCoefficient=infos.some(info=>info.coeffs&&near(info.coeffs.a,13,1e-7));
+  const correctConstant=infos.some(info=>info.coeffs&&near(info.coeffs.b,-12,1e-7));
+  const correct8x=algebraHasTerm(combined,8,false),correctMinus12=/\-12(?:$|[^0-9])/i.test(String(combined).replace(/\s+/g,''));
+  let score=0,award='',lost='';
+  if(finalCorrect){
+    score=3;award='M1 M1 A1 awarded: the bracket was expanded correctly and like terms were collected to 13x − 12.';lost='None — full credit awarded.';
+  }else if(equivalentUncollected){
+    score=2;award='M1 M1 awarded because a fully correct expanded equivalent expression is shown.';lost='A1 lost because the final expression was not presented in the required collected form 13x − 12.';
+  }else if(bracketExpanded||(correct8x&&correctMinus12)){
+    score=2;award='M1 M1 awarded for correctly expanding 4(2x − 3) to 8x − 12.';lost='A1 lost because the remaining +5x was not combined to give the final 13x − 12.';
+  }else if(correctXCoefficient||correctConstant||correct8x||correctMinus12){
+    score=1;award='M1 awarded because one substantive expansion/collection component is correct.';lost='Two marks were lost because the complete expansion and collection were not secured as 13x − 12.';
+  }else{
+    award='M0 M0 A0: no reliable correct expansion or collection stage was identified.';lost=(work||final)?'The entered algebra is not a recognised correct stage leading to 13x − 12.':'No answer or working was entered.';
+  }
+  const partA=makePart({label:'(a) Expand and simplify',max:3,score,response:combineResponses(['q6aWork','q6aFinal']),expected:'13x − 12',nuggets:['MF18.06'],awardReason:award,lostReason:lost});
+
+  const rb=rawValue('q6b'),info=factorisationInfo(rb),innerOnly=linearEquivalent(rb,3,2)&&!/^[+-]?\d+\s*\(/.test(normaliseAlgebra(rb));
+  let bs=0,ba='',bl='';
+  if(info?.equivalent&&Math.abs(info.outer)===6){
+    bs=2;ba='M1 A1 awarded: the highest common factor 6 was taken outside one bracket, giving 6(3x + 2) or an exact equivalent.';bl='None — full credit awarded.';
+  }else if(info?.equivalent&&[2,3].includes(Math.abs(info.outer))){
+    bs=1;ba=`M1 awarded because ${Math.abs(info.outer)} is a valid common factor and the factorisation is equivalent to 18x + 12.`;bl='A1 lost because the expression was not factorised fully using the highest common factor 6.';
+  }else if(innerOnly){
+    ba='M0 A0: 3x + 2 is the correct expression inside the bracket, but omitting the outside factor 6 does not show a valid factorisation of 18x + 12.';
+    bl='Both marks were lost because the response must remain equivalent to the original expression; the complete factorisation is 6(3x + 2).';
+  }else{
+    ba='M0 A0: no valid equivalent single-bracket factorisation was identified.';bl=!rb?'No answer was entered.':'The expression is not equivalent to 18x + 12 in a valid factorised form.';
+  }
+  const partB=makePart({label:'(b) Factorise fully',max:2,score:bs,response:rb,expected:'6(3x + 2)',nuggets:['MF18.08'],awardReason:ba,lostReason:bl});
+
+  return makeQuestion(6,'Algebra: expand, simplify and factorise',[partA,partB],
+    'Use MF18.06 to distribute every term and collect like terms, and MF18.08 to take the highest common factor outside a single bracket.');
+}
+
+/* ---------- Q7: two-sided inequality ---------- */
+function parseTwoSided(value){
+  const s=String(value??'').toLowerCase().replace(/[−–—]/g,'-').replace(/≥/g,'>=').replace(/≤/g,'<=').replace(/\band\b/g,',').replace(/&&/g,',').replace(/\s+/g,'');
+  let match=s.match(/^(-?\d+(?:\.\d+)?)(<=|<)x(<=|<)(-?\d+(?:\.\d+)?)$/);
+  if(match)return{L:Number(match[1]),U:Number(match[4]),Li:match[2]==='<=',Ui:match[3]==='<='};
+  match=s.match(/^(-?\d+(?:\.\d+)?)(>=|>)x(>=|>)(-?\d+(?:\.\d+)?)$/);
+  if(match)return{L:Number(match[4]),U:Number(match[1]),Li:match[3]==='>=',Ui:match[2]==='>='};
+  const parts=s.split(/[,;&]/);let L=null,U=null,Li=false,Ui=false;
+  for(const part of parts){
+    let p=part.match(/^x(>=|>)(-?\d+(?:\.\d+)?)$/);if(p){L=Number(p[2]);Li=p[1]==='>=';continue;}
+    p=part.match(/^x(<=|<)(-?\d+(?:\.\d+)?)$/);if(p){U=Number(p[2]);Ui=p[1]==='<=';continue;}
+    p=part.match(/^(-?\d+(?:\.\d+)?)(<=|<)x$/);if(p){L=Number(p[1]);Li=p[2]==='<=';continue;}
+    p=part.match(/^(-?\d+(?:\.\d+)?)(>=|>)x$/);if(p){U=Number(p[1]);Ui=p[2]==='>=';}
+  }
+  return L!==null&&U!==null?{L,U,Li,Ui}:null;
+}
+function oneSidedInequalityEvidence(value){
+  const s=String(value??'').toLowerCase().replace(/[−–—]/g,'-').replace(/≥/g,'>=').replace(/≤/g,'<=').replace(/\s+/g,'');
+  return {
+    lower:/x>-3(?:$|[,;&])|-3<x(?:$|[,;&])/.test(s),
+    upper:/x<=4(?:$|[,;&])|4>=x(?:$|[,;&])/.test(s)
+  };
+}
+function assessQ7(){
+  const response=rawValue('q7ans'),parsed=parseTwoSided(response),compact=String(response??'').toLowerCase().replace(/[−–—]/g,'-').replace(/≥/g,'>=').replace(/≤/g,'<=').replace(/\s+/g,'');
+  const sides=oneSidedInequalityEvidence(response);
+  let score=0,award='',lost='';
+  if(parsed&&parsed.L===-3&&parsed.U===4&&!parsed.Li&&parsed.Ui){
+    score=3;award='M1 M1 A1 awarded for the exact solution −3 < x ≤ 4, including both correct inequality symbols.';lost='None — full credit awarded.';
+  }else if(parsed&&parsed.L===-3&&parsed.U===4){
+    score=2;award='M1 M1 awarded because both boundary values −3 and 4 are correct.';lost='A1 lost because one or both inequality symbols do not preserve the original open/closed boundaries.';
+  }else if(/^-9<3x<=12$/.test(compact)||/12>=3x>-9$/.test(compact)){
+    score=1;award='M1 awarded for correctly subtracting 2 from all three parts to obtain −9 < 3x ≤ 12.';lost='Two marks were lost because all three parts still had to be divided by 3 and the final solution stated as −3 < x ≤ 4.';
+  }else if(sides.lower||sides.upper||(parsed&&((parsed.L===-3&&!parsed.Li)||(parsed.U===4&&parsed.Ui)))){
+    score=1;award='M1 awarded because one correct final boundary with its correct inequality direction was stated.';lost='Two marks were lost because the complete two-sided solution was not correct.';
+  }else{
+    award='M0 M0 A0: no correct intermediate inequality or valid final boundary was identified.';lost=!response?'No solution inequality was entered.':'The response does not show −9 < 3x ≤ 12, −3 < x ≤ 4, or one correct final side.';
+  }
+  const textPart=makePart({label:'Algebraic solution',max:3,score,response,expected:'−3 < x ≤ 4',nuggets:['MF25.10'],awardReason:award,lostReason:lost});
+
+  const leftPosition=q7State.L===-3,rightPosition=q7State.U===4,leftStyle=!q7State.Li,rightStyle=q7State.Ui;
+  const allCorrect=leftPosition&&rightPosition&&leftStyle&&rightStyle;
+  const positionsCorrect=leftPosition&&rightPosition;
+  const correctEndpointCount=(leftPosition&&leftStyle?1:0)+(rightPosition&&rightStyle?1:0);
+  let lineScore=0,lineAward='',lineLost='';
+  if(allCorrect){
+    lineScore=2;lineAward='B1 B1 awarded: the segment has an open endpoint at −3 and a closed endpoint at 4.';lineLost='None — full credit awarded.';
+  }else if(positionsCorrect){
+    lineScore=1;lineAward='B1 awarded because both endpoints are positioned at the correct boundary values −3 and 4.';lineLost='The second mark was lost because −3 must be open and 4 must be closed.';
+  }else if(correctEndpointCount===1){
+    lineScore=1;lineAward='B1 awarded because one endpoint has both the correct position and the correct open/closed style.';lineLost='The second mark was lost because the other endpoint is not represented correctly.';
+  }else{
+    lineAward='B0 B0: neither a complete pair of correct positions nor one fully correct endpoint was shown.';lineLost=`The number line currently represents ${q7State.L} ${q7State.Li?'≤':'<'} x ${q7State.Ui?'≤':'<'} ${q7State.U}, rather than −3 < x ≤ 4.`;
+  }
+  const linePart=makePart({label:'Number-line representation',max:2,score:lineScore,response:`${q7State.L} ${q7State.Li?'≤':'<'} x ${q7State.Ui?'≤':'<'} ${q7State.U}`,expected:'Open circle at −3, closed circle at 4, joined segment',nuggets:['MF25.12'],awardReason:lineAward,lostReason:lineLost});
+
+  return makeQuestion(7,'Two-sided inequalities and number lines',[textPart,linePart],
+    'Use MF25.10 to solve the two-sided inequality and MF25.12 to transfer both boundary values and their strict/inclusive symbols onto a number line.');
+}
+
+/* ---------- Q8: angles ---------- */
+function assessQ8(){
+  const ra=rawValue('q8a'),a=parseNumeric(ra),q8aSetup=(containsAllLiteralValues(ra,[78,105,92])&&evidenceIncludes(ra,360))||evidenceIncludes(ra,275,1e-9);
+  let as=0,aa='',al='';
+  if(near(a,85,1e-9)){
+    as=2;aa='M1 A1 awarded: the three known angles total 275° and 360° − 275° = 85°.';al='None — full credit awarded.';
+  }else if(q8aSetup){
+    as=1;aa='M1 awarded for a correct quadrilateral-angle sum or subtraction setup.';al='A1 lost because the final missing angle was not obtained as 85°.';
+  }else{
+    aa='M0 A0: no correct use of the 360° quadrilateral total was identified.';al=!ra?'No answer was entered.':'The response does not show the known-angle total 275°, a correct 360° subtraction, or the final 85°.';
+  }
+  const partA=makePart({label:'(a) Missing quadrilateral angle',max:2,score:as,response:ra,expected:'85°',nuggets:['MF28.05'],awardReason:aa,lostReason:al});
+
+  const rx=rawValue('q8bx'),x=parseNumeric(rx),xCompact=String(rx??'').toLowerCase().replace(/[−–—]/g,'-').replace(/[×·]/g,'*').replace(/÷/g,'/').replace(/\s+/g,'');
+  const equationSeen=/\(?x\+20\)?\+\(?2\*?x\+10\)?\+60=180|180=\(?x\+20\)?\+\(?2\*?x\+10\)?\+60|3\*?x\+90=180|180=3\*?x\+90|3\*?x=90|90=3\*?x|x=90\/3|90\/3/.test(xCompact);
+  const wrongTriangleTotal=/=360|360=|3\*?x\+90=360|360=3\*?x\+90|3\*?x=270|270=3\*?x/.test(xCompact);
+  let xs=0,xa='',xl='',xNuggets=['MF28.01'];
+  if(near(x,30,1e-9)){
+    xs=2;xa='M1 A1 awarded: the angle expressions were summed to 3x + 90 = 180 and solved to x = 30.';xl='None — full credit awarded.';
+  }else if(equationSeen||near(x,90,1e-9)){
+    xs=1;xNuggets=['MF19.02'];xa='M1 awarded for a correct triangle equation or the correct intermediate result 3x = 90.';xl='A1 lost because the one-step equation was not completed to x = 30.';
+  }else if(wrongTriangleTotal){
+    xs=1;xa='SC1 awarded for forming a complete angle equation but using 360° instead of the 180° triangle total.';
+    xl='A1 lost because angles in a triangle sum to 180°, so the correct equation is 3x + 90 = 180 and x = 30.';
+  }else{
+    xa='M0 A0: no correct triangle-angle equation was identified.';xl=!rx?'No value of x was entered.':'The response does not show 3x + 90 = 180, 3x = 90, or x = 30.';
+  }
+  const partX=makePart({label:'(b) Solve for x',max:2,score:xs,response:rx,expected:'x = 30',nuggets:xNuggets,awardReason:xa,lostReason:xl});
+
+  const rang=rawValue('q8bangle'),angle=parseNumeric(rang),consistent=Number.isFinite(x)&&near(angle,2*x+10,1e-9);
+  let angleScore=0,angleAward='',angleLost='',angleNuggets=['MF28.01'];
+  if(near(angle,70,1e-9)){
+    angleScore=1;angleAward='A1 awarded for substituting x = 30 into 2x + 10 to obtain 70°.';angleLost='None — full credit awarded.';
+  }else if(xs>0&&consistent){
+    angleScore=1;angleAward=`FT1 awarded because the entered x-value (${x}) was substituted consistently into 2x + 10.`;angleLost='None — this mark was secured by valid follow-through, although the earlier x-value may still be incorrect.';
+  }else{
+    if(near(x,30,1e-9))angleNuggets=['MF17.14'];
+    angleAward='A0/FT0: neither the correct angle nor a supported substitution follow-through was obtained.';
+    angleLost=!rang?'No angle was entered.':'The angle is not 70° and is not a consistent follow-through from an x-value that earned method credit.';
+  }
+  const partAngle=makePart({label:'(b) Angle 2x + 10',max:1,score:angleScore,response:rang,expected:'70°',nuggets:angleNuggets,awardReason:angleAward,lostReason:angleLost});
+
+  return makeQuestion(8,'Angles in quadrilaterals and algebraic triangles',[partA,partX,partAngle],
+    'Use MF28.05 for the 360° quadrilateral total, MF28.01 for the 180° triangle total, and MF17.14 only where x was correct but substitution into 2x + 10 caused the remaining error.');
+}
+
+/* ---------- Q9: estimated mean (table remains unmarked) ---------- */
+function q9NormalisedWork(response){return normaliseArithmeticExpression(String(response??'')).replace(/[=≈→;]/g,',').replace(/\s+/g,'');}
+function q9MultiplicationPairs(response){
+  const s=q9NormalisedWork(response),pairs=[];
+  const regex=/(-?\d+(?:\.\d+)?)\*(-?\d+(?:\.\d+)?)/g;let match;
+  while((match=regex.exec(s)))pairs.push([Number(match[1]),Number(match[2])]);
+  return pairs;
+}
+function q9RepresentativeData(response){
+  const frequencies=[6,9,11,4],pairs=q9MultiplicationPairs(response),representatives=Array(4).fill(NaN);
+  frequencies.forEach((frequency,index)=>{
+    const candidate=pairs.find(([a,b])=>near(a,frequency,1e-9)||near(b,frequency,1e-9));
+    if(candidate)representatives[index]=near(candidate[0],frequency,1e-9)?candidate[1]:candidate[0];
+  });
+  return {frequencies,representatives,pairs};
+}
+function q9HasDivisionBy30(response){return /\/\(?30\)?(?:$|[^0-9.])|\/30/.test(q9NormalisedWork(response));}
+function q9CorrectProductCount(response){
+  const targets=[30,135,275,140],values=evidenceValues(response);
+  const pairData=q9RepresentativeData(response),expectedReps=[5,15,25,35];
+  return targets.filter((target,index)=>values.some(value=>near(value,target,1e-8))||near(pairData.representatives[index],expectedReps[index],1e-8)).length;
+}
+function assessQ9(){
+  const response=rawValue('q9mean'),finalValue=parseNumeric(response),exactMean=580/30;
+  let score=0,award='',lost='',nuggets=['MF49.17'];
+
+  if(near(finalValue,19.3,1e-9)){
+    score=5;
+    award='B1 M1 M1 M1 A1 awarded by inference from the correct final estimated mean, 19.3 minutes.';
+    lost='None — full credit awarded.';
+  }else if(!response){
+    award='No marks awarded. The marked calculation/final-answer box is blank; entries in the table are unmarked working space.';
+    lost='All 5 marks were lost because no markable estimated-mean calculation or final answer was entered.';
+  }else{
+    const values=evidenceValues(response),midpoints=[5,15,25,35],products=[30,135,275,140];
+    const midpointCount=midpoints.filter(target=>values.some(value=>near(value,target,1e-8))).length;
+    const productCount=q9CorrectProductCount(response);
+    const has580=values.some(value=>near(value,580,1e-7));
+    const hasDivide30=q9HasDivisionBy30(response);
+    const pairData=q9RepresentativeData(response),allRepresentatives=pairData.representatives.every(Number.isFinite);
+    const correctRepresentatives=pairData.representatives.filter((value,index)=>near(value,midpoints[index],1e-8)).length;
+    const derivedTotal=allRepresentatives?pairData.frequencies.reduce((sum,frequency,index)=>sum+frequency*pairData.representatives[index],0):NaN;
+    const derivedMean=Number.isFinite(derivedTotal)?derivedTotal/30:NaN;
+    const finalMatchesDerived=Number.isFinite(derivedMean)&&hasDivide30&&(near(finalValue,derivedMean,0.001)||near(finalValue,roundedTo(derivedMean,1),1e-9));
+    const correctUnrounded=near(finalValue,exactMean,0.005)&&!near(finalValue,19.3,1e-9);
+    const correctMethodShown=(midpointCount===4||productCount===4||has580)&&hasDivide30;
+
+    if(correctUnrounded){
+      score=4;nuggets=['MF9.02'];
+      award='B1 M1 M1 M1 awarded by inference from the correct unrounded value of 580 ÷ 30.';
+      lost='A1 lost because the final estimated mean had to be rounded to 19.3 minutes to 1 decimal place.';
+    }else{
+      let midpointMark=(midpointCount===4||productCount===4||has580)?1:0;
+      let productMarks=0;
+      if(productCount===4||has580)productMarks=2;
+      else if(productCount>=2)productMarks=1;
+      else if(allRepresentatives)productMarks=1; // valid weighted-mean structure, eligible for follow-through despite wrong representatives
+      const divideMark=hasDivide30&&(productMarks>0||has580)?1:0;
+      const accuracyFT=finalMatchesDerived&&allRepresentatives&&divideMark?1:0;
+
+      // Correct complete method followed by a wrong final evaluation retains all method marks.
+      if(correctMethodShown&&midpointMark===1&&productMarks===2){
+        midpointMark=1;productMarks=2;
+      }
+      score=midpointMark+productMarks+divideMark+accuracyFT;
+
+      const earned=[];
+      if(midpointMark)earned.push('B1 for all four correct class midpoints, shown directly or implied by the exact products/weighted total');
+      if(productMarks===2)earned.push('M1 M1 for all four correct frequency × midpoint products or the correct weighted total 580');
+      else if(productMarks===1)earned.push(allRepresentatives?'M1 for a complete weighted-frequency structure using one representative value for each class':'M1 for at least two correct frequency × midpoint products');
+      if(divideMark)earned.push('M1 for dividing a supported weighted total by the total frequency 30');
+      if(accuracyFT)earned.push('FT A1 for evaluating the learner’s complete supported weighted-mean calculation consistently');
+      award=earned.length?`${score} mark${score===1?'':'s'} awarded: ${earned.join('; ')}.`:'No recognised midpoint, weighted-product or divide-by-total-frequency evidence was found in the marked response box.';
+
+      const missing=[];
+      if(!midpointMark)missing.push('the four correct midpoints 5, 15, 25 and 35 were not shown or implied');
+      if(productMarks<2)missing.push(`${2-productMarks} product-method mark${2-productMarks===1?' was':'s were'} not secured`);
+      if(!divideMark)missing.push('division of a supported weighted total by 30 was not shown');
+      if(!accuracyFT)missing.push('the correct final mean 19.3, or a valid follow-through value from a complete supported calculation, was not obtained');
+      lost=`${5-score} mark${5-score===1?' was':'s were'} lost because ${missing.join('; ')}.`;
+    }
+  }
+
+  return makeQuestion(9,'Estimated mean from grouped continuous data',[makePart({
+    label:'Calculation and final estimated mean (table entries are unmarked)',max:5,score,response,expected:'19.3 minutes',nuggets,awardReason:award,lostReason:lost
+  })],
+  'Use MF49.17 to find class midpoints, calculate and total f × x, then divide by the total frequency. Use MF9.02 only when the complete weighted-mean method was correct and the remaining error was rounding to 1 decimal place.');
+}
+
+/* ---------- Q10: probability tree ---------- */
+function parseProbabilityAnswer(value){
+  const raw=finalStatedText(value).trim();
+  if(!raw)return NaN;
+  const percent=raw.match(/(-?\d+(?:\.\d+)?)\s*%\s*$/);
+  if(percent)return Number(percent[1])/100;
+  return parseNumeric(raw);
+}
+function probabilityEvidenceValues(value){
+  const values=[];
+  workingSegments(value).forEach(segment=>{
+    const parsed=parseProbabilityAnswer(segment);
+    if(Number.isFinite(parsed))values.push(parsed);
+    const arithmetic=evaluateArithmeticSegment(segment.replace(/%/g,'/100'));
+    if(Number.isFinite(arithmetic))values.push(arithmetic);
+  });
+  return values;
+}
+function probabilityIncludes(value,target,tolerance=1e-9){return probabilityEvidenceValues(value).some(candidate=>near(candidate,target,tolerance));}
+function pathProductFormulaSeen(response){
+  const s=compactArithmetic(String(response??'').replace(/%/g,'/100'));
+  return /0\.35\*0\.65|0\.65\*0\.35|\(?35\/100\)?\*\(?65\/100\)?|\(?65\/100\)?\*\(?35\/100\)?/.test(s);
+}
+function twoOneRedPathsSeen(response){
+  const s=compactArithmetic(String(response??'').replace(/%/g,'/100'));
+  const direct=(s.match(/0\.35\*0\.65|0\.65\*0\.35/g)||[]).length;
+  return direct>=2||/0\.2275\+0\.2275|2\*0\.2275|0\.2275\*2/.test(s);
+}
+function assessQ10(){
+  const rr=rawValue('q10rb'),br=rawValue('q10br'),rf=rawValue('q10final');
+  const rv=parseProbabilityAnswer(rr),bv=parseProbabilityAnswer(br),fv=parseProbabilityAnswer(rf);
+  const rPath=near(rv,0.2275,1e-9)||probabilityIncludes(rr,0.2275)||pathProductFormulaSeen(rr);
+  const bPath=near(bv,0.2275,1e-9)||probabilityIncludes(br,0.2275)||pathProductFormulaSeen(br);
+  const finalCorrect=near(fv,0.455,1e-9);
+  let score=0,award='',lost='',nuggets=['MF46.16','MF46.17'];
+
+  if(finalCorrect){
+    score=4;
+    award='M1 M1 M1 A1 awarded by inference from the exact final probability 0.455 (equivalently 45.5% or 91/200).';
+    lost='None — full credit awarded.';
+  }else{
+    const finalShowsBoth=twoOneRedPathsSeen(rf);
+    let pathMarks=(rPath?1:0)+(bPath?1:0);
+    if(finalShowsBoth)pathMarks=2;
+    else if(pathMarks===0&&probabilityIncludes(rf,0.2275))pathMarks=1;
+
+    const bothPathsSupported=pathMarks===2;
+    const finalAddsEnteredPaths=bothPathsSupported&&Number.isFinite(rv)&&Number.isFinite(bv)&&Number.isFinite(fv)&&near(fv,rv+bv,1e-9);
+    const additionSeen=finalShowsBoth||/0\.2275\+0\.2275|2\*0\.2275|0\.2275\*2/.test(compactArithmetic(rf));
+    const roundedTotal=[0.45,0.46].some(value=>near(fv,value,1e-9));
+    const percentScaleError=near(fv,45.5,1e-9)||near(fv,0.00455,1e-9);
+    let additionMark=(bothPathsSupported&&(finalAddsEnteredPaths||additionSeen||roundedTotal||percentScaleError))?1:0;
+
+    // A rounded final answer alone strongly implies the complete two-path method but loses final accuracy.
+    if(pathMarks===0&&roundedTotal){pathMarks=2;additionMark=1;}
+
+    score=pathMarks+additionMark;
+    const earned=[];
+    if(pathMarks)earned.push(`${pathMarks===2?'M1 M1':'M1'} for ${pathMarks===2?'both':'one'} exactly-one-red path product${pathMarks===2?'s':''}`);
+    if(additionMark)earned.push('M1 for combining the two mutually exclusive exactly-one-red paths');
+    award=earned.length?`${score} mark${score===1?'':'s'} awarded: ${earned.join('; ')}.`:'No correct path multiplication or supported addition of the required paths was identified.';
+
+    const missing=[];
+    if(pathMarks<2)missing.push(`${2-pathMarks} path-product mark${2-pathMarks===1?' was':'s were'} not secured`);
+    if(!additionMark)missing.push('the two exactly-one-red paths were not validly combined');
+    missing.push('A1 was not secured because the exact final probability 0.455 (45.5% or 91/200) was not stated');
+    lost=`${4-score} mark${4-score===1?' was':'s were'} lost because ${missing.join('; ')}.`;
+
+    if(pathMarks<2)nuggets=['MF46.15','MF46.16','MF46.17'];
+    else if(!additionMark)nuggets=['MF46.17'];
+    else nuggets=['MF46.16'];
+  }
+
+  return makeQuestion(10,'Probability tree: exactly one red',[makePart({
+    label:'Exactly one red: path products, addition and final probability',max:4,score,
+    response:`P(R then B) = ${shownResponse(rr)}; P(B then R) = ${shownResponse(br)}; final = ${shownResponse(rf)}`,
+    expected:'0.35 × 0.65 + 0.65 × 0.35 = 0.455',nuggets,awardReason:award,lostReason:lost
+  })],
+  'Use MF46.15 for multiplying along one complete tree path, MF46.16 for combining multiple outcomes and MF46.17 for the AND/OR structure of the two required paths.');
+}
+
+/* ---------- Q11: similarity ---------- */
+function assessQ11(){
+  const ra=rawValue('q11a'),a=parseNumeric(ra);
+  const scaleSeen=evidenceIncludes(ra,2.5,1e-9)||containsDivision(ra,10,4)||containsDivision(ra,15,6);
+  const sideSetup=containsProduct(ra,6,2.5)||/6\*?\(?10\/4\)?/.test(compactArithmetic(ra));
+  let as=0,aa='',al='';
+  if(near(a,15,1e-9)){
+    as=2;aa='M1 A1 awarded: the linear scale factor 10 ÷ 4 = 2.5 was applied to 6 cm to obtain DE = 15 cm.';al='None — full credit awarded.';
+  }else if(scaleSeen||sideSetup){
+    as=1;aa='M1 awarded for the correct linear scale factor or a correct corresponding-side multiplication setup.';al='A1 lost because DE was not obtained as 15 cm.';
+  }else{
+    aa='M0 A0: no correct corresponding-side scale-factor method was identified.';al=!ra?'No answer was entered.':'The response does not show scale factor 2.5, a valid 6 × 2.5 setup or DE = 15 cm.';
+  }
+  const partA=makePart({label:'(a) Missing corresponding side',max:2,score:as,response:ra,expected:'15 cm',nuggets:['MF43.05'],awardReason:aa,lostReason:al});
+
+  const rb=rawValue('q11b'),ratio=parseRatio(rb),b=parseNumeric(rb);
+  const numericRatio=ratio&&ratio.right!==0?ratio.left/ratio.right:NaN;
+  const correct=near(b,6.25,1e-9)||near(numericRatio,6.25,1e-9);
+  const impliedLinearFactor=Number.isFinite(a)&&a>0?a/6:NaN;
+  const followsTheirSide=as>0&&Number.isFinite(impliedLinearFactor)&&impliedLinearFactor>0&&(near(b,impliedLinearFactor**2,1e-9)||near(numericRatio,impliedLinearFactor**2,1e-9));
+  let bs=0,ba='',bl='';
+  if(correct){
+    bs=1;ba='B1 awarded for squaring the linear scale factor: 2.5² = 6.25.';bl='None — full credit awarded.';
+  }else if(followsTheirSide){
+    bs=1;ba=`FT1 awarded because the area factor is the square of the linear factor implied by the learner's DE value (${a} ÷ 6).`;bl='None — this mark was secured by follow-through, although part (a) may still be inaccurate.';
+  }else{
+    ba='B0/FT0: the correct area scale factor or a supported follow-through was not obtained.';bl=!rb?'No answer was entered.':near(b,2.5)?'The linear scale factor was entered without squaring it.':'The area factor should be 2.5² = 6.25.';
+  }
+  const partB=makePart({label:'(b) Area scale factor DEF : ABC',max:1,score:bs,response:rb,expected:'6.25 : 1',nuggets:['MF43.05'],awardReason:ba,lostReason:bl});
+
+  return makeQuestion(11,'Similarity: linear and area scale factors',[partA,partB],
+    'Use MF43.05 to match corresponding sides, find the linear scale factor and square that factor for the area comparison.');
+}
+
+/* ---------- Q12: Pythagoras ---------- */
+function assessQ12(){
+  const response=rawValue('q12a'),value=parseNumeric(response),special=evaluateSpecialMath(response);
+  const compactPythagoras=compactArithmetic(response);
+  const correctSquares=containsAllLiteralValues(response,[49,576]);
+  const correctSetup=/7(?:\^2|\*\*2)\+24(?:\^2|\*\*2)|24(?:\^2|\*\*2)\+7(?:\^2|\*\*2)/.test(compactPythagoras);
+  const pythagorasHasContradictoryResult=/[=≈→]/.test(response)&&!near(value,25,1e-9)&&!near(value,625,1e-9);
+  const sumSeen=literalNumbers(response).some(candidate=>near(candidate,625,1e-9))||(!pythagorasHasContradictoryResult&&near(parseNumeric(response),625,1e-9));
+  let score=0,award='',lost='';
+  if(near(value,25,1e-9)){
+    score=3;award='M1 A1 A1 awarded: 7² + 24² = 625 and √625 = 25 cm.';lost='None — full credit awarded.';
+  }else if(sumSeen||near(value,625,1e-9)||near(special,25,1e-9)){
+    score=2;award='M1 A1 awarded because the correct sum of squares, 625, or its exact square-root expression is shown.';lost='The final A1 was lost because the hypotenuse was not clearly completed as 25 cm.';
+  }else if(correctSetup||correctSquares){
+    score=1;award='M1 awarded for a correct sum-of-squares setup or for correctly obtaining the two required squares.';lost='Two accuracy marks were lost because the working was not completed through 625 to 25 cm.';
+  }else{
+    award='M0 A0 A0: no correct Pythagoras sum-of-squares method was identified.';lost=!response?'No answer was entered.':'The response does not show 7² + 24², 49 + 576, 625 or the final 25 cm.';
+  }
+  return makeQuestion(12,'Pythagoras: finding the hypotenuse',[makePart({label:'Hypotenuse',max:3,score,response,expected:'25 cm',nuggets:['MF44.02'],awardReason:award,lostReason:lost})],
+    'Use MF44.02 to square both perpendicular sides, add the squares and take the square root.');
+}
+
+/* ---------- Q13: trigonometry and alternate angles ---------- */
+function assessQ13(){
+  const ra=rawValue('q13a'),a=parseNumeric(ra),trueAngle=Math.acos(12/20)*180/Math.PI;
+  const ratioSeen=evidenceIncludes(ra,0.6,1e-9)||containsDivision(ra,12,20)||/cos\s*\(?\s*(?:theta|θ)\s*\)?\s*=\s*(?:12\/20|0\.6)/i.test(String(ra));
+  const inverseCosSeen=/cos\s*(?:\^?-?1|⁻¹)|acos/i.test(String(ra));
+  const radiansValue=Math.acos(0.6);
+  let as=0,aa='',al='',aNuggets=['MF45.05'];
+  if(near(a,53,1e-9)){
+    as=2;aa='M1 A1 awarded: cos θ = 12/20 was inverted and the angle was rounded to 53°.';al='None — full credit awarded.';
+  }else if(near(a,trueAngle,0.06)||[53.1,53.13,53.1301].some(value=>near(a,value,0.02))){
+    as=1;aNuggets=['MF9.01'];aa='M1 awarded for the correct inverse-cosine value before final rounding.';al='A1 lost because the final answer had to be stated as 53° to the nearest degree.';
+  }else if(near(a,radiansValue,0.003)){
+    as=1;aNuggets=['MF45.02'];aa='M1 awarded because the correct inverse-cosine calculation is evident.';al='A1 lost because the calculator was in radians; the requested answer is 53° in degrees.';
+  }else if(ratioSeen||inverseCosSeen){
+    as=1;aa='M1 awarded for identifying adjacent ÷ hypotenuse = 12 ÷ 20 = 0.6 or for setting up inverse cosine.';al='A1 lost because the calculation was not completed and rounded to 53°.';
+  }else{
+    aa='M0 A0: no correct cosine ratio or inverse-cosine method was identified.';al=!ra?'No answer was entered.':'The response does not show 12 ÷ 20 = 0.6, inverse cosine, the unrounded angle or 53°.';
+  }
+  const partA=makePart({label:'(a) Missing angle using cosine',max:2,score:as,response:ra,expected:'53°',nuggets:aNuggets,awardReason:aa,lostReason:al});
+
+  const rb=rawValue('q13b'),b=parseNumeric(rb),compact=String(rb??'').toLowerCase().replace(/[−–—]/g,'-').replace(/[×·]/g,'*').replace(/÷/g,'/').replace(/\s+/g,'');
+  const equationSeen=/2\*?x=84|84=2\*?x|x=84\/2|84\/2/.test(compact);
+  let bs=0,ba='',bl='',bNuggets=['MF27.08'];
+  if(near(b,42,1e-9)){
+    bs=2;ba='M1 A1 awarded: alternate angles were equated, 2x = 84, and the equation was solved to x = 42.';bl='None — full credit awarded.';
+  }else if(equationSeen){
+    bs=1;bNuggets=['MF19.02'];ba='M1 awarded for the correct equation 2x = 84 (or 84 ÷ 2), showing that the alternate-angle relationship was identified.';bl='A1 lost because the one-step equation was not completed correctly to x = 42.';
+  }else{
+    ba='M0 A0: no correct alternate-angle equation was identified.';
+    bl=!rb?'No answer was entered.':near(b,84)?'84° was copied from the diagram, but the required equation is 2x = 84 and x = 42.':near(b,168)?'84 was multiplied by 2; alternate angles give 2x = 84, so 84 must be divided by 2.':'The response does not show 2x = 84 or x = 42.';
+  }
+  const partB=makePart({label:'(b) Alternate-angle equation',max:2,score:bs,response:rb,expected:'x = 42',nuggets:bNuggets,awardReason:ba,lostReason:bl});
+
+  return makeQuestion(13,'Trigonometry and angles in parallel lines',[partA,partB],
+    'Use MF45.05 for a missing angle, MF45.02 for calculator-mode errors, MF9.01 for nearest-degree rounding, MF27.08 for alternate angles and MF19.02 only where 2x = 84 was formed correctly but the one-step equation was not solved.');
+}
+
+function assessAll(){
+  return [assessQ1(),assessQ2(),assessQ3(),assessQ4(),assessQ5(),assessQ6(),assessQ7(),assessQ8(),assessQ9(),assessQ10(),assessQ11(),assessQ12(),assessQ13()];
+}
+
+/* ---------- Result calculations ---------- */
+const QUESTION_MAX=[6,2,8,5,6,5,5,5,5,4,3,3,4];
+const MAX=QUESTION_MAX.reduce((sum,value)=>sum+value,0);
+$('totalmax').textContent=MAX;
+
+/* Supplied grade boundaries, translated to this 61-mark calculator assessment.
+   Each grade interval is divided into Low / Medium / High sections as evenly as possible. */
+const GRADE_BOUNDARIES = Object.freeze([
+  {grade:'5',min:42,max:61,percentMin:69,percentMax:100,bands:[
+    {level:'Low',min:42,max:48,percentMin:69,percentMax:79},
+    {level:'Medium',min:49,max:54,percentMin:80,percentMax:89},
+    {level:'High',min:55,max:61,percentMin:90,percentMax:100}
+  ]},
+  {grade:'4',min:33,max:41,percentMin:54,percentMax:68,bands:[
+    {level:'Low',min:33,max:35,percentMin:54,percentMax:58},
+    {level:'Medium',min:36,max:38,percentMin:59,percentMax:63},
+    {level:'High',min:39,max:41,percentMin:64,percentMax:68}
+  ]},
+  {grade:'3',min:23,max:32,percentMin:38,percentMax:53,bands:[
+    {level:'Low',min:23,max:25,percentMin:38,percentMax:42},
+    {level:'Medium',min:26,max:28,percentMin:43,percentMax:47},
+    {level:'High',min:29,max:32,percentMin:48,percentMax:53}
+  ]},
+  {grade:'2',min:14,max:22,percentMin:23,percentMax:37,bands:[
+    {level:'Low',min:14,max:16,percentMin:23,percentMax:27},
+    {level:'Medium',min:17,max:19,percentMin:28,percentMax:32},
+    {level:'High',min:20,max:22,percentMin:33,percentMax:37}
+  ]},
+  {grade:'1',min:6,max:13,percentMin:10,percentMax:22,bands:[
+    {level:'Low',min:6,max:8,percentMin:10,percentMax:13},
+    {level:'Medium',min:9,max:10,percentMin:14,percentMax:17},
+    {level:'High',min:11,max:13,percentMin:18,percentMax:22}
+  ]},
+  {grade:'U',min:0,max:5,percentMin:0,percentMax:9,bands:[
+    {level:'Low',min:0,max:1,percentMin:0,percentMax:2},
+    {level:'Medium',min:2,max:3,percentMin:3,percentMax:5},
+    {level:'High',min:4,max:5,percentMin:6,percentMax:9}
+  ]}
+]);
+function gradeFrom(raw,max){
+  const score=Math.max(0,Math.min(max,Math.round(Number(raw)||0)));
+  const boundary=GRADE_BOUNDARIES.find(item=>score>=item.min&&score<=item.max)
+    ||GRADE_BOUNDARIES[GRADE_BOUNDARIES.length-1];
+  const band=boundary.bands.find(item=>score>=item.min&&score<=item.max)
+    ||boundary.bands[0];
+  return {grade:boundary.grade,level:band.level};
+}
+function gradeDisplay(result){
+  const label=`${result.grade} ${result.level}`;
+  return result.grade==='4'||result.grade==='5'?`${label} (PASS)`:label;
+}
+function performanceBand(raw,max){const proportion=raw/max;return proportion>=0.80?'STRONG / SECURE':proportion>=0.55?'DEVELOPING':'EMERGING / NEEDS SUPPORT';}
+function questionStatus(score,max){return score===max?'SECURE':score===0?'PRIORITY':'DEVELOPING';}
+function unique(values){return[...new Set(values.filter(Boolean))];}
+function pluralMarks(value){return`${value} mark${value===1?'':'s'}`;}
+function formatCodes(codes){
+  const cleaned=unique(codes).filter(code=>NUGGET_CATALOG[code]);
+  return cleaned.length?cleaned.map(code=>`[${code}] ${NUGGET_CATALOG[code]}`).join(' | '):'(no validated code assigned)';
+}
+
+/* Exactly one primary target per incorrect question, capped at four questions. */
+const MAX_CORRECTIVE_TARGETS=4;
+function targetCandidateForQuestion(question){
+  const candidates=[];
+  question.parts.forEach((part,partIndex)=>{
+    if(part.score>=part.max)return;
+    const validCodes=unique(part.nuggets).filter(code=>NUGGET_CATALOG[code]);
+    if(!validCodes.length)return;
+    candidates.push({
+      code:validCodes[0],title:NUGGET_CATALOG[validCodes[0]],question:question.number,partIndex,part:part.label,
+      score:part.score,max:part.max,marksLost:part.max-part.score,lossRatio:(part.max-part.score)/part.max,zeroCredit:part.score===0,reason:part.lostReason
+    });
+  });
+  candidates.sort((a,b)=>{
+    if(a.zeroCredit!==b.zeroCredit)return a.zeroCredit?-1:1;
+    if(a.lossRatio!==b.lossRatio)return b.lossRatio-a.lossRatio;
+    if(a.marksLost!==b.marksLost)return b.marksLost-a.marksLost;
+    return a.partIndex-b.partIndex;
+  });
+  return candidates[0]||null;
+}
+function collectNuggetTargets(questions){
+  const wrongQuestions=questions.filter(question=>question.score<question.max).map(question=>({
+    question,
+    candidate:targetCandidateForQuestion(question),
+    marksLost:question.max-question.score,
+    lossRatio:(question.max-question.score)/question.max,
+    zeroCredit:question.score===0
+  })).filter(item=>item.candidate);
+
+  wrongQuestions.sort((a,b)=>{
+    if(a.zeroCredit!==b.zeroCredit)return a.zeroCredit?-1:1;
+    if(a.lossRatio!==b.lossRatio)return b.lossRatio-a.lossRatio;
+    if(a.marksLost!==b.marksLost)return b.marksLost-a.marksLost;
+    return a.question.number-b.question.number;
+  });
+
+  return wrongQuestions.slice(0,MAX_CORRECTIVE_TARGETS).map(item=>({
+    code:item.candidate.code,title:item.candidate.title,question:item.question.number,topic:item.question.topic,
+    part:item.candidate.part,score:item.candidate.score,max:item.candidate.max,reason:item.candidate.reason
+  }));
+}
+function reportQuestionSummary(question){
+  const lost=question.max-question.score;
+  if(lost===0)return'All assessed parts were correct; no marks were lost.';
+  if(question.score===0)return`No marks were awarded. ${pluralMarks(lost)} were lost across this question.`;
+  const partialParts=question.parts.filter(part=>part.score>0&&part.score<part.max).length;
+  return`Partial performance: ${question.score}/${question.max}. ${pluralMarks(lost)} lost${partialParts?`; ${partialParts} part${partialParts===1?'':'s'} received partial credit`:''}.`;
+}
+function buildReport(questions,total,grade,band){
+  const lines=[],rule='='.repeat(78),subRule='-'.repeat(78);
+  lines.push('GCSE MATHS (EDUQAS-STYLE) — FOUNDATION CALCULATOR INITIAL ASSESSMENT');
+  lines.push('DO NOT CLOSE THIS PAGE');
+  lines.push(rule);
+  lines.push('FINAL RESULT');
+  lines.push(`Mark: ${total} / ${MAX}`);
+  lines.push(`Percentage: ${Math.round((total/MAX)*100)}%`);
+  lines.push(`Indicative grade: ${gradeDisplay(grade)}`);
+  lines.push(`Performance band: ${band}`);
+  lines.push('');
+  lines.push('AUTOMATIC PARTIAL-CREDIT NOTE');
+  lines.push('The marker separates method, accuracy, independent and follow-through credit where the question permits it. Method credit is awarded only when the response entered on this page shows, or strongly implies, a recognised correct method or intermediate stage. A later arithmetic error does not remove an earned method mark. The final stated answer controls final accuracy, and handwritten working outside the page cannot be inspected.');
+  lines.push('');
+  lines.push('MARKING ABBREVIATIONS USED IN THIS REPORT');
+  lines.push('M = method | A = accuracy | B = independent mark | FT = follow-through | SC = special-case credit');
+  lines.push('');
+
+  lines.push('PLAIN-TEXT HEAT MAP (NO COLOURS)');
+  lines.push('Key: SECURE = full marks | DEVELOPING = some marks | PRIORITY = zero marks');
+  lines.push(subRule);
+  questions.forEach(question=>{
+    const percent=Math.round((question.score/question.max)*100);
+    lines.push(`Q${String(question.number).padEnd(2)} | ${questionStatus(question.score,question.max).padEnd(10)} | ${String(question.score).padStart(2)}/${String(question.max).padEnd(2)} | ${String(percent).padStart(3)}% | ${question.topic}`);
+  });
+  lines.push('');
+
+  lines.push('CENTURY NUGGET TARGETS — MAXIMUM 4, INCORRECT QUESTIONS ONLY');
+  lines.push('Rule: each incorrect question contributes one primary nugget and every fully correct question is excluded. One, two, three or four incorrect questions therefore produce one, two, three or four targets; five or more incorrect questions produce four targets.');
+  lines.push(subRule);
+  const targets=collectNuggetTargets(questions);
+  if(!targets.length){
+    lines.push('No corrective Century targets were generated because every question achieved full marks.');
+    lines.push('Consolidation target: complete mixed calculator-paper retrieval practice to maintain every secure topic.');
+  }else{
+    targets.forEach((target,index)=>{
+      lines.push(`TARGET ${index+1} — [${target.code}] ${target.title}`);
+      lines.push(`Triggered by Q${target.question} — ${target.topic}`);
+      lines.push(`Primary lost-mark evidence: ${target.part}: ${target.score}/${target.max}. ${target.reason}`);
+      lines.push('Action: complete this Century nugget, then reattempt the triggering question and secure full marks.');
+      lines.push('');
+    });
+  }
+
+  lines.push('QUESTION-BY-QUESTION BREAKDOWN');
+  lines.push(rule);
+  questions.forEach(question=>{
+    const percent=Math.round((question.score/question.max)*100);
+    lines.push(`Q${question.number} — ${question.topic}`);
+    lines.push(`Question result: ${question.score} / ${question.max} (${percent}%) — ${questionStatus(question.score,question.max)}`);
+    lines.push(`What happened: ${reportQuestionSummary(question)}`);
+    lines.push('');
+    question.parts.forEach(part=>{
+      lines.push(`  ${part.label}`);
+      lines.push(`  Student response: ${part.response}`);
+      lines.push(`  Expected answer: ${part.expected}`);
+      lines.push(`  Marks awarded: ${part.score} / ${part.max}`);
+      lines.push(`  Marking outcome: ${part.score===part.max?'FULL CREDIT':part.score===0?'NO CREDIT':'PARTIAL CREDIT'}`);
+      lines.push(`  Credit awarded because: ${part.awardReason}`);
+      lines.push(`  Marks lost because: ${part.lostReason}`);
+      if(part.score<part.max)lines.push(`  Validated corrective Century mapping(s): ${formatCodes(part.nuggets)}`);
+      else lines.push('  Corrective Century target: None — this part achieved full credit and cannot generate a target.');
+      lines.push('');
+    });
+    lines.push(question.score<question.max?`  Question target: ${question.practice}`:'  Question target: Maintain this secure topic through mixed retrieval practice.');
+    lines.push(subRule);
+  });
+  lines.push('END OF REPORT');
+  return lines.join('\n');
+}
+
+function lockPaper(){
+  document.querySelectorAll('main input, main select, main button').forEach(control=>{
+    const keep=control.id==='copyBtn'||control.closest('#tabbar')||control.closest('#results');
+    if(!keep)control.disabled=true;
+  });
+}
+function doMarkAll(){
+  if(paperMarked)return;
+  const questions=assessAll();
+  const total=questions.reduce((sum,question)=>sum+question.score,0);
+  const grade=gradeFrom(total,MAX),band=performanceBand(total,MAX);
+  $('totalscore').textContent=total;$('grade').textContent=gradeDisplay(grade);$('band').textContent=band;
+  tabs.filter(tab=>/^q\d+$/.test(tab.dataset.target||'')).forEach(tab=>{
+    const number=Number(tab.dataset.target.slice(1)),question=questions[number-1];
+    if(question)tab.title=`Q${number}: ${question.score}/${question.max} — ${questionStatus(question.score,question.max)}`;
+  });
+  $('smartBox').value=buildReport(questions,total,grade,band);$('smartWrap').style.display='block';
+  paperMarked=true;fsLocked=false;lockPaper();updateFsState();
+  const button=$('markAllBtn');button.disabled=true;button.textContent='Marked and locked';showTab('results');
+}
+$('markAllBtn').addEventListener('click',doMarkAll);
+
+
+/* ---------- Clipboard and source deterrents ---------- */
+let allowProgrammaticCopy = false;
+function selectionAllowedTarget(target){
+  const element = target instanceof Element ? target : target?.parentElement;
+  return !!element?.closest('input,textarea,[contenteditable="true"]');
+}
+document.addEventListener('contextmenu', event=>event.preventDefault(), {capture:true});
+document.addEventListener('selectstart', event=>{
+  if(!selectionAllowedTarget(event.target)) event.preventDefault();
+}, {capture:true});
+document.addEventListener('dragstart', event=>event.preventDefault(), {capture:true});
+document.addEventListener('copy', event=>{ if(!allowProgrammaticCopy) event.preventDefault(); }, {capture:true});
+document.addEventListener('cut', event=>event.preventDefault(), {capture:true});
+document.addEventListener('paste', event=>event.preventDefault(), {capture:true});
+document.addEventListener('keydown', event=>{
+  const key = (event.key || '').toLowerCase();
+  const modifier = event.ctrlKey || event.metaKey;
+  const copyOrSourceShortcut = modifier && (key === 'c' || key === 'x' || key === 'u' || key === 'insert');
+  const selectPageShortcut = modifier && key === 'a' && !selectionAllowedTarget(event.target);
+  const keyboardContextMenu = key === 'contextmenu' || (event.shiftKey && key === 'f10');
+  if(copyOrSourceShortcut || selectPageShortcut || keyboardContextMenu){
+    event.preventDefault();
+    event.stopPropagation();
+    showBlockToast(copyOrSourceShortcut ? 'Copy disabled' : 'Text selection disabled');
+  }
+}, {capture:true});
+
+$('copyBtn').addEventListener('click', async () => {
+  const text = $('smartBox').value;
+  try{
+    await navigator.clipboard.writeText(text);
+    $('copyBtn').textContent = 'Copied ✓';
+    setTimeout(()=>{$('copyBtn').textContent='Copy to clipboard';},1200);
+  }catch(_error){
+    allowProgrammaticCopy = true;
+    try{
+      $('smartBox').focus();
+      $('smartBox').select();
+      document.execCommand('copy');
+      $('copyBtn').textContent = 'Copied ✓';
+      setTimeout(()=>{$('copyBtn').textContent='Copy to clipboard';},1200);
+    }catch(_ignored){}
+    setTimeout(()=>{allowProgrammaticCopy=false;},0);
+  }
+});
+
+updateFsState();
+</script>
+
+<!-- BEGIN PEM FLOATING CALCULATOR: self-contained, no assessment logic changes -->
+<div id="pemCalcWindow" role="dialog" aria-modal="false" aria-labelledby="pemCalcTitle" hidden>
+  <div class="pem-calc-heading">
+    <div id="pemCalcDrag" tabindex="0" aria-label="Move calculator. Drag, or use the arrow keys. Hold Shift for a larger move.">
+      <span id="pemCalcTitle">Calculator</span>
+      <span class="pem-calc-drag-hint">Drag here to move</span>
+    </div>
+    <button type="button" id="pemCalcClose" aria-label="Close calculator">Close ×</button>
+  </div>
+  <div id="pemCalcContent">
+    <div class="pem-calc-mode"><b>DEG</b><span>All angles are in degrees</span></div>
+    <label for="pemCalcExpression" class="sr-only">Calculator expression</label>
+    <input id="pemCalcExpression" type="text" inputmode="decimal" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="240" placeholder="0" aria-describedby="pemCalcHelp" aria-label="Calculator expression">
+    <output id="pemCalcResult" for="pemCalcExpression" aria-live="polite" aria-atomic="true">0</output>
+    <div class="pem-calc-keys" role="group" aria-label="Calculator keys">
+      <button type="button" data-fn="sin" aria-label="Sine in degrees">sin</button>
+      <button type="button" data-fn="cos" aria-label="Cosine in degrees">cos</button>
+      <button type="button" data-fn="tan" aria-label="Tangent in degrees">tan</button>
+      <button type="button" data-fn="sqrt" aria-label="Square root"><math xmlns="http://www.w3.org/1998/Math/MathML" aria-hidden="true"><msqrt><mi>x</mi></msqrt></math></button>
+      <button type="button" data-op="^" aria-label="Power: x to the power y"><math xmlns="http://www.w3.org/1998/Math/MathML" aria-hidden="true"><msup><mi>x</mi><mi>y</mi></msup></math></button>
+      <button type="button" data-fn="asin" aria-label="Inverse sine in degrees"><math xmlns="http://www.w3.org/1998/Math/MathML" aria-hidden="true"><msup><mi mathvariant="normal">sin</mi><mrow><mo>−</mo><mn>1</mn></mrow></msup></math></button>
+      <button type="button" data-fn="acos" aria-label="Inverse cosine in degrees"><math xmlns="http://www.w3.org/1998/Math/MathML" aria-hidden="true"><msup><mi mathvariant="normal">cos</mi><mrow><mo>−</mo><mn>1</mn></mrow></msup></math></button>
+      <button type="button" data-fn="atan" aria-label="Inverse tangent in degrees"><math xmlns="http://www.w3.org/1998/Math/MathML" aria-hidden="true"><msup><mi mathvariant="normal">tan</mi><mrow><mo>−</mo><mn>1</mn></mrow></msup></math></button>
+      <button type="button" data-op="^2" aria-label="Square"><math xmlns="http://www.w3.org/1998/Math/MathML" aria-hidden="true"><msup><mi>x</mi><mn>2</mn></msup></math></button>
+      <button type="button" data-insert="π" aria-label="Pi">π</button>
+      <button type="button" data-action="clear" aria-label="Clear calculation">AC</button>
+      <button type="button" data-action="delete" aria-label="Delete last character">DEL</button>
+      <button type="button" data-insert="(" aria-label="Open bracket">(</button>
+      <button type="button" data-insert=")" aria-label="Close bracket">)</button>
+      <button type="button" data-insert="Ans" aria-label="Previous answer">Ans</button>
+      <button type="button" data-insert="7">7</button>
+      <button type="button" data-insert="8">8</button>
+      <button type="button" data-insert="9">9</button>
+      <button type="button" data-op="÷" aria-label="Divide">÷</button>
+      <button type="button" data-op="%" aria-label="Percent: divide by one hundred">%</button>
+      <button type="button" data-insert="4">4</button>
+      <button type="button" data-insert="5">5</button>
+      <button type="button" data-insert="6">6</button>
+      <button type="button" data-op="×" aria-label="Multiply">×</button>
+      <button type="button" data-action="sign" aria-label="Change sign">±</button>
+      <button type="button" data-insert="1">1</button>
+      <button type="button" data-insert="2">2</button>
+      <button type="button" data-insert="3">3</button>
+      <button type="button" data-op="−" aria-label="Subtract">−</button>
+      <button type="button" class="pem-calc-equals" data-action="equals" aria-label="Calculate">=</button>
+      <button type="button" class="pem-calc-zero" data-insert="0">0</button>
+      <button type="button" data-insert="." aria-label="Decimal point">.</button>
+      <button type="button" data-op="+" aria-label="Add">+</button>
+    </div>
+    <p class="pem-calc-help" id="pemCalcHelp">Type or use the keys. Press Enter or = to calculate. Use Ans to keep the full precision of the previous answer.</p>
+  </div>
+</div>
+<script id="pemCalcScript">
+(function initialisePemFloatingCalculator(){
+  'use strict';
+  // Everything is local to this calculator; assessment answers and marking are never written to.
+  const panel = document.getElementById('pemCalcWindow');
+  const opener = document.getElementById('pemCalcOpen');
+  const closer = document.getElementById('pemCalcClose');
+  const handle = document.getElementById('pemCalcDrag');
+  const expression = document.getElementById('pemCalcExpression');
+  const result = document.getElementById('pemCalcResult');
+  const keys = panel.querySelector('.pem-calc-keys');
+  const functionLabels = Object.freeze({sin:'sin',cos:'cos',tan:'tan',asin:'sin⁻¹',acos:'cos⁻¹',atan:'tan⁻¹',sqrt:'√'});
+  let lastAnswer = 0;
+  let justEvaluated = false;
+  let positioned = false;
+  let drag = null;
+
+  function paused(){
+    return document.body.classList.contains('exam-paused') ||
+      (typeof answerEntryPaused === 'function' && answerEntryPaused());
+  }
+  function modalVisible(){
+    return ['intro','formulaModal'].some(id=>{
+      const element = document.getElementById(id);
+      return element && !element.hidden && getComputedStyle(element).display !== 'none';
+    });
+  }
+  function available(){return !paused() && !modalVisible();}
+  function syncAvailability(){
+    panel.inert = !available();
+    if(panel.inert) endDrag();
+  }
+  function viewport(){
+    const v = window.visualViewport;
+    return {x:v ? v.offsetLeft : 0,y:v ? v.offsetTop : 0,
+      width:v ? v.width : document.documentElement.clientWidth,
+      height:v ? v.height : window.innerHeight};
+  }
+  function place(left,top){
+    const v=viewport(),box=panel.getBoundingClientRect(),gap=8;
+    const maxLeft=Math.max(v.x+gap,v.x+v.width-box.width-gap);
+    const maxTop=Math.max(v.y+gap,v.y+v.height-box.height-gap);
+    panel.style.left=Math.max(v.x+gap,Math.min(left,maxLeft))+'px';
+    panel.style.top=Math.max(v.y+gap,Math.min(top,maxTop))+'px';
+    panel.style.right='auto';
+  }
+  function fit(){
+    if(panel.hidden)return;
+    const v=viewport();
+    panel.style.maxHeight=Math.max(80,v.height-16)+'px';
+    panel.style.maxWidth=Math.max(80,v.width-16)+'px';
+    const box=panel.getBoundingClientRect();
+    place(box.left,box.top);
+  }
+  function open(){
+    if(!available())return;
+    panel.hidden=false;
+    syncAvailability();
+    fit();
+    if(!positioned){
+      const v=viewport(),box=panel.getBoundingClientRect();
+      const header=document.querySelector('header');
+      place(v.x+v.width-box.width-16,(header ? header.getBoundingClientRect().bottom : v.y+60)+10);
+      positioned=true;
+    }
+    opener.setAttribute('aria-expanded','true');
+    opener.textContent='Close calculator';
+    expression.focus({preventScroll:true});
+  }
+  function close(){
+    endDrag();
+    panel.hidden=true;
+    opener.setAttribute('aria-expanded','false');
+    opener.textContent='Open calculator';
+    if(available())opener.focus({preventScroll:true});
+  }
+  opener.addEventListener('click',()=>panel.hidden ? open() : close());
+  closer.addEventListener('click',close);
+
+  // Pointer capture keeps dragging reliable for mouse, pen and touch, even off the title bar.
+  handle.addEventListener('pointerdown',event=>{
+    if(!available() || event.button!==0 || drag)return;
+    const box=panel.getBoundingClientRect();
+    drag={id:event.pointerId,x:event.clientX,y:event.clientY,left:box.left,top:box.top};
+    panel.classList.add('pem-calc-dragging');
+    handle.focus({preventScroll:true});
+    try{handle.setPointerCapture(event.pointerId);}catch(_error){}
+    event.preventDefault();
+  });
+  handle.addEventListener('pointermove',event=>{
+    if(!drag || event.pointerId!==drag.id)return;
+    if(!available()){endDrag();return;}
+    place(drag.left+event.clientX-drag.x,drag.top+event.clientY-drag.y);
+    event.preventDefault();
+  });
+  function endDrag(){
+    const previous=drag;
+    drag=null;
+    panel.classList.remove('pem-calc-dragging');
+    if(previous){try{handle.releasePointerCapture(previous.id);}catch(_error){}}
+  }
+  ['pointerup','pointercancel','lostpointercapture'].forEach(name=>handle.addEventListener(name,endDrag));
+  handle.addEventListener('keydown',event=>{
+    if(!available() || !['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(event.key))return;
+    const box=panel.getBoundingClientRect(),step=event.shiftKey ? 40 : 10;
+    place(box.left+(event.key==='ArrowRight'?step:event.key==='ArrowLeft'?-step:0),
+      box.top+(event.key==='ArrowDown'?step:event.key==='ArrowUp'?-step:0));
+    event.preventDefault();event.stopPropagation();
+  });
+  window.addEventListener('resize',fit);
+  if(window.visualViewport){
+    window.visualViewport.addEventListener('resize',fit);
+    window.visualViewport.addEventListener('scroll',fit);
+  }
+  if(typeof ResizeObserver==='function')new ResizeObserver(fit).observe(panel);
+  const availabilityObserver=new MutationObserver(()=>{syncAvailability();fit();});
+  availabilityObserver.observe(document.body,{attributes:true,attributeFilter:['class']});
+  availabilityObserver.observe(document.documentElement,{attributes:true,attributeFilter:['class','style']});
+  ['intro','formulaModal'].forEach(id=>{
+    const element=document.getElementById(id);
+    if(element)availabilityObserver.observe(element,{attributes:true,attributeFilter:['style','hidden']});
+  });
+  ['fullscreenchange','webkitfullscreenchange','msfullscreenchange'].forEach(name=>
+    document.addEventListener(name,()=>{syncAvailability();fit();}));
+  syncAvailability();
+
+  function message(text,isError=false){
+    result.textContent=text;
+    result.dataset.error=String(isError);
+    expression.setAttribute('aria-invalid',String(isError));
+  }
+  function setExpression(text,caret=text.length){
+    if(text.length>240){message('Calculation is too long. Use a shorter expression.',true);return false;}
+    expression.value=text;
+    expression.focus({preventScroll:true});
+    expression.setSelectionRange(caret,caret);
+    justEvaluated=false;
+    message('');
+    return true;
+  }
+  function selection(){
+    return {start:expression.selectionStart ?? expression.value.length,end:expression.selectionEnd ?? expression.value.length};
+  }
+  function insert(text,operator=false){
+    if(justEvaluated)setExpression(operator ? 'Ans' : '');
+    const {start,end}=selection(),value=expression.value;
+    setExpression(value.slice(0,start)+text+value.slice(end),start+text.length);
+  }
+  function applyFunction(name){
+    const label=functionLabels[name];
+    if(!label)return;
+    if(justEvaluated){setExpression(label+'(Ans)');return;}
+    const {start,end}=selection(),value=expression.value;
+    if(start!==end){
+      const wrapped=label+'('+value.slice(start,end)+')';
+      setExpression(value.slice(0,start)+wrapped+value.slice(end),start+wrapped.length);
+      return;
+    }
+    // A complete current calculation can be used directly, e.g. 12 ÷ 20, then inverse cosine.
+    if(value.trim() && end===value.length){
+      try{evaluate(value);setExpression(label+'('+value+')');return;}catch(_error){}
+    }
+    insert(label+'(');
+  }
+  function deleteCharacter(){
+    const {start,end}=selection(),value=expression.value;
+    const from=start===end ? Math.max(0,start-1) : start;
+    setExpression(value.slice(0,from)+value.slice(end),from);
+  }
+  function changeSign(){
+    if(justEvaluated){setExpression('−(Ans)');return;}
+    const {start,end}=selection(),value=expression.value;
+    if(start!==end){
+      const wrapped='−('+value.slice(start,end)+')';
+      setExpression(value.slice(0,start)+wrapped+value.slice(end),start+wrapped.length);
+    }else setExpression(value.trim() ? '−('+value+')' : '−');
+  }
+
+  // A small arithmetic parser, not JavaScript evaluation. No eval, Function, network or dependencies.
+  function finite(value){
+    if(!Number.isFinite(value))throw new Error('Maths error: the result is not a finite real number.');
+    return Object.is(value,-0) ? 0 : value;
+  }
+  function trig(name,value){
+    const angle=value%360,halfTurn=value%180;
+    if(name==='sin'){
+      if(halfTurn===0)return 0;
+      if(angle===90 || angle===-270)return 1;
+      if(angle===-90 || angle===270)return -1;
+      return Math.sin(angle*Math.PI/180);
+    }
+    if(name==='cos'){
+      if(Math.abs(halfTurn)===90)return 0;
+      if(angle===0)return 1;
+      if(Math.abs(angle)===180)return -1;
+      return Math.cos(angle*Math.PI/180);
+    }
+    if(name==='tan'){
+      if(Math.abs(halfTurn)===90)throw new Error('Maths error: tangent is undefined at this angle.');
+      if(halfTurn===0)return 0;
+      return Math.tan(halfTurn*Math.PI/180);
+    }
+    if((name==='asin' || name==='acos') && Math.abs(value)>1)
+      throw new Error('Maths error: inverse sine and cosine need a value from −1 to 1.');
+    if(name==='asin')return Math.asin(value)*180/Math.PI;
+    if(name==='acos')return Math.acos(value)*180/Math.PI;
+    if(name==='atan')return Math.atan(value)*180/Math.PI;
+    if(name==='sqrt'){
+      if(value<0)throw new Error('Maths error: a square root needs a non-negative value.');
+      return Math.sqrt(value);
+    }
+    throw new Error('Unknown function.');
+  }
+  function evaluate(source){
+    if(!source.trim())throw new Error('Enter a calculation first.');
+    if(source.length>240)throw new Error('Calculation is too long.');
+    const normal=source.toLowerCase()
+      .replace(/(sin|cos|tan)(?:⁻¹|\^\(?-1\)?)(?=\s*\()/g,(_match,name)=>'a'+name)
+      .replace(/arcsin/g,'asin').replace(/arccos/g,'acos').replace(/arctan/g,'atan')
+      .replace(/[−–—]/g,'-').replace(/[×·]/g,'*').replace(/÷/g,'/').replace(/\*\*/g,'^')
+      .replace(/π/g,' pi ').replace(/√/g,'sqrt').replace(/²/g,'^2').replace(/³/g,'^3');
+    const tokens=[];
+    for(let i=0;i<normal.length;){
+      const rest=normal.slice(i);
+      if(/\s/.test(normal[i])){i++;continue;}
+      const number=rest.match(/^(?:\d+(?:\.\d*)?|\.\d+)(?:e[+-]?\d+)?/);
+      if(number){tokens.push({type:'number',value:finite(Number(number[0]))});i+=number[0].length;continue;}
+      const word=rest.match(/^[a-z]+/);
+      if(word){
+        const name=word[0];
+        if(name==='pi' || name==='ans')tokens.push({type:'constant',value:name});
+        else if(Object.hasOwn(functionLabels,name))tokens.push({type:'function',value:name});
+        else if(name==='x')tokens.push({type:'*'});
+        else throw new Error('Use numbers, brackets and the calculator functions only.');
+        i+=name.length;continue;
+      }
+      if('+-*/^()%'.includes(normal[i])){tokens.push({type:normal[i++]});continue;}
+      throw new Error('Check the calculation: an unsupported character was entered.');
+    }
+    if(tokens.length>240)throw new Error('Calculation is too long.');
+    tokens.push({type:'end'});
+    let position=0,depth=0;
+    function type(){return tokens[position].type;}
+    function take(expected){
+      if(type()!==expected)throw new Error(expected===')' ? 'Check the brackets in the calculation.' : 'Check the calculation.');
+      return tokens[position++];
+    }
+    function nested(callback){
+      if(++depth>64)throw new Error('There are too many nested brackets or powers.');
+      try{return callback();}finally{depth--;}
+    }
+    function primary(){
+      if(type()==='number')return take('number').value;
+      if(type()==='constant')return take('constant').value==='pi' ? Math.PI : lastAnswer;
+      if(type()==='('){
+        take('(');const value=nested(sum);take(')');return value;
+      }
+      if(type()==='function'){
+        const name=take('function').value;
+        take('(');const value=nested(sum);take(')');return finite(trig(name,value));
+      }
+      throw new Error('Check the calculation: a number or bracket is missing.');
+    }
+    function postfix(){
+      let value=primary();
+      while(type()==='%'){take('%');value/=100;}
+      return finite(value);
+    }
+    function power(){
+      const value=postfix();
+      if(type()==='^'){take('^');return finite(Math.pow(value,nested(unary)));}
+      return value;
+    }
+    function unary(){
+      if(type()==='+'){take('+');return nested(unary);}
+      if(type()==='-'){take('-');return finite(-nested(unary));}
+      return power();
+    }
+    function product(){
+      let value=unary();
+      while(true){
+        if(type()==='*'){take('*');value=finite(value*unary());}
+        else if(type()==='/'){
+          take('/');const divisor=unary();
+          if(divisor===0)throw new Error('Maths error: cannot divide by zero.');
+          value=finite(value/divisor);
+        }else if(type()==='(' || type()==='constant' || type()==='function' ||
+          (type()==='number' && [')','constant','%'].includes(tokens[position-1]?.type))){
+          value=finite(value*unary());
+        }else break;
+      }
+      return value;
+    }
+    function sum(){
+      let value=product();
+      while(type()==='+' || type()==='-'){
+        const operator=type();take(operator);
+        const other=product();value=finite(operator==='+' ? value+other : value-other);
+      }
+      return value;
+    }
+    const answer=sum();
+    if(type()!=='end')throw new Error('Check the calculation, brackets and decimal points.');
+    return finite(answer);
+  }
+  function calculate(){
+    if(!available())return;
+    try{
+      let source=expression.value.trim();
+      // Like a handheld calculator, accept omitted closing brackets at the very end.
+      let balance=0;
+      for(const character of source){
+        if(character==='(')balance++;
+        if(character===')' && --balance<0)throw new Error('Check the brackets in the calculation.');
+      }
+      if(balance>0)source+=')'.repeat(balance);
+      const answer=evaluate(source);
+      lastAnswer=answer;expression.value=source;
+      message('= '+Number(answer.toPrecision(12)).toString());
+      justEvaluated=true;
+      expression.focus({preventScroll:true});
+      expression.setSelectionRange(source.length,source.length);
+    }catch(error){
+      justEvaluated=false;
+      message(error instanceof Error ? error.message : 'Check the calculation.',true);
+      expression.focus({preventScroll:true});
+    }
+  }
+  // Do not let mouse clicks on calculator keys discard the expression's selection/caret.
+  keys.addEventListener('pointerdown',event=>{
+    if(event.pointerType==='mouse' && event.target.closest('button'))event.preventDefault();
+  });
+  keys.addEventListener('click',event=>{
+    if(!available())return;
+    const button=event.target.closest('button');
+    if(!button || !keys.contains(button))return;
+    if(button.dataset.fn)applyFunction(button.dataset.fn);
+    else if(button.dataset.op)insert(button.dataset.op,true);
+    else if(button.hasAttribute('data-insert'))insert(button.dataset.insert);
+    else if(button.dataset.action==='equals')calculate();
+    else if(button.dataset.action==='clear'){setExpression('');message('0');}
+    else if(button.dataset.action==='delete')deleteCharacter();
+    else if(button.dataset.action==='sign')changeSign();
+  });
+  expression.addEventListener('beforeinput',event=>{
+    if(!available())return;
+    if(justEvaluated && event.inputType==='insertText'){
+      const {start,end}=selection();
+      // An explicit selection or a moved caret is an edit, not a new/chained calculation.
+      if(start!==end || end!==expression.value.length){justEvaluated=false;return;}
+      const continuation=/^[+\-−*/×÷^%]/.test(event.data || '');
+      setExpression(continuation ? 'Ans' : '');
+    }
+  });
+  expression.addEventListener('input',()=>{justEvaluated=false;message('');});
+  panel.addEventListener('keydown',event=>{
+    if(event.defaultPrevented || !available())return;
+    if(event.key==='Escape'){event.preventDefault();event.stopPropagation();close();return;}
+    if(event.ctrlKey || event.metaKey || event.altKey)return;
+    if(event.target===expression){
+      if(event.key==='Enter' || event.key==='='){event.preventDefault();event.stopPropagation();calculate();}
+      else if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Home','End','Backspace','Delete'].includes(event.key))justEvaluated=false;
+      return;
+    }
+    // Number-pad entry still works after keyboard users focus one of the on-screen keys.
+    if(event.target===handle)return;
+    if(/^[0-9.()]$/.test(event.key)){event.preventDefault();insert(event.key);}
+    else if(/^[+\-*/^%]$/.test(event.key)){event.preventDefault();insert(event.key,true);}
+    else if(event.key==='='){event.preventDefault();calculate();}
+    else if(event.key==='Backspace'){event.preventDefault();deleteCharacter();}
+  });
+})();
+</script>
+<!-- END PEM FLOATING CALCULATOR -->
+</body>
+</html>
